@@ -1,0 +1,40 @@
+# ===================================
+# Mirai HelpDesk Management System
+# Git Attributes - Line Ending Configuration
+# ===================================
+
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Force specific file types
+*.js text eol=lf
+*.ts text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf
+
+# Windows batch files
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.xlsx binary
+*.xls binary
+*.doc binary
+*.docx binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.db binary
+*.sqlite binary

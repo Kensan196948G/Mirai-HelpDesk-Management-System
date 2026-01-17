@@ -1,0 +1,55 @@
+{
+  "name": "mirai-helpdesk-management-system",
+  "version": "0.1.0",
+  "description": "社内IT部門向けヘルプデスク管理システム - インシデント、サービス要求、Microsoft 365運用管理",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "build": "echo 'Build step placeholder'",
+    "test": "jest",
+    "test:e2e": "playwright test",
+    "lint": "eslint src/ --ext .js,.ts",
+    "lint:fix": "eslint src/ --ext .js,.ts --fix",
+    "format": "prettier --write \"src/**/*.{js,ts,json}\"",
+    "db:migrate": "node scripts/migrate.js",
+    "db:seed": "node scripts/seed.js"
+  },
+  "keywords": [
+    "helpdesk",
+    "itsm",
+    "incident-management",
+    "service-request",
+    "microsoft-365",
+    "audit-trail",
+    "rbac"
+  ],
+  "author": "Mirai IT Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "dotenv": "^16.4.5",
+    "better-sqlite3": "^11.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "uuid": "^10.0.0",
+    "date-fns": "^3.6.0",
+    "express-validator": "^7.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "@playwright/test": "^1.47.0"
+  }
+}
