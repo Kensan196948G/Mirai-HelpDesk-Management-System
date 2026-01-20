@@ -2,7 +2,7 @@
   "model": "sonnet[1m]",
   "env": {
     "ENABLE_TOOL_SEARCH": "true",
-    "ENABLE_EXPERIMENTAL_MCP_CLI": "true",
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
     "MCP_TIMEOUT": "30000"
   },
   "statusLine": {
