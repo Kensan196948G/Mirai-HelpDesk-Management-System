@@ -12,6 +12,11 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "memory",
-    "playwright"
+    "github",
+    "brave-search",
+    "context7",
+    "sequential-thinking",
+    "sqlite",
+    "claude-mem"
   ]
 }
