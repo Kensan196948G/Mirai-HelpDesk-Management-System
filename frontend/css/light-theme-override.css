@@ -1,0 +1,128 @@
+/**
+ * Mirai HelpDesk - Light Theme Override
+ * 明るいテーマへの変更とロゴサイズ調整
+ */
+
+/* ============== Light Theme Colors ============== */
+body {
+    background: #faf9f8 !important;
+    color: #323130 !important;
+}
+
+.sidebar {
+    background: #ffffff !important;
+    border-right: 1px solid #edebe9 !important;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.08) !important;
+}
+
+.sidebar-logo svg {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.sidebar-logo span {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #323130 !important;
+}
+
+.sidebar-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #edebe9 !important;
+}
+
+.nav-link {
+    color: #605e5c !important;
+}
+
+.nav-link:hover {
+    background: #f3f2f1 !important;
+    color: #0078d4 !important;
+}
+
+.nav-link.active {
+    background: #deecf9 !important;
+    color: #0078d4 !important;
+    border-left: 3px solid #0078d4 !important;
+}
+
+.nav-section-title {
+    color: #8a8886 !important;
+}
+
+.main-content {
+    background: #faf9f8 !important;
+}
+
+.page-header h1 {
+    color: #323130 !important;
+}
+
+/* Stats Cards */
+.stat-card {
+    background: #ffffff !important;
+    border: 1px solid #edebe9 !important;
+    box-shadow: 0 1.6px 3.6px rgba(0,0,0,.13), 0 0.3px 0.9px rgba(0,0,0,.11) !important;
+}
+
+.stat-value {
+    color: #323130 !important;
+}
+
+.stat-label {
+    color: #605e5c !important;
+}
+
+/* Cards */
+.card {
+    background: #ffffff !important;
+    border: 1px solid #edebe9 !important;
+    box-shadow: 0 1.6px 3.6px rgba(0,0,0,.13), 0 0.3px 0.9px rgba(0,0,0,.11) !important;
+}
+
+.card-header h3 {
+    color: #323130 !important;
+}
+
+.card-body {
+    color: #605e5c !important;
+}
+
+/* User Info */
+.user-info {
+    background: #f3f2f1 !important;
+    border-top: 1px solid #edebe9 !important;
+}
+
+.user-avatar {
+    background: #0078d4 !important;
+    color: #ffffff !important;
+}
+
+.user-name {
+    color: #323130 !important;
+}
+
+.user-role {
+    color: #605e5c !important;
+}
+
+/* Buttons */
+.btn-ghost {
+    color: #605e5c !important;
+}
+
+.btn-ghost:hover {
+    background: #f3f2f1 !important;
+    color: #0078d4 !important;
+}
+
+/* Lists */
+.list-item {
+    background: #ffffff !important;
+    border: 1px solid #edebe9 !important;
+}
+
+.list-item:hover {
+    background: #f3f2f1 !important;
+}

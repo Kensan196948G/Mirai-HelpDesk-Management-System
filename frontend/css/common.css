@@ -1,47 +1,41 @@
 /**
  * Mirai HelpDesk - Common Styles
- * 
- * Design System: Dark theme with glassmorphism
+ *
+ * Design System: Light theme with Fluent Design
  */
 
 /* ============== CSS Variables ============== */
 :root {
-    /* Colors - Dark Theme */
-    --color-bg-primary: #0f0f1a;
-    --color-bg-secondary: #1a1a2e;
-    --color-bg-tertiary: #252542;
-    --color-bg-elevated: rgba(37, 37, 66, 0.8);
-    
-    /* Glass Effect */
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    --glass-blur: blur(10px);
-    
-    /* Accent Colors */
-    --color-primary: #6366f1;
-    --color-primary-light: #818cf8;
-    --color-primary-dark: #4f46e5;
-    --color-secondary: #22d3ee;
-    --color-accent: #f472b6;
-    
+    /* Colors - Light Theme (Microsoft Fluent Design) */
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #faf9f8;
+    --color-bg-tertiary: #f3f2f1;
+    --color-bg-elevated: #ffffff;
+
+    /* Microsoft Blue */
+    --color-primary: #0078d4;
+    --color-primary-light: #2b88d8;
+    --color-primary-dark: #005a9e;
+    --color-secondary: #00bcf2;
+    --color-accent: #8764b8;
+
     /* Status Colors */
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-error: #ef4444;
-    --color-info: #3b82f6;
-    
+    --color-success: #107c10;
+    --color-warning: #ff8c00;
+    --color-error: #d13438;
+    --color-info: #0078d4;
+
     /* Priority Colors */
-    --color-p1: #ef4444;
-    --color-p2: #f59e0b;
-    --color-p3: #3b82f6;
-    --color-p4: #6b7280;
-    
+    --color-p1: #d13438;
+    --color-p2: #ff8c00;
+    --color-p3: #0078d4;
+    --color-p4: #8a8886;
+
     /* Text Colors */
-    --color-text-primary: #ffffff;
-    --color-text-secondary: rgba(255, 255, 255, 0.7);
-    --color-text-tertiary: rgba(255, 255, 255, 0.5);
-    --color-text-disabled: rgba(255, 255, 255, 0.3);
+    --color-text-primary: #323130;
+    --color-text-secondary: #605e5c;
+    --color-text-tertiary: #8a8886;
+    --color-text-disabled: #c8c6c4;
     
     /* Borders */
     --border-radius-sm: 6px;
