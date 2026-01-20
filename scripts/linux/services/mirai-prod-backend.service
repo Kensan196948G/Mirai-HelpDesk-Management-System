@@ -1,0 +1,16 @@
+[Unit]
+Description=Mirai HelpDesk - Production Backend API (HTTPS)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/Mirai-HelpDesk-Management-System/backend
+Environment="PATH=/path/to/Mirai-HelpDesk-Management-System/backend/.venv-linux/bin"
+ExecStart=/path/to/Mirai-HelpDesk-Management-System/backend/.venv-linux/bin/uvicorn app.main:app --host 192.168.0.187 --port 8443 --ssl-certfile /path/to/Mirai-HelpDesk-Management-System/certificates/server.crt --ssl-keyfile /path/to/Mirai-HelpDesk-Management-System/certificates/server.key
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

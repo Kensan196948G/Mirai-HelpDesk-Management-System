@@ -1,0 +1,847 @@
+/**
+ * Microsoft Fluent Design - Component Styles
+ * Mirai ヘルプデスク管理システム
+ *
+ * 再利用可能なFluentコンポーネントスタイル
+ */
+
+/* ==========================================================================
+   カードコンポーネント
+   ========================================================================== */
+
+.ms-Card {
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-medium);
+  box-shadow: var(--shadow-depth-2);
+  padding: var(--spacing-xxl);
+  transition: all var(--duration-normal) ease;
+  border: 1px solid transparent;
+}
+
+.ms-Card:hover {
+  box-shadow: var(--shadow-depth-4);
+  transform: translateY(-2px);
+}
+
+.ms-Card--interactive {
+  cursor: pointer;
+}
+
+.ms-Card--interactive:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-depth-2);
+}
+
+.ms-Card--compact {
+  padding: var(--spacing-lg);
+}
+
+.ms-Card--spacious {
+  padding: var(--spacing-xxxl);
+}
+
+/* 統計カード */
+.ms-Card--stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.ms-Card--stats::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--ms-blue);
+  opacity: 0;
+  transition: opacity var(--duration-normal);
+}
+
+.ms-Card--stats:hover::before {
+  opacity: 1;
+}
+
+.ms-Card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ms-Card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ms-Card-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.ms-Card-body {
+  flex: 1;
+}
+
+.ms-Card-footer {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+/* ==========================================================================
+   統計カードコンポーネント
+   ========================================================================== */
+
+.stats-card {
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-medium);
+  box-shadow: var(--shadow-depth-2);
+  padding: var(--spacing-xxl);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  transition: all var(--duration-normal) ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card:hover {
+  box-shadow: var(--shadow-depth-8);
+  transform: translateY(-4px);
+}
+
+.stats-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--ms-blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-slow) ease;
+}
+
+.stats-card:hover::after {
+  transform: scaleX(1);
+}
+
+.stats-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--border-radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  flex-shrink: 0;
+  transition: transform var(--duration-normal) ease;
+}
+
+.stats-card:hover .stats-icon {
+  transform: scale(1.1);
+}
+
+.stats-icon--primary {
+  background: var(--ms-blue-lighter);
+  color: var(--ms-blue);
+}
+
+.stats-icon--success {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.stats-icon--warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.stats-icon--error {
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+.stats-icon--info {
+  background: var(--info-bg);
+  color: var(--info);
+}
+
+.stats-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.stats-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-value {
+  font-size: var(--font-size-xxxl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stats-change {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.stats-change.positive {
+  color: var(--success);
+}
+
+.stats-change.negative {
+  color: var(--error);
+}
+
+.stats-change.neutral {
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   ボタンコンポーネント
+   ========================================================================== */
+
+.ms-Button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  border-radius: var(--border-radius-small);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.ms-Button:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.ms-Button:active {
+  transform: scale(0.98);
+}
+
+.ms-Button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Primary Button */
+.ms-Button--primary {
+  background-color: var(--ms-blue);
+  color: var(--text-white);
+  border-color: var(--ms-blue);
+}
+
+.ms-Button--primary:hover:not(:disabled) {
+  background-color: var(--ms-blue-hover);
+  border-color: var(--ms-blue-hover);
+}
+
+.ms-Button--primary:active:not(:disabled) {
+  background-color: var(--ms-blue-active);
+  border-color: var(--ms-blue-active);
+}
+
+/* Secondary Button */
+.ms-Button--secondary {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+.ms-Button--secondary:hover:not(:disabled) {
+  background-color: var(--bg-secondary);
+  border-color: var(--text-primary);
+}
+
+/* Ghost Button */
+.ms-Button--ghost {
+  background-color: transparent;
+  color: var(--ms-blue);
+  border-color: transparent;
+}
+
+.ms-Button--ghost:hover:not(:disabled) {
+  background-color: var(--ms-blue-lighter);
+}
+
+/* Danger Button */
+.ms-Button--danger {
+  background-color: var(--error);
+  color: var(--text-white);
+  border-color: var(--error);
+}
+
+.ms-Button--danger:hover:not(:disabled) {
+  background-color: #a80000;
+  border-color: #a80000;
+}
+
+/* Icon Button */
+.ms-Button--icon {
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-small);
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+}
+
+.ms-Button--icon:hover:not(:disabled) {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Button Sizes */
+.ms-Button--small {
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.ms-Button--large {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+}
+
+/* ==========================================================================
+   入力フィールドコンポーネント
+   ========================================================================== */
+
+.ms-TextField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+}
+
+.ms-TextField-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.ms-TextField-input {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-small);
+  transition: all var(--duration-fast) ease;
+}
+
+.ms-TextField-input:hover {
+  border-color: var(--border-hover);
+}
+
+.ms-TextField-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 1px var(--border-focus);
+}
+
+.ms-TextField-input::placeholder {
+  color: var(--text-disabled);
+}
+
+.ms-TextField-input:disabled {
+  background-color: var(--bg-secondary);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.ms-TextField--error .ms-TextField-input {
+  border-color: var(--error);
+}
+
+.ms-TextField-description {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.ms-TextField-error {
+  font-size: var(--font-size-xs);
+  color: var(--error);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* ==========================================================================
+   モーダルコンポーネント
+   ========================================================================== */
+
+.ms-Modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn var(--duration-normal) ease;
+}
+
+.ms-Modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+}
+
+.ms-Modal-container {
+  position: relative;
+  z-index: var(--z-modal);
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-medium);
+  box-shadow: var(--shadow-depth-64);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: scaleUp var(--duration-normal) ease;
+}
+
+.ms-Modal-header {
+  padding: var(--spacing-xxl);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ms-Modal-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ms-Modal-close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  border-radius: var(--border-radius-small);
+  transition: all var(--duration-fast) ease;
+}
+
+.ms-Modal-close:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.ms-Modal-body {
+  padding: var(--spacing-xxl);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.ms-Modal-footer {
+  padding: var(--spacing-lg) var(--spacing-xxl);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+/* ==========================================================================
+   タグ・バッジコンポーネント
+   ========================================================================== */
+
+.ms-Tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--border-radius-small);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.ms-Tag--primary {
+  background: var(--ms-blue-lighter);
+  color: var(--ms-blue);
+  border-color: var(--ms-blue);
+}
+
+.ms-Tag--success {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: var(--success-border);
+}
+
+.ms-Tag--warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-color: var(--warning-border);
+}
+
+.ms-Tag--error {
+  background: var(--error-bg);
+  color: var(--error);
+  border-color: var(--error-border);
+}
+
+.ms-Tag--info {
+  background: var(--info-bg);
+  color: var(--info);
+  border-color: var(--info-border);
+}
+
+.ms-Tag--neutral {
+  background: var(--fluent-gray-20);
+  color: var(--fluent-gray-90);
+  border-color: var(--fluent-gray-40);
+}
+
+/* 優先度タグ */
+.ms-Tag--priority-p1 {
+  background: var(--priority-p1-bg);
+  color: var(--priority-p1);
+  border-color: var(--priority-p1);
+}
+
+.ms-Tag--priority-p2 {
+  background: var(--priority-p2-bg);
+  color: var(--priority-p2);
+  border-color: var(--priority-p2);
+}
+
+.ms-Tag--priority-p3 {
+  background: var(--priority-p3-bg);
+  color: var(--priority-p3);
+  border-color: var(--priority-p3);
+}
+
+.ms-Tag--priority-p4 {
+  background: var(--priority-p4-bg);
+  color: var(--priority-p4);
+  border-color: var(--priority-p4);
+}
+
+/* バッジ */
+.ms-Badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  color: var(--text-white);
+  background: var(--error);
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.ms-Badge--dot {
+  width: 8px;
+  height: 8px;
+  min-width: 0;
+  padding: 0;
+  border-radius: var(--border-radius-circle);
+}
+
+/* ==========================================================================
+   プログレスバーコンポーネント
+   ========================================================================== */
+
+.ms-ProgressBar {
+  width: 100%;
+  height: 4px;
+  background-color: var(--fluent-gray-30);
+  border-radius: var(--border-radius-small);
+  overflow: hidden;
+  position: relative;
+}
+
+.ms-ProgressBar-fill {
+  height: 100%;
+  background-color: var(--ms-blue);
+  border-radius: var(--border-radius-small);
+  transition: width var(--duration-slow) ease;
+}
+
+.ms-ProgressBar--success .ms-ProgressBar-fill {
+  background-color: var(--success);
+}
+
+.ms-ProgressBar--warning .ms-ProgressBar-fill {
+  background-color: var(--warning);
+}
+
+.ms-ProgressBar--error .ms-ProgressBar-fill {
+  background-color: var(--error);
+}
+
+.ms-ProgressBar--indeterminate .ms-ProgressBar-fill {
+  width: 30% !important;
+  animation: indeterminateProgress 1.5s infinite ease-in-out;
+}
+
+@keyframes indeterminateProgress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+/* ==========================================================================
+   トグルスイッチコンポーネント
+   ========================================================================== */
+
+.ms-Toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ms-Toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ms-Toggle-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background-color: var(--fluent-gray-60);
+  border-radius: 12px;
+  transition: background-color var(--duration-fast) ease;
+}
+
+.ms-Toggle-input:checked + .ms-Toggle-track {
+  background-color: var(--ms-blue);
+}
+
+.ms-Toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-circle);
+  box-shadow: var(--shadow-depth-2);
+  transition: transform var(--duration-fast) ease;
+}
+
+.ms-Toggle-input:checked + .ms-Toggle-track .ms-Toggle-thumb {
+  transform: translateX(20px);
+}
+
+.ms-Toggle-input:focus-visible + .ms-Toggle-track {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.ms-Toggle-input:disabled + .ms-Toggle-track {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   データテーブルコンポーネント
+   ========================================================================== */
+
+.ms-Table {
+  width: 100%;
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-medium);
+  box-shadow: var(--shadow-depth-2);
+  overflow: hidden;
+}
+
+.ms-Table-container {
+  overflow-x: auto;
+}
+
+.ms-Table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ms-Table thead {
+  background: var(--fluent-gray-10);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.ms-Table th {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ms-Table td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ms-Table tbody tr {
+  transition: background-color var(--duration-fast) ease;
+}
+
+.ms-Table tbody tr:hover {
+  background-color: var(--fluent-gray-10);
+}
+
+.ms-Table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   ピボットタブコンポーネント
+   ========================================================================== */
+
+.ms-Pivot {
+  display: flex;
+  border-bottom: 2px solid var(--border-color);
+  gap: var(--spacing-md);
+}
+
+.ms-Pivot-item {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+  position: relative;
+  bottom: -2px;
+}
+
+.ms-Pivot-item:hover {
+  color: var(--text-primary);
+  background: var(--fluent-gray-10);
+}
+
+.ms-Pivot-item.is-selected {
+  color: var(--ms-blue);
+  border-bottom-color: var(--ms-blue);
+}
+
+/* ==========================================================================
+   レスポンシブデザイン
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .ms-Card {
+    padding: var(--spacing-lg);
+  }
+
+  .stats-card {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--spacing-lg);
+  }
+
+  .stats-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+  }
+
+  .stats-value {
+    font-size: var(--font-size-xxl);
+  }
+
+  .ms-Modal-container {
+    width: 95%;
+  }
+
+  .ms-Modal-header,
+  .ms-Modal-body,
+  .ms-Modal-footer {
+    padding: var(--spacing-lg);
+  }
+
+  .ms-Table th,
+  .ms-Table td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .ms-Button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stats-value {
+    font-size: var(--font-size-xl);
+  }
+
+  .ms-Card-footer {
+    flex-direction: column;
+  }
+
+  .ms-Card-footer .ms-Button {
+    width: 100%;
+  }
+}
