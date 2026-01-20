@@ -1,19 +1,22 @@
 {
-  "model": "sonnet[1m]",
   "env": {
     "ENABLE_TOOL_SEARCH": "true",
     "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
     "MCP_TIMEOUT": "30000"
   },
-  "statusLine": {
-    "type": "command",
-    "command": "npx --yes ccstatusline@latest"
-  },
+  "model": "sonnet[1m]",
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "memory",
     "github",
     "brave-search",
     "sequential-thinking"
-  ]
+  ],
+  "statusLine": {
+    "type": "command",
+    "command": "npx --yes ccstatusline@latest"
+  },
+  "enabledPlugins": {
+    "claude-mem@thedotmack": true
+  }
 }
