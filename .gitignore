@@ -56,6 +56,10 @@ tmp/
 temp/
 *.tmp
 
+# Uploaded files
+backend/uploads/
+uploads/
+
 # Claude Code local settings
 .claude/settings.local.json
 .claude/*.local.json

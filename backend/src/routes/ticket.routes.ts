@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
 import { TicketController } from '../controllers/ticket.controller';
+import { ApprovalController } from '../controllers/approval.controller';
 import { body, param } from 'express-validator';
 import { validate, runValidations } from '../middleware/validation';
 import { UserRole } from '../types';
@@ -78,6 +79,27 @@ router.post(
   ]),
   validate,
   TicketController.addComment
+);
+
+// 承認依頼作成（Agent/M365 Operator/Manager）
+router.post(
+  '/:id/approvals',
+  authorize(UserRole.AGENT, UserRole.M365_OPERATOR, UserRole.MANAGER),
+  runValidations([
+    param('id').isUUID().withMessage('Invalid ticket ID'),
+    body('approver_id').isUUID().withMessage('Valid approver ID is required'),
+    body('reason').notEmpty().withMessage('Reason is required'),
+  ]),
+  validate,
+  ApprovalController.createApprovalRequest
+);
+
+// チケットの承認履歴取得
+router.get(
+  '/:id/approvals',
+  runValidations([param('id').isUUID().withMessage('Invalid ticket ID')]),
+  validate,
+  ApprovalController.getApprovalHistory
 );
 
 export default router;

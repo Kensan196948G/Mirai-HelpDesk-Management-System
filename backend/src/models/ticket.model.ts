@@ -7,6 +7,7 @@ import {
   UrgencyLevel,
   PriorityLevel,
 } from '../types';
+import { SLAService } from '../services/sla.service';
 
 export class TicketModel {
   // チケット作成
@@ -19,27 +20,45 @@ export class TicketModel {
     requester_id: string;
     category_id?: string;
   }): Promise<Ticket> {
-    // 優先度は自動計算（データベーストリガー）
-    // SLAポリシーも自動選択（実装が必要）
-    const result = await query(
-      `INSERT INTO tickets (
-        type, subject, description, impact, urgency,
-        requester_id, category_id, status
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING *`,
-      [
-        ticketData.type,
-        ticketData.subject,
-        ticketData.description,
-        ticketData.impact,
-        ticketData.urgency,
-        ticketData.requester_id,
-        ticketData.category_id,
-        TicketStatus.NEW,
-      ]
-    );
+    return withTransaction(async (client) => {
+      // チケットを仮作成（優先度は自動計算されるトリガーに依存）
+      const insertResult = await client.query(
+        `INSERT INTO tickets (
+          type, subject, description, impact, urgency,
+          requester_id, category_id, status
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING *`,
+        [
+          ticketData.type,
+          ticketData.subject,
+          ticketData.description,
+          ticketData.impact,
+          ticketData.urgency,
+          ticketData.requester_id,
+          ticketData.category_id,
+          TicketStatus.NEW,
+        ]
+      );
 
-    return result.rows[0];
+      const ticket = insertResult.rows[0];
+
+      // SLA期限を計算
+      const { response_due_at, due_at } = SLAService.calculateDueDates(
+        ticket.priority,
+        ticket.created_at
+      );
+
+      // SLA期限を更新
+      const updateResult = await client.query(
+        `UPDATE tickets
+         SET response_due_at = $1, due_at = $2
+         WHERE ticket_id = $3
+         RETURNING *`,
+        [response_due_at, due_at, ticket.ticket_id]
+      );
+
+      return updateResult.rows[0];
+    });
   }
 
   // チケット検索（フィルタ付き）
