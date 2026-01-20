@@ -11,13 +11,7 @@
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "github",
     "memory",
-    "playwright",
-    "sqlite",
-    "context7",
-    "sequential-thinking",
-    "chrome-devtools",
-    "claude-mem"
+    "playwright"
   ]
 }
