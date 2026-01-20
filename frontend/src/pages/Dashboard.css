@@ -1,0 +1,105 @@
+.dashboard-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 64px);
+}
+
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  background-color: #f0f2f5;
+}
+
+.dashboard-error {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.dashboard-container .ant-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+.dashboard-container .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dashboard-container .ant-statistic-title {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 8px;
+}
+
+.dashboard-container .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.dashboard-container .ant-table-row {
+  transition: background-color 0.3s;
+}
+
+.dashboard-container .ant-table-row:hover {
+  background-color: #f5f5f5;
+}
+
+.dashboard-container .ant-badge-status-text {
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  .dashboard-container .ant-statistic-content {
+    font-size: 20px;
+  }
+
+  .dashboard-container .ant-card {
+    margin-bottom: 16px;
+  }
+}
+
+/* アラートのアニメーション */
+.dashboard-container .ant-alert {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* カードホバーエフェクト */
+.dashboard-container .ant-card {
+  transition: all 0.3s ease;
+}
+
+.dashboard-container .ant-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* 統計カードのアイコン */
+.dashboard-container .ant-statistic-content-prefix {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+/* タグのスタイル調整 */
+.dashboard-container .ant-tag {
+  margin-right: 0;
+  border-radius: 4px;
+}

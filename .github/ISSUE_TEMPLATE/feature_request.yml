@@ -1,0 +1,59 @@
+name: ✨ 機能リクエスト
+description: 新機能や改善を提案する
+title: "[FEATURE] "
+labels: ["enhancement", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 機能リクエスト
+
+        新しい機能や改善提案をお待ちしています！
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: カテゴリ
+      description: 機能のカテゴリを選択してください
+      options:
+        - チケット管理
+        - Microsoft 365連携
+        - 承認ワークフロー
+        - ナレッジベース
+        - 通知システム
+        - レポート・KPI
+        - UI/UX改善
+        - セキュリティ
+        - その他
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 解決したい課題
+      description: この機能でどのような課題を解決したいですか？
+      placeholder: 現在、〜という課題があります...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 提案する解決策
+      description: どのような機能・改善を提案しますか？
+      placeholder: 〜という機能があれば...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 代替案
+      description: 他に検討した解決策はありますか？
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 追加情報
+      description: その他、参考になる情報があれば記載してください
