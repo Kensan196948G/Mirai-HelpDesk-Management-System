@@ -43,15 +43,21 @@ const App = {
         Sidebar.render();
         Sidebar.updateUserInfo();
 
-        // Sidebar toggle
-        document.getElementById('sidebar-toggle').addEventListener('click', () => {
-            Sidebar.toggle();
-        });
+        // Sidebar toggle (optional)
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                Sidebar.toggle();
+            });
+        }
 
         // Logout button
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            Auth.logout();
-        });
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                Auth.logout();
+            });
+        }
     },
 
     initRouter() {
