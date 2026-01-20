@@ -1,0 +1,114 @@
+{
+  "model": "sonnet[1m]",
+  "env": {
+    "ENABLE_TOOL_SEARCH": "true",
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "true",
+    "MCP_TIMEOUT": "30000"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "npx --yes ccstatusline@latest"
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "github",
+    "memory",
+    "playwright",
+    "sqlite",
+    "context7",
+    "sequential-thinking",
+    "chrome-devtools"
+  ],
+  "hooks": {
+    "afterToolUse": {
+      "enabled": true,
+      "command": "echo '✅ Tool executed successfully' && exit 0",
+      "description": "ツール実行後のフック"
+    },
+    "beforeCommit": {
+      "enabled": true,
+      "command": "npm run lint --prefix backend && npm run lint --prefix frontend",
+      "description": "コミット前のLintチェック"
+    },
+    "parallelExecution": {
+      "enabled": true,
+      "maxConcurrency": 7,
+      "conflictDetection": true,
+      "conflictResolution": "auto-merge",
+      "description": "並列実行機能（最大7並列、コンフリクト自動検出・解決）"
+    }
+  },
+  "subAgents": {
+    "enabled": true,
+    "maxAgents": 7,
+    "agents": [
+      {
+        "name": "backend-specialist",
+        "type": "general-purpose",
+        "description": "バックエンド専門エージェント（Node.js/Express/TypeScript/PostgreSQL）",
+        "tools": ["all"],
+        "context": "backend/**/*"
+      },
+      {
+        "name": "frontend-specialist",
+        "type": "general-purpose",
+        "description": "フロントエンド専門エージェント（React/TypeScript/Ant Design）",
+        "tools": ["all"],
+        "context": "frontend/**/*"
+      },
+      {
+        "name": "database-specialist",
+        "type": "general-purpose",
+        "description": "データベース専門エージェント（PostgreSQL/マイグレーション）",
+        "tools": ["all"],
+        "context": "database/**/*"
+      },
+      {
+        "name": "m365-specialist",
+        "type": "general-purpose",
+        "description": "Microsoft 365連携専門エージェント（Graph API/認証）",
+        "tools": ["all"],
+        "context": "backend/src/services/m365*.ts,backend/src/controllers/m365*.ts"
+      },
+      {
+        "name": "security-specialist",
+        "type": "general-purpose",
+        "description": "セキュリティ専門エージェント（認証/認可/監査）",
+        "tools": ["all"],
+        "context": "backend/src/middleware/**/*,backend/src/utils/logger.ts"
+      },
+      {
+        "name": "test-specialist",
+        "type": "general-purpose",
+        "description": "テスト専門エージェント（Jest/Playwright/E2E）",
+        "tools": ["all"],
+        "context": "backend/tests/**/*,frontend/tests/**/*"
+      },
+      {
+        "name": "docs-specialist",
+        "type": "general-purpose",
+        "description": "ドキュメント専門エージェント（Markdown/API仕様書）",
+        "tools": ["Read", "Write", "Edit", "Glob", "Grep"],
+        "context": "docs/**/*,*.md"
+      }
+    ],
+    "orchestration": {
+      "mode": "parallel",
+      "conflictResolution": "auto-merge",
+      "communicationProtocol": "message-passing"
+    }
+  },
+  "features": {
+    "autoSave": true,
+    "autoFormat": true,
+    "autoLint": true,
+    "parallelDevelopment": true,
+    "conflictPrevention": true,
+    "intelligentCodeCompletion": true
+  },
+  "experimental": {
+    "multiAgentCollaboration": true,
+    "conflictFreeParallelEdits": true,
+    "semanticMerge": true
+  }
+}

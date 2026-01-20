@@ -1,0 +1,5 @@
+{
+  "name": "commit-push-pr",
+  "description": "変更をコミット、プッシュして、プルリクエストを作成",
+  "instructions": "以下の手順で変更をコミット、プッシュし、プルリクエストを作成してください：\n\n1. git statusで変更を確認\n2. 現在のブランチ名を確認（git branch --show-current）\n3. mainブランチでない場合、または新しいブランチを作成する場合：\n   - git checkout -b feature/<機能名> で新ブランチ作成\n4. git add -Aですべての変更をステージング\n5. 適切なコミットメッセージでコミット\n6. git push -u origin <ブランチ名>でプッシュ\n7. gh pr createでプルリクエストを作成\n   - タイトル: 簡潔な変更内容\n   - 本文: ## Summary（箇条書き）、## Test plan（チェックリスト）、🤖 Generated with Claude Code\n\nコミットメッセージのフォーマット：\n- 絵文字を先頭に付ける\n- 簡潔な要約 + 詳細説明\n- Co-Authored-By: Claude Sonnet 4.5 (1M context) <noreply@anthropic.com>\n\nPR本文のフォーマット：\n## Summary\n- 変更内容1\n- 変更内容2\n\n## Test plan\n- [ ] テスト項目1\n- [ ] テスト項目2\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\n必ずユーザーに確認してからプッシュしてください。"
+}

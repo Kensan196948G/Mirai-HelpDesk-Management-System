@@ -3,7 +3,7 @@
     "github": {
       "type": "http",
       "url": "https://api.githubcopilot.com/mcp/",
-      "description": "GitHub統合 - リポジトリ管理、Issue追跡"
+      "description": "GitHub統合 - リポジトリ管理、Issue追跡、PR作成"
     },
     "memory": {
       "type": "stdio",
@@ -25,6 +25,30 @@
       "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-sqlite@latest"],
       "env": {},
       "description": "SQLiteデータベース - 開発・テスト用データストア"
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://api.context7.com/mcp",
+      "description": "Context7 - 拡張コンテキスト管理、長期記憶"
+    },
+    "sequential-thinking": {
+      "type": "http",
+      "url": "https://mcp.sequential-thinking.com/mcp",
+      "description": "Sequential Thinking - 順序立った思考、複雑な問題解決"
+    },
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@modelcontextprotocol/chrome-devtools@latest"],
+      "env": {},
+      "description": "Chrome DevTools - ブラウザデバッグ、パフォーマンス分析"
+    },
+    "claude-mem": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "claude-mem@latest"],
+      "env": {},
+      "description": "Claude Memory - 長期記憶管理、コンテキスト保持"
     }
   }
 }
