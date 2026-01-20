@@ -14,9 +14,6 @@
     "memory",
     "github",
     "brave-search",
-    "context7",
-    "sequential-thinking",
-    "sqlite",
-    "claude-mem"
+    "sequential-thinking"
   ]
 }
