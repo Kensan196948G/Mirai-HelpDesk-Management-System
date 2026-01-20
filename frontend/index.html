@@ -305,6 +305,9 @@
 
     <!-- Scripts -->
     <script>
+        // API Base URL（環境に応じて自動判定）
+        const API_BASE_URL = `http://${window.location.hostname}:8000/api`;
+
         // Simple login handler
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -324,7 +327,7 @@
             loginBtnText.innerHTML = '<span class="spinner"></span> ログイン中...';
 
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -338,9 +341,21 @@
 
                 const data = await response.json();
 
-                // Save token
-                localStorage.setItem('access_token', data.access_token);
-                localStorage.setItem('refresh_token', data.refresh_token);
+                // Save tokens (using Auth.js key names)
+                localStorage.setItem('mirai_access_token', data.access_token);
+                localStorage.setItem('mirai_refresh_token', data.refresh_token);
+
+                // Get user info
+                const userResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${data.access_token}`
+                    }
+                });
+
+                if (userResponse.ok) {
+                    const user = await userResponse.json();
+                    localStorage.setItem('mirai_user', JSON.stringify(user));
+                }
 
                 // Redirect to main app
                 window.location.href = '/app.html';
