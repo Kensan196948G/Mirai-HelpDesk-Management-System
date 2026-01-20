@@ -1,27 +1,81 @@
 import { defineConfig, devices } from '@playwright/test';
 
+/**
+ * Playwright E2E Test Configuration
+ * Mirai HelpDesk Management System
+ */
 export default defineConfig({
+  // テストディレクトリ
   testDir: './tests/e2e',
+
+  // 並列実行の設定
   fullyParallel: true,
+
+  // CI環境では.only()の使用を禁止
   forbidOnly: !!process.env.CI,
+
+  // リトライ設定（CI環境では2回まで）
   retries: process.env.CI ? 2 : 0,
+
+  // ワーカー数（CI環境では1つ、ローカルではCPU数に基づく）
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+
+  // レポート出力形式
+  reporter: [
+    ['html', { open: 'never' }],
+    ['list'],
+    ['json', { outputFile: 'test-results/results.json' }]
+  ],
+
+  // グローバル設定
   use: {
-    baseURL: 'http://localhost:3000',
+    // フロントエンドのベースURL
+    baseURL: 'http://127.0.0.1:8080',
+
+    // API エンドポイント（環境変数で上書き可能）
+    extraHTTPHeaders: {
+      'Accept': 'application/json',
+    },
+
+    // トレース設定（失敗時に自動記録）
     trace: 'on-first-retry',
+
+    // スクリーンショット（失敗時のみ）
     screenshot: 'only-on-failure',
+
+    // ビデオ録画（失敗時のみ）
+    video: 'retain-on-failure',
+
+    // タイムアウト設定
+    actionTimeout: 10 * 1000, // 10秒
+    navigationTimeout: 30 * 1000, // 30秒
   },
+
+  // テストタイムアウト（1テスト30秒）
+  timeout: 30 * 1000,
+
+  // プロジェクト設定（複数ブラウザ対応）
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    // 必要に応じて他のブラウザを追加
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
   ],
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000/api/health',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+
+  // ローカル開発サーバーの起動設定（オプション）
+  // webServer: {
+  //   command: 'npm run dev',
+  //   url: 'http://127.0.0.1:8000/health',
+  //   reuseExistingServer: !process.env.CI,
+  //   timeout: 120 * 1000,
+  // },
 });

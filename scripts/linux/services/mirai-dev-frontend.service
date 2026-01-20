@@ -1,0 +1,15 @@
+[Unit]
+Description=Mirai HelpDesk - Development Frontend WebUI
+After=network.target mirai-dev-backend.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/Mirai-HelpDesk-Management-System/frontend
+ExecStart=/usr/bin/python3 -m http.server 8080 --bind 192.168.0.187
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

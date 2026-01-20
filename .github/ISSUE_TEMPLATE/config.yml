@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 ドキュメント
+    url: https://github.com/Kensan196948G/Mirai-HelpDesk-Management-System/tree/main/docs
+    about: セットアップガイド、API仕様、デプロイメントガイド
+  - name: 💬 ディスカッション
+    url: https://github.com/Kensan196948G/Mirai-HelpDesk-Management-System/discussions
+    about: 質問や議論はこちら
