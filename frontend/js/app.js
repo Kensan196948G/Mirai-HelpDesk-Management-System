@@ -65,68 +65,48 @@ const App = {
         Router.register('/dashboard', () => DashboardPage.render());
 
         // Incident Management
-        Router.register('/incidents', () => TicketsPage.render({ type: 'incident' }));
-        Router.register('/incidents/priority', () => TicketsPage.render({ view: 'priority' }));
-        Router.register('/incidents/sla', () => TicketsPage.render({ view: 'sla' }));
+        Router.register('/incidents', () => IncidentsPage.render());
+        Router.register('/incidents/priority', () => IncidentsPage.render({ view: 'priority' }));
+        Router.register('/incidents/sla', () => IncidentsPage.render({ view: 'sla' }));
 
         // Service Request Management
-        Router.register('/service-requests', () => TicketsPage.render({ type: 'service_request' }));
-        Router.register('/service-requests/standard', () => TicketsPage.render({ view: 'standard' }));
+        Router.register('/service-requests', () => ServiceRequestsPage.render());
+        Router.register('/service-requests/standard', () => ServiceRequestsPage.render({ view: 'standard' }));
         Router.register('/service-requests/approvals', () => M365ApprovalsPage.render());
 
         // Change Management
-        Router.register('/changes', () => TicketsPage.render({ type: 'change' }));
-        Router.register('/changes/m365', () => M365TasksPage.render());
-        Router.register('/changes/approval-flow', () => M365ApprovalsPage.render({ view: 'flow' }));
+        Router.register('/changes', () => ChangesPage.render());
+        Router.register('/changes/m365', () => ChangesPage.render({ view: 'm365' }));
+        Router.register('/changes/approval-flow', () => ApprovalFlowPage.render());
 
         // Knowledge Management
         Router.register('/knowledge', () => KnowledgePage.render());
-        Router.register('/knowledge/faq', () => KnowledgePage.render({ category: 'faq' }));
-        Router.register('/knowledge/procedures', () => KnowledgePage.render({ category: 'procedure' }));
-        Router.register('/knowledge/known-issues', () => KnowledgePage.render({ category: 'known_issue' }));
+        Router.register('/knowledge/faq', () => KnowledgeFilteredPage.renderFAQ());
+        Router.register('/knowledge/procedures', () => KnowledgeFilteredPage.renderProcedures());
+        Router.register('/knowledge/known-issues', () => KnowledgeFilteredPage.renderKnownIssues());
 
         // M365 Operations
         Router.register('/m365/tasks', () => M365TasksPage.render());
         Router.register('/m365/users', () => M365UsersPage.render());
         Router.register('/m365/licenses', () => M365LicensesPage.render());
-        Router.register('/m365/execution-logs', () => {
-            this.renderPlaceholder('M365実施ログ', 'M365操作の実施記録を表示します。');
-        });
+        Router.register('/m365/execution-logs', () => AuditPage.renderM365ExecutionLogs());
 
         // Audit & Compliance
-        Router.register('/audit/logs', () => {
-            this.renderPlaceholder('監査ログ', 'すべての操作履歴を表示します。');
-        });
-        Router.register('/audit/operation-history', () => {
-            this.renderPlaceholder('操作履歴', 'チケット変更履歴を表示します。');
-        });
-        Router.register('/audit/sla-achievement', () => {
-            this.renderPlaceholder('SLA達成率', 'サービスレベルの評価を表示します。');
-        });
-        Router.register('/audit/compliance-report', () => {
-            this.renderPlaceholder('コンプライアンスレポート', '規制遵守状況を表示します。');
-        });
-        Router.register('/audit/sod-check', () => {
-            this.renderPlaceholder('SOD検証', '職務分離の遵守確認を表示します。');
-        });
+        Router.register('/audit/logs', () => AuditPage.renderAuditLogs());
+        Router.register('/audit/operation-history', () => AuditPage.renderOperationHistory());
+        Router.register('/audit/sla-achievement', () => AuditPage.renderSLAAchievement());
+        Router.register('/audit/compliance-report', () => AuditPage.renderComplianceReport());
+        Router.register('/audit/sod-check', () => AuditPage.renderSODCheck());
 
         // Reports & Analytics
         Router.register('/reports', () => ReportsPage.render());
-        Router.register('/reports/monthly', () => {
-            this.renderPlaceholder('月次レポート', '月次パフォーマンス評価を表示します。');
-        });
-        Router.register('/reports/export', () => {
-            this.renderPlaceholder('エクスポート', '監査用データのエクスポート機能を提供します。');
-        });
+        Router.register('/reports/monthly', () => ReportsExtendedPage.renderMonthlyReport());
+        Router.register('/reports/export', () => ReportsExtendedPage.renderExportPage());
 
         // System Administration
         Router.register('/users', () => UsersPage.render());
-        Router.register('/settings/sla-policies', () => {
-            this.renderPlaceholder('SLAポリシー設定', 'SLA目標値の設定を行います。');
-        });
-        Router.register('/settings/categories', () => {
-            this.renderPlaceholder('カテゴリ管理', 'チケット分類の管理を行います。');
-        });
+        Router.register('/settings/sla-policies', () => SettingsExtendedPage.renderSLAPolicies());
+        Router.register('/settings/categories', () => SettingsExtendedPage.renderCategories());
         Router.register('/settings', () => SettingsPage.render());
 
         // Legacy routes (backward compatibility)
