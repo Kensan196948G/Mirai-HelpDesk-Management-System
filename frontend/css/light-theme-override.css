@@ -137,3 +137,23 @@ body {
 .list-item:hover {
     background: #f3f2f1 !important;
 }
+
+/* Main Content Area - 左側サイドバーとの適切な間隔を確保 */
+.main-content {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+    padding-top: 24px !important;
+}
+
+/* Page Header - タイトルの位置調整 */
+.page-header {
+    margin-bottom: 24px !important;
+    padding-left: 0 !important;
+}
+
+.page-header h1 {
+    font-size: 28px !important;
+    font-weight: 600 !important;
+    color: #323130 !important;
+    margin: 0 !important;
+}
