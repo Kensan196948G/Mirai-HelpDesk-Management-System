@@ -1,0 +1,17 @@
+[Unit]
+Description=Mirai HelpDesk - Production Frontend WebUI (HTTPS)
+After=network.target mirai-prod-backend.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/Mirai-HelpDesk-Management-System/frontend
+Environment="SSL_CERT=/path/to/Mirai-HelpDesk-Management-System/certificates/server.crt"
+Environment="SSL_KEY=/path/to/Mirai-HelpDesk-Management-System/certificates/server.key"
+ExecStart=/usr/bin/python3 /path/to/Mirai-HelpDesk-Management-System/scripts/linux/https_server.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

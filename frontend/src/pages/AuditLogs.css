@@ -1,0 +1,387 @@
+/*
+ * Audit Logs Page Styling
+ * Fluent Design準拠のスタイリング
+ */
+
+.audit-logs-page {
+  padding: 24px;
+  background-color: #faf9f8;
+  min-height: 100vh;
+}
+
+/* ページヘッダー */
+.audit-logs-page .page-header {
+  margin-bottom: 24px;
+}
+
+.audit-logs-page .page-header h2 {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #323130;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audit-logs-page .page-header .ant-typography {
+  color: #605e5c;
+  font-size: 14px;
+}
+
+/* 統計カード */
+.audit-logs-page .statistics-card {
+  background: linear-gradient(135deg, #f3f2f1 0%, #ffffff 100%);
+  border-radius: 8px;
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132),
+    0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+}
+
+.audit-logs-page .statistics-card .ant-statistic-title {
+  color: #605e5c;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.audit-logs-page .statistics-card .ant-statistic-content {
+  color: #0078d4;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.audit-logs-page .statistics-card .ant-badge {
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+/* フィルターセクション */
+.audit-logs-page .filters-section {
+  padding: 20px;
+  background-color: #f3f2f1;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.audit-logs-page .filters-section .ant-typography {
+  font-size: 13px;
+  font-weight: 600;
+  color: #323130;
+}
+
+.audit-logs-page .filters-section .ant-select,
+.audit-logs-page .filters-section .ant-picker,
+.audit-logs-page .filters-section .ant-input {
+  border-radius: 2px;
+}
+
+.audit-logs-page .filters-section .ant-select:hover,
+.audit-logs-page .filters-section .ant-picker:hover,
+.audit-logs-page .filters-section .ant-input:hover {
+  border-color: #0078d4;
+}
+
+.audit-logs-page .filters-section .ant-select-focused,
+.audit-logs-page .filters-section .ant-picker-focused,
+.audit-logs-page .filters-section .ant-input-focused {
+  border-color: #0078d4;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+/* アクションバー */
+.audit-logs-page .action-bar {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.audit-logs-page .action-bar .ant-btn {
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.audit-logs-page .action-bar .ant-btn-primary {
+  background-color: #0078d4;
+  border-color: #0078d4;
+}
+
+.audit-logs-page .action-bar .ant-btn-primary:hover {
+  background-color: #106ebe;
+  border-color: #106ebe;
+}
+
+/* テーブルスタイリング */
+.audit-logs-page .ant-table {
+  background-color: #ffffff;
+  border-radius: 4px;
+}
+
+.audit-logs-page .ant-table-thead > tr > th {
+  background-color: #faf9f8;
+  color: #605e5c;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 2px solid #edebe9;
+  padding: 12px 16px;
+}
+
+.audit-logs-page .ant-table-tbody > tr > td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #323130;
+  border-bottom: 1px solid #edebe9;
+}
+
+.audit-logs-page .ant-table-tbody > tr:hover > td {
+  background-color: #f3f2f1;
+}
+
+.audit-logs-page .ant-table-tbody > tr.ant-table-row-selected > td {
+  background-color: #deecf9;
+}
+
+/* タグスタイリング */
+.audit-logs-page .ant-tag {
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border: none;
+}
+
+/* ページネーション */
+.audit-logs-page .ant-pagination {
+  margin-top: 16px;
+}
+
+.audit-logs-page .ant-pagination-item {
+  border-radius: 2px;
+  border-color: #edebe9;
+}
+
+.audit-logs-page .ant-pagination-item-active {
+  background-color: #0078d4;
+  border-color: #0078d4;
+}
+
+.audit-logs-page .ant-pagination-item-active a {
+  color: #ffffff;
+}
+
+/* ドロワースタイリング */
+.audit-logs-page .ant-drawer-header {
+  background-color: #faf9f8;
+  border-bottom: 1px solid #edebe9;
+}
+
+.audit-logs-page .ant-drawer-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #323130;
+}
+
+.audit-logs-page .ant-drawer-body {
+  background-color: #ffffff;
+}
+
+.audit-logs-page .ant-descriptions-bordered .ant-descriptions-item-label {
+  background-color: #faf9f8;
+  color: #605e5c;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.audit-logs-page .ant-descriptions-bordered .ant-descriptions-item-content {
+  background-color: #ffffff;
+  color: #323130;
+  font-size: 14px;
+}
+
+/* カードスタイリング */
+.audit-logs-page .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132),
+    0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+  border: 1px solid #edebe9;
+}
+
+.audit-logs-page .ant-card-body {
+  padding: 24px;
+}
+
+/* ボタンスタイリング */
+.audit-logs-page .ant-btn {
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 14px;
+  height: 32px;
+  padding: 4px 16px;
+}
+
+.audit-logs-page .ant-btn-primary {
+  background-color: #0078d4;
+  border-color: #0078d4;
+  box-shadow: none;
+}
+
+.audit-logs-page .ant-btn-primary:hover,
+.audit-logs-page .ant-btn-primary:focus {
+  background-color: #106ebe;
+  border-color: #106ebe;
+}
+
+.audit-logs-page .ant-btn-default:hover,
+.audit-logs-page .ant-btn-default:focus {
+  color: #0078d4;
+  border-color: #0078d4;
+}
+
+/* リンクボタン */
+.audit-logs-page .ant-btn-link {
+  color: #0078d4;
+  font-weight: 600;
+}
+
+.audit-logs-page .ant-btn-link:hover,
+.audit-logs-page .ant-btn-link:focus {
+  color: #106ebe;
+}
+
+/* Tooltip */
+.audit-logs-page .ant-tooltip-inner {
+  background-color: #323130;
+  border-radius: 2px;
+  font-size: 12px;
+}
+
+/* Space コンポーネント */
+.audit-logs-page .ant-space-item {
+  display: flex;
+  align-items: center;
+}
+
+/* 詳細情報のJSONビュー */
+.audit-logs-page pre {
+  background-color: #f3f2f1;
+  border: 1px solid #edebe9;
+  border-radius: 4px;
+  padding: 12px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #323130;
+  max-height: 400px;
+  overflow: auto;
+}
+
+/* コードブロック */
+.audit-logs-page .ant-typography code {
+  background-color: #f3f2f1;
+  border: 1px solid #edebe9;
+  border-radius: 2px;
+  padding: 2px 6px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  color: #a4262c;
+}
+
+/* テキストカラー */
+.audit-logs-page .ant-typography-secondary {
+  color: #605e5c;
+}
+
+/* アイコン */
+.audit-logs-page .anticon {
+  vertical-align: -0.125em;
+}
+
+/* ローディングスピナー */
+.audit-logs-page .ant-spin {
+  color: #0078d4;
+}
+
+/* 空状態 */
+.audit-logs-page .ant-empty-description {
+  color: #605e5c;
+  font-size: 14px;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .audit-logs-page {
+    padding: 16px;
+  }
+
+  .audit-logs-page .filters-section {
+    padding: 16px;
+  }
+
+  .audit-logs-page .ant-table {
+    font-size: 12px;
+  }
+
+  .audit-logs-page .ant-drawer {
+    width: 100% !important;
+  }
+}
+
+/* プリント用スタイル */
+@media print {
+  .audit-logs-page .filters-section,
+  .audit-logs-page .action-bar,
+  .audit-logs-page .ant-pagination {
+    display: none;
+  }
+
+  .audit-logs-page .ant-table {
+    font-size: 10px;
+  }
+
+  .audit-logs-page .ant-card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
+
+/* アニメーション */
+.audit-logs-page .ant-table-tbody > tr {
+  transition: background-color 0.2s ease;
+}
+
+.audit-logs-page .ant-btn {
+  transition: all 0.2s ease;
+}
+
+.audit-logs-page .ant-tag {
+  transition: all 0.2s ease;
+}
+
+/* フォーカス時のアクセシビリティ */
+.audit-logs-page *:focus-visible {
+  outline: 2px solid #0078d4;
+  outline-offset: 2px;
+}
+
+/* セレクションハイライト */
+::selection {
+  background-color: #deecf9;
+  color: #323130;
+}
+
+/* スクロールバーのスタイリング */
+.audit-logs-page ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.audit-logs-page ::-webkit-scrollbar-track {
+  background-color: #f3f2f1;
+}
+
+.audit-logs-page ::-webkit-scrollbar-thumb {
+  background-color: #c8c6c4;
+  border-radius: 4px;
+}
+
+.audit-logs-page ::-webkit-scrollbar-thumb:hover {
+  background-color: #a19f9d;
+}

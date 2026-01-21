@@ -1,0 +1,5 @@
+{
+  "name": "commit-push-pr-merge",
+  "description": "変更をコミット、プッシュ、プルリクエスト作成、そしてマージまで実行",
+  "instructions": "以下の手順で変更をコミット、プッシュ、プルリクエスト作成、マージを実行してください：\n\n1. git statusで変更を確認\n2. 現在のブランチ名を確認（git branch --show-current）\n3. mainブランチでない場合、または新しいブランチを作成する場合：\n   - git checkout -b feature/<機能名> で新ブランチ作成\n4. git add -Aですべての変更をステージング\n5. 適切なコミットメッセージでコミット\n6. git push -u origin <ブランチ名>でプッシュ\n7. gh pr createでプルリクエストを作成\n   - タイトル: 簡潔な変更内容\n   - 本文: Summary、Test plan、Claude Code署名\n8. 作成したPR番号を取得\n9. gh pr merge <PR番号> --merge --delete-branchでマージと削除\n10. git checkout mainでmainブランチに戻る\n11. git pull origin mainで最新の状態に更新\n\nコミットメッセージのフォーマット：\n- 絵文字を先頭に付ける（✨新機能、🐛バグ修正、📝ドキュメント等）\n- 簡潔な要約（50文字以内）+ 詳細説明\n- Co-Authored-By: Claude Sonnet 4.5 (1M context) <noreply@anthropic.com>\n\nPR本文のフォーマット：\n## Summary\n- 主要な変更点を箇条書き（3-5項目）\n\n## Test plan\n- [ ] ビルドが通ることを確認\n- [ ] テストが通ることを確認\n- [ ] 手動テストを実施\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\n重要：\n- マージ前にCIが成功していることを確認\n- 必ずユーザーに確認してからマージ実行\n- マージ後はブランチを自動削除"
+}

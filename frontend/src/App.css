@@ -1,0 +1,261 @@
+/* Microsoft Fluent Design - App Container Styles */
+
+.app-container {
+  min-height: 100vh;
+  background-color: var(--bg-canvas);
+}
+
+.page-header {
+  padding: var(--spacing-xxl) 0;
+  margin-bottom: var(--spacing-xxl);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-depth-2);
+}
+
+.page-title {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.page-content {
+  padding: var(--spacing-xxl);
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-depth-2);
+  transition: box-shadow var(--duration-normal) ease;
+}
+
+.page-content:hover {
+  box-shadow: var(--shadow-depth-4);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  gap: var(--spacing-lg);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--fluent-gray-30);
+  border-top-color: var(--ms-blue);
+  border-radius: var(--border-radius-circle);
+  animation: spin var(--duration-ultra-slow) linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.error-container {
+  text-align: center;
+  padding: var(--spacing-huge) var(--spacing-xxl);
+  background: var(--error-bg);
+  border-radius: var(--border-radius-medium);
+  border: 1px solid var(--error-border);
+  animation: slideDown var(--duration-normal) ease;
+}
+
+.error-icon {
+  font-size: 3rem;
+  color: var(--error);
+  margin-bottom: var(--spacing-lg);
+}
+
+.error-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--error);
+  margin-bottom: var(--spacing-md);
+}
+
+.error-message {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-huge) var(--spacing-xxl);
+  color: var(--text-secondary);
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  color: var(--fluent-gray-60);
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.5;
+}
+
+.empty-state-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty-state-description {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* コンテンツセクション */
+.content-section {
+  margin-bottom: var(--spacing-xxxl);
+}
+
+.content-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* グリッドレイアウト */
+.grid-container {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.grid-2-cols {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3-cols {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-4-cols {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* レスポンシブグリッド */
+@media (max-width: 1200px) {
+  .grid-4-cols {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .grid-3-cols,
+  .grid-4-cols {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: var(--spacing-lg) 0;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .page-content {
+    padding: var(--spacing-lg);
+  }
+
+  .grid-2-cols,
+  .grid-3-cols,
+  .grid-4-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .section-actions {
+    width: 100%;
+  }
+
+  .error-container,
+  .empty-state {
+    padding: var(--spacing-xxl) var(--spacing-lg);
+  }
+}
+
+/* アニメーション */
+.fade-in {
+  animation: fadeIn var(--duration-normal) ease;
+}
+
+.slide-up {
+  animation: slideUp var(--duration-normal) ease;
+}
+
+.scale-up {
+  animation: scaleUp var(--duration-normal) ease;
+}
+
+/* ユーティリティクラス */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

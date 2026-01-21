@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirai ヘルプデスク - M365管理</title>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <!-- Common CSS -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/m365.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        #sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid #e1e4e8;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .topbar {
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid #e1e4e8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        #page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #323130;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .toolbar-left h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #323130;
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #0078d4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #106ebe;
+        }
+
+        .btn-secondary {
+            background: #f3f2f1;
+            color: #323130;
+        }
+
+        .btn-secondary:hover {
+            background: #e1dfdd;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #323130;
+        }
+
+        .btn-ghost:hover {
+            background: #f3f2f1;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 13px;
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #edebe9;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #dff6dd;
+            color: #107c10;
+        }
+
+        .badge-error {
+            background: #fde7e9;
+            color: #a4262c;
+        }
+
+        .badge-warning {
+            background: #fff4e5;
+            color: #8a6d3b;
+        }
+
+        .badge-info {
+            background: #e6f2ff;
+            color: #0078d4;
+        }
+
+        .badge-primary {
+            background: #0078d4;
+            color: white;
+        }
+
+        .badge-secondary {
+            background: #e1dfdd;
+            color: #605e5c;
+        }
+
+        .badge-outline {
+            background: transparent;
+            border: 1px solid #e1e4e8;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e1e4e8;
+            font-weight: 600;
+            color: #323130;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #edebe9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #323130;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e1e4e8;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0078d4;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #605e5c;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid #edebe9;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #323130;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 24px;
+            border-top: 1px solid #edebe9;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .toast {
+            padding: 16px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid #107c10;
+        }
+
+        .toast.error {
+            border-left: 4px solid #a4262c;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <div style="padding: 24px; border-bottom: 1px solid #e1e4e8;">
+                <h2 style="margin: 0; color: #0078d4;">Mirai HelpDesk</h2>
+            </div>
+            <ul id="nav-menu" style="list-style: none; padding: 12px; margin: 0;">
+                <li><a href="#/m365/users" class="nav-link active" style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 6px; text-decoration: none; color: #323130;"><i data-lucide="user-search"></i><span>ユーザー検索</span></a></li>
+                <li><a href="#/m365/licenses" class="nav-link" style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 6px; text-decoration: none; color: #323130;"><i data-lucide="key"></i><span>ライセンス管理</span></a></li>
+                <li><a href="#/m365/tasks" class="nav-link" style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 6px; text-decoration: none; color: #323130;"><i data-lucide="cloud"></i><span>M365 タスク</span></a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="topbar">
+                <h1 id="page-title">M365 ユーザー検索</h1>
+                <div>
+                    <button class="btn btn-ghost">
+                        <i data-lucide="user"></i>
+                        <span>Admin User</span>
+                    </button>
+                </div>
+            </div>
+            <div id="page-content"></div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/toast.js"></script>
+    <script src="js/components/sidebar.js"></script>
+    <script src="js/pages/m365-users.js"></script>
+    <script src="js/pages/m365-licenses.js"></script>
+    <script src="js/pages/m365-tasks.js"></script>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Simple router for demo
+        function handleRoute() {
+            const hash = window.location.hash.slice(1) || '/m365/users';
+
+            // Update active nav
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.style.background = link.getAttribute('href') === '#' + hash ? '#e6f2ff' : 'transparent';
+                link.style.color = link.getAttribute('href') === '#' + hash ? '#0078d4' : '#323130';
+            });
+
+            // Route to page
+            if (hash === '/m365/users') {
+                document.getElementById('page-title').textContent = 'M365 ユーザー検索';
+                M365UsersPage.render();
+            } else if (hash === '/m365/licenses') {
+                document.getElementById('page-title').textContent = 'M365 ライセンス管理';
+                M365LicensesPage.render();
+            } else if (hash === '/m365/tasks') {
+                document.getElementById('page-title').textContent = 'M365 タスク';
+                M365TasksPage.render();
+            }
+
+            // Re-init icons after page render
+            setTimeout(() => lucide.createIcons(), 100);
+        }
+
+        // Listen to hash changes
+        window.addEventListener('hashchange', handleRoute);
+        window.addEventListener('DOMContentLoaded', handleRoute);
+
+        // Mock Toast if not defined
+        if (typeof Toast === 'undefined') {
+            window.Toast = {
+                success: (message) => {
+                    const container = document.getElementById('toast-container');
+                    const toast = document.createElement('div');
+                    toast.className = 'toast success';
+                    toast.innerHTML = `<i data-lucide="check-circle"></i><span>${message}</span>`;
+                    container.appendChild(toast);
+                    lucide.createIcons();
+                    setTimeout(() => toast.remove(), 3000);
+                },
+                error: (message) => {
+                    const container = document.getElementById('toast-container');
+                    const toast = document.createElement('div');
+                    toast.className = 'toast error';
+                    toast.innerHTML = `<i data-lucide="alert-circle"></i><span>${message}</span>`;
+                    container.appendChild(toast);
+                    lucide.createIcons();
+                    setTimeout(() => toast.remove(), 3000);
+                }
+            };
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "name": "commit-push",
+  "description": "変更をコミットしてGitHubにプッシュ",
+  "instructions": "以下の手順で変更をコミットしてプッシュしてください：\n\n1. git statusで変更を確認\n2. git add -Aですべての変更をステージング\n3. 適切なコミットメッセージを作成（絵文字使用）\n4. git commitでコミット\n5. git push origin mainでプッシュ\n\nコミットメッセージのフォーマット：\n- 絵文字を先頭に付ける（✨新機能、🐛バグ修正、📝ドキュメント、🎨UI改善、♻️リファクタリング）\n- 1行目: 簡潔な要約（50文字以内）\n- 2行目: 空行\n- 3行目以降: 詳細な説明\n- 最後: Co-Authored-By: Claude Sonnet 4.5 (1M context) <noreply@anthropic.com>\n\n必ずユーザーに確認してからプッシュしてください。"
+}

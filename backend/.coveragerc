@@ -1,0 +1,71 @@
+# Coverage.py configuration for pytest-cov
+# カバレッジ測定の設定
+
+[run]
+# カバレッジ測定対象のソースディレクトリ
+source = app
+
+# 除外するファイル/ディレクトリパターン
+omit =
+    # テストファイル
+    */tests/*
+    */test_*.py
+
+    # 仮想環境
+    */.venv/*
+    */.venv-win/*
+    */venv/*
+
+    # 設定ファイル
+    */config.py
+
+    # __pycache__
+    */__pycache__/*
+
+    # データベースマイグレーション（将来追加される可能性）
+    */alembic/*
+    */migrations/*
+
+# ブランチカバレッジを有効化
+branch = True
+
+[report]
+# レポートから除外する行のパターン
+exclude_lines =
+    # デフォルトのpragma
+    pragma: no cover
+
+    # 型チェック専用のインポート
+    if TYPE_CHECKING:
+
+    # デバッグ専用コード
+    def __repr__
+
+    # 抽象メソッド
+    raise NotImplementedError
+
+    # 実行されないコード
+    if __name__ == .__main__.:
+
+    # 型チェック専用
+    @overload
+
+    # パススルー
+    pass
+
+# カバレッジが低い場合の精度
+precision = 2
+
+# カバレッジレポートに表示する行数
+show_missing = True
+
+# ソートキー（名前順）
+sort = Name
+
+[html]
+# HTMLレポートの出力ディレクトリ
+directory = htmlcov
+
+[xml]
+# XMLレポートの出力ファイル
+output = coverage.xml

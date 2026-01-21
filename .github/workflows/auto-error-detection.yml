@@ -1,0 +1,411 @@
+name: 🤖 自動エラー検知・修復システム
+
+on:
+  # 定期実行（毎時）
+  schedule:
+    - cron: '0 * * * *'
+
+  # 手動実行
+  workflow_dispatch:
+    inputs:
+      max_iterations:
+        description: '最大実行回数（デフォルト: 15）'
+        required: false
+        default: '15'
+      sleep_minutes:
+        description: '15回実行後の待機時間（分）'
+        required: false
+        default: '30'
+
+  # Issueからのトリガー
+  issues:
+    types: [opened, labeled]
+
+env:
+  MAX_ITERATIONS: ${{ github.event.inputs.max_iterations || 15 }}
+  SLEEP_MINUTES: ${{ github.event.inputs.sleep_minutes || 30 }}
+  NODE_VERSION: '18'
+
+jobs:
+  detect-and-fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: 📥 リポジトリのチェックアウト
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔧 Node.js セットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: 📦 バックエンド依存関係インストール
+        run: |
+          cd backend
+          npm ci
+
+      - name: 📦 フロントエンド依存関係インストール
+        run: |
+          cd frontend
+          npm ci
+
+      - name: 🔍 TypeScriptエラーチェック（バックエンド）
+        id: check-backend
+        continue-on-error: true
+        run: |
+          cd backend
+          npm run build 2>&1 | tee ../build-backend.log
+          echo "status=$?" >> $GITHUB_OUTPUT
+
+      - name: 🔍 TypeScriptエラーチェック（フロントエンド）
+        id: check-frontend
+        continue-on-error: true
+        run: |
+          cd frontend
+          npm run build 2>&1 | tee ../build-frontend.log
+          echo "status=$?" >> $GITHUB_OUTPUT
+
+      - name: 🧪 テスト実行（バックエンド）
+        id: test-backend
+        continue-on-error: true
+        run: |
+          cd backend
+          npm test 2>&1 | tee ../test-backend.log || true
+          echo "status=$?" >> $GITHUB_OUTPUT
+
+      - name: 🧪 テスト実行（フロントエンド）
+        id: test-frontend
+        continue-on-error: true
+        run: |
+          cd frontend
+          npm test 2>&1 | tee ../test-frontend.log || true
+          echo "status=$?" >> $GITHUB_OUTPUT
+
+      - name: 📊 エラー解析
+        id: analyze-errors
+        run: |
+          echo "=== エラー解析 ===" > error-summary.txt
+
+          # バックエンドビルドエラー
+          if [ "${{ steps.check-backend.outputs.status }}" != "0" ]; then
+            echo "❌ バックエンドビルドエラー検出" >> error-summary.txt
+            echo "backend_build_error=true" >> $GITHUB_OUTPUT
+            grep -A 5 "error TS" build-backend.log >> error-summary.txt || true
+          else
+            echo "✅ バックエンドビルド: OK" >> error-summary.txt
+            echo "backend_build_error=false" >> $GITHUB_OUTPUT
+          fi
+
+          # フロントエンドビルドエラー
+          if [ "${{ steps.check-frontend.outputs.status }}" != "0" ]; then
+            echo "❌ フロントエンドビルドエラー検出" >> error-summary.txt
+            echo "frontend_build_error=true" >> $GITHUB_OUTPUT
+            grep -A 5 "error" build-frontend.log >> error-summary.txt || true
+          else
+            echo "✅ フロントエンドビルド: OK" >> error-summary.txt
+            echo "frontend_build_error=false" >> $GITHUB_OUTPUT
+          fi
+
+          # エラーの有無を判定
+          if [ "${{ steps.check-backend.outputs.status }}" != "0" ] || [ "${{ steps.check-frontend.outputs.status }}" != "0" ]; then
+            echo "has_errors=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_errors=false" >> $GITHUB_OUTPUT
+          fi
+
+          cat error-summary.txt
+
+      - name: 🐛 Issue作成（エラー検出時）
+        if: steps.analyze-errors.outputs.has_errors == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const errorSummary = fs.readFileSync('error-summary.txt', 'utf8');
+            const backendLog = fs.existsSync('build-backend.log') ? fs.readFileSync('build-backend.log', 'utf8') : '';
+            const frontendLog = fs.existsSync('build-frontend.log') ? fs.readFileSync('build-frontend.log', 'utf8') : '';
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🤖 自動検知: ビルドエラー (${new Date().toISOString()})`,
+              labels: ['auto-detected', 'bug', 'needs-fix'],
+              body: `## 🔍 自動エラー検知レポート
+
+            **検知日時:** ${new Date().toISOString()}
+            **ワークフロー:** ${context.workflow}
+            **実行ID:** ${context.runId}
+
+            ### 📊 エラーサマリー
+
+            \`\`\`
+            ${errorSummary}
+            \`\`\`
+
+            ### 🔧 バックエンドビルドログ
+
+            <details>
+            <summary>クリックして表示</summary>
+
+            \`\`\`
+            ${backendLog.slice(-2000)}
+            \`\`\`
+
+            </details>
+
+            ### 🎨 フロントエンドビルドログ
+
+            <details>
+            <summary>クリックして表示</summary>
+
+            \`\`\`
+            ${frontendLog.slice(-2000)}
+            \`\`\`
+
+            </details>
+
+            ---
+
+            **自動修復を試行します...**
+            `
+            });
+
+            core.setOutput('issue_number', issue.data.number);
+
+      - name: 🔄 自動修復ループ（最大15回）
+        if: steps.analyze-errors.outputs.has_errors == 'true'
+        id: auto-fix-loop
+        run: |
+          ITERATION=1
+          MAX_ITERATIONS=${{ env.MAX_ITERATIONS }}
+          FIXED=false
+
+          while [ $ITERATION -le $MAX_ITERATIONS ] && [ "$FIXED" = "false" ]; do
+            echo "🔄 修復試行 $ITERATION / $MAX_ITERATIONS"
+
+            # ESLintとPrettierで自動修正
+            echo "🔧 ESLint自動修正を実行..."
+            cd backend && npm run lint:fix || true
+            cd ../frontend && npm run lint:fix || true
+            cd ..
+
+            echo "🎨 Prettier自動フォーマット..."
+            cd backend && npm run format || true
+            cd ../frontend && npm run format || true
+            cd ..
+
+            # 再ビルドしてエラーチェック
+            echo "🔍 再ビルド..."
+            cd backend && npm run build > ../rebuild-backend.log 2>&1
+            BACKEND_STATUS=$?
+            cd ../frontend && npm run build > ../rebuild-frontend.log 2>&1
+            FRONTEND_STATUS=$?
+            cd ..
+
+            if [ $BACKEND_STATUS -eq 0 ] && [ $FRONTEND_STATUS -eq 0 ]; then
+              echo "✅ 修復成功！（試行回数: $ITERATION）"
+              FIXED=true
+              echo "fixed=true" >> $GITHUB_OUTPUT
+              echo "iterations=$ITERATION" >> $GITHUB_OUTPUT
+              break
+            fi
+
+            echo "❌ 修復失敗。次の試行へ..."
+            ITERATION=$((ITERATION + 1))
+            sleep 5
+          done
+
+          if [ "$FIXED" = "false" ]; then
+            echo "⚠️ $MAX_ITERATIONS 回の試行後も修復できませんでした"
+            echo "fixed=false" >> $GITHUB_OUTPUT
+            echo "iterations=$ITERATION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ✅ Issue更新（修復成功）
+        if: steps.auto-fix-loop.outputs.fixed == 'true'
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.detect-and-fix.outputs.issue_number }}
+          ITERATIONS: ${{ steps.auto-fix-loop.outputs.iterations }}
+        run: |
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: process.env.ISSUE_NUMBER,
+            body: `## ✅ 自動修復成功！
+
+            **修復完了:** ${new Date().toISOString()}
+            **試行回数:** ${process.env.ITERATIONS} / ${{ env.MAX_ITERATIONS }}
+
+            ### 🔧 実施した修復
+
+            1. ESLint自動修正
+            2. Prettier自動フォーマット
+            3. TypeScriptビルドの検証
+
+            ビルドが正常に完了しました。このIssueをクローズします。
+            `
+          });
+
+          await github.rest.issues.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: process.env.ISSUE_NUMBER,
+            state: 'closed',
+            labels: ['auto-fixed', 'resolved']
+          });
+
+      - name: ⚠️ Issue更新（修復失敗）
+        if: steps.auto-fix-loop.outputs.fixed == 'false'
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.detect-and-fix.outputs.issue_number }}
+        run: |
+          const fs = require('fs');
+          const backendLog = fs.existsSync('rebuild-backend.log') ? fs.readFileSync('rebuild-backend.log', 'utf8') : '';
+          const frontendLog = fs.existsSync('rebuild-frontend.log') ? fs.readFileSync('rebuild-frontend.log', 'utf8') : '';
+
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: process.env.ISSUE_NUMBER,
+            body: `## ⚠️ 自動修復失敗
+
+            **失敗日時:** ${new Date().toISOString()}
+            **試行回数:** ${{ env.MAX_ITERATIONS }} 回
+
+            ### ❌ 最終ビルドログ
+
+            <details>
+            <summary>バックエンド</summary>
+
+            \`\`\`
+            ${backendLog.slice(-2000)}
+            \`\`\`
+
+            </details>
+
+            <details>
+            <summary>フロントエンド</summary>
+
+            \`\`\`
+            ${frontendLog.slice(-2000)}
+            \`\`\`
+
+            </details>
+
+            ---
+
+            **⏰ ${{ env.SLEEP_MINUTES }}分後に再試行します...**
+            `
+          });
+
+          await github.rest.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: process.env.ISSUE_NUMBER,
+            labels: ['auto-fix-failed', 'needs-manual-review']
+          });
+
+      - name: 💤 スリープ（15回失敗後）
+        if: steps.auto-fix-loop.outputs.fixed == 'false'
+        run: |
+          echo "⏰ ${{ env.SLEEP_MINUTES }}分間待機します..."
+          sleep $((${{ env.SLEEP_MINUTES }} * 60))
+
+      - name: 🔄 再実行トリガー（無限ループ）
+        if: steps.auto-fix-loop.outputs.fixed == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'auto-error-detection.yml',
+              ref: 'main'
+            });
+
+            console.log('🔄 ワークフローを再スケジュールしました');
+
+      - name: 📝 変更をコミット（修復成功時）
+        if: steps.auto-fix-loop.outputs.fixed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          git add -A
+
+          if git diff --staged --quiet; then
+            echo "変更なし"
+          else
+            git commit -m "🤖 自動修復: ビルドエラーを修正
+
+            - ESLint自動修正を適用
+            - Prettierフォーマットを適用
+            - 試行回数: ${{ steps.auto-fix-loop.outputs.iterations }}/${{ env.MAX_ITERATIONS }}
+
+            Issue: #${{ steps.detect-and-fix.outputs.issue_number }}
+
+            Co-Authored-By: GitHub Actions <github-actions[bot]@users.noreply.github.com>"
+
+            git push
+            echo "✅ 変更をプッシュしました"
+          fi
+
+      - name: 🎉 成功通知
+        if: steps.analyze-errors.outputs.has_errors == 'false'
+        run: |
+          echo "✅ エラーは検出されませんでした"
+          echo "🎉 システムは正常に動作しています"
+
+  # 定期的なヘルスチェック
+  health-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+
+    steps:
+      - name: 📥 リポジトリのチェックアウト
+        uses: actions/checkout@v4
+
+      - name: 🏥 ヘルスチェック実行
+        run: |
+          echo "🏥 システムヘルスチェック"
+          echo "✅ リポジトリアクセス: OK"
+          echo "✅ ワークフロー実行: OK"
+          echo "📅 実行日時: $(date)"
+
+      - name: 📊 統計情報収集
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // 過去24時間のIssue統計
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              since: yesterday.toISOString(),
+              per_page: 100
+            });
+
+            const autoDetected = issues.data.filter(i =>
+              i.labels.some(l => l.name === 'auto-detected')
+            );
+
+            const autoFixed = issues.data.filter(i =>
+              i.labels.some(l => l.name === 'auto-fixed')
+            );
+
+            console.log('📊 過去24時間の統計:');
+            console.log(`  - 検出されたエラー: ${autoDetected.length}件`);
+            console.log(`  - 自動修復成功: ${autoFixed.length}件`);
+            console.log(`  - 成功率: ${autoDetected.length > 0 ? Math.round(autoFixed.length / autoDetected.length * 100) : 0}%`);

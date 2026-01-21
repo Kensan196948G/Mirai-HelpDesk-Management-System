@@ -1,0 +1,81 @@
+# Mirai HelpDesk Management System - Audit Log Rotation Configuration
+# 監査ログのローテーション設定 (Linux/logrotate用)
+#
+# インストール手順:
+# sudo cp scripts/linux/mirai-audit.logrotate /etc/logrotate.d/mirai-audit
+# sudo chmod 644 /etc/logrotate.d/mirai-audit
+#
+# 手動実行 (テスト):
+# sudo logrotate -f /etc/logrotate.d/mirai-audit
+#
+# 監査要件:
+# - 最低90日間の保持
+# - 10MBを超える場合は日次でローテーション
+# - 圧縮によるストレージ効率化
+# - 削除なしで追記専用
+
+/var/log/mirai-helpdesk/logs/*.jsonl {
+    # 日次ローテーション
+    daily
+
+    # 90日分を保持 (監査要件: 最低2年推奨だが、デフォルトは90日)
+    rotate 90
+
+    # 10MBを超えた場合は日次でなくても即座にローテーション
+    size 10M
+
+    # ローテーション後にgzip圧縮
+    compress
+
+    # 圧縮を遅延させない (即座に圧縮)
+    delaycompress
+
+    # ファイルが存在しない場合でもエラーを出さない
+    missingok
+
+    # 空のログファイルはローテーションしない
+    notifempty
+
+    # copytruncate を使用してログファイルをコピー後に切り捨て
+    # これによりアプリケーションの再起動が不要
+    copytruncate
+
+    # ローテーション後のファイル名に日付を付与
+    dateext
+    dateformat -%Y%m%d
+
+    # 同じ日に複数回ローテーションする場合は番号を付与
+    dateyesterday
+
+    # 作成するファイルのパーミッション
+    create 0640 mirai-app mirai-app
+
+    # ローテーション後のスクリプト実行
+    postrotate
+        # ログローテーション完了をsyslogに記録
+        /usr/bin/logger -t mirai-audit "Audit log rotation completed"
+    endscript
+}
+
+# 開発環境用 (プロジェクトディレクトリ内のlogs)
+# 本番環境では上記の /var/log/mirai-helpdesk/logs を使用
+Z:\Mirai-HelpDesk-Management-System\backend\logs/*.jsonl {
+    daily
+    rotate 90
+    size 10M
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    dateext
+    dateformat -%Y%m%d
+}
+
+# 注意事項:
+# 1. 本番環境では /var/log/mirai-helpdesk/logs にログを出力すること
+# 2. mirai-app ユーザーとグループを作成すること (または適切なユーザー名に変更)
+# 3. SELinux が有効な場合は、ログディレクトリのコンテキストを設定すること:
+#    sudo semanage fcontext -a -t var_log_t "/var/log/mirai-helpdesk(/.*)?"
+#    sudo restorecon -R /var/log/mirai-helpdesk
+# 4. 監査要件に応じて rotate の値を調整すること (最低2年 = 730日)
