@@ -2,6 +2,91 @@
  * Mirai HelpDesk - Component Styles
  */
 
+/* ============== Project Introduction ============== */
+.project-intro {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, rgba(0, 120, 212, 0.05), rgba(0, 188, 242, 0.05));
+    border: 1px solid rgba(0, 120, 212, 0.15);
+    border-radius: var(--border-radius-lg);
+}
+
+.intro-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-primary);
+}
+
+.intro-header i {
+    font-size: var(--font-size-xl);
+}
+
+.intro-header h2 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.intro-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.intro-card {
+    padding: var(--spacing-lg);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--border-color, #edebe9);
+    border-radius: var(--border-radius-md);
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+
+.intro-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.15);
+    border-color: var(--color-primary);
+}
+
+.intro-card i {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.intro-card h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.intro-card p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ============== Stat Card Description ============== */
+.stat-description {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.4;
+}
+
+.stat-description i {
+    font-size: 10px;
+    opacity: 0.7;
+}
+
 /* ============== Empty State ============== */
 .empty-state {
     display: flex;
@@ -234,6 +319,7 @@
 .search-input input {
     padding-left: 40px;
     min-width: 250px;
+    height: 40px;
 }
 
 .search-input i {

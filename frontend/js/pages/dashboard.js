@@ -38,6 +38,34 @@ const DashboardPage = {
         const content = document.getElementById('page-content');
 
         content.innerHTML = `
+            <!-- Project Introduction -->
+            <div class="project-intro">
+                <div class="intro-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h2>Mirai ヘルプデスクとは</h2>
+                </div>
+
+                <div class="intro-cards">
+                    <div class="intro-card">
+                        <i class="fas fa-bullseye"></i>
+                        <h3>目的</h3>
+                        <p>社内のIT関連の困りごとを迅速に解決し、業務を円滑に進めるための窓口です</p>
+                    </div>
+
+                    <div class="intro-card">
+                        <i class="fas fa-heart"></i>
+                        <h3>意義</h3>
+                        <p>全社員が安心してITシステムを利用でき、生産性を最大化できる環境を提供します</p>
+                    </div>
+
+                    <div class="intro-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>品質保証</h3>
+                        <p>ITSM（ITサービス管理）とISO20000に準拠した、監査証跡完備の信頼できるシステムです</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -47,9 +75,13 @@ const DashboardPage = {
                     <div class="stat-content">
                         <div class="stat-value">${stats.total_tickets}</div>
                         <div class="stat-label">総チケット数</div>
+                        <div class="stat-description">
+                            <i class="fas fa-info-circle"></i>
+                            現在対応中および過去のすべての問い合わせ件数
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="stat-card">
                     <div class="stat-icon warning">
                         <i class="lucide-clock"></i>
@@ -57,9 +89,13 @@ const DashboardPage = {
                     <div class="stat-content">
                         <div class="stat-value">${stats.open_tickets}</div>
                         <div class="stat-label">対応中</div>
+                        <div class="stat-description">
+                            <i class="fas fa-info-circle"></i>
+                            現在IT部門が対応を進めているチケット数
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="stat-card">
                     <div class="stat-icon success">
                         <i class="lucide-check-circle"></i>
@@ -67,9 +103,13 @@ const DashboardPage = {
                     <div class="stat-content">
                         <div class="stat-value">${stats.resolved_today}</div>
                         <div class="stat-label">本日解決</div>
+                        <div class="stat-description">
+                            <i class="fas fa-info-circle"></i>
+                            今日中に解決できた問い合わせの件数
+                        </div>
                     </div>
                 </div>
-                
+
                 <div class="stat-card">
                     <div class="stat-icon error">
                         <i class="lucide-alert-triangle"></i>
@@ -77,6 +117,10 @@ const DashboardPage = {
                     <div class="stat-content">
                         <div class="stat-value">${stats.overdue_tickets}</div>
                         <div class="stat-label">期限超過</div>
+                        <div class="stat-description">
+                            <i class="fas fa-info-circle"></i>
+                            対応期限を過ぎているチケット（優先対応中）
+                        </div>
                     </div>
                 </div>
             </div>

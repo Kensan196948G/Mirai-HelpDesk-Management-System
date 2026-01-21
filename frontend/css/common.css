@@ -195,9 +195,17 @@ body {
 }
 
 .nav-link i {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
     width: 24px;
     text-align: center;
+    flex-shrink: 0;
+}
+
+.nav-link span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .nav-section-title {
@@ -208,6 +216,16 @@ body {
     color: var(--color-text-tertiary);
     padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
     margin-top: var(--spacing-md);
+    cursor: help;
+    transition: color 0.2s ease;
+}
+
+.nav-section-title:hover {
+    color: var(--color-text-secondary);
+}
+
+.nav-section-title:first-child {
+    margin-top: 0;
 }
 
 .sidebar-footer {
@@ -304,6 +322,7 @@ body {
 .page-content {
     flex: 1;
     padding: var(--spacing-lg);
+    padding-left: 24px;
     overflow-y: auto;
 }
 

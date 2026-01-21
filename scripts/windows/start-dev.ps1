@@ -24,9 +24,9 @@ Write-Host "============================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Configuration (avoid $Host - it's a reserved variable in PowerShell)
-$ApiHost = "192.168.0.187"
+$ApiHost = "192.168.0.145"
 $ApiPort = 8000
-$WebHost = "192.168.0.187"
+$WebHost = "192.168.0.145"
 $WebPort = 8080
 
 # Check Python
