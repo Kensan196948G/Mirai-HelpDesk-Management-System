@@ -1,0 +1,311 @@
+{
+  "name": "user-prompt-submit",
+  "description": "ユーザー入力時の並列タスク自動起動 - 複雑なタスクを自動的に複数のSubAgentに分散",
+  "enabled": true,
+  "event": "user-prompt-submit",
+  "version": "1.0.0",
+
+  "conditions": {
+    "trigger_patterns": [
+      "実装",
+      "作成",
+      "追加",
+      "開発",
+      "構築",
+      "implement",
+      "create",
+      "add",
+      "build",
+      "develop"
+    ],
+    "complexity_threshold": "medium",
+    "auto_detect_parallel_tasks": true
+  },
+
+  "actions": [
+    {
+      "name": "parse-user-request",
+      "description": "ユーザーリクエストを解析",
+      "type": "nlp-analysis",
+      "extract": [
+        "task_type",
+        "components",
+        "scope",
+        "dependencies",
+        "priority"
+      ],
+      "output_variable": "PARSED_REQUEST"
+    },
+    {
+      "name": "detect-task-complexity",
+      "description": "タスクの複雑度を検出",
+      "type": "script",
+      "criteria": {
+        "simple": "single file, < 50 lines",
+        "medium": "2-5 files, or single complex file",
+        "complex": "> 5 files, or cross-cutting changes",
+        "very_complex": "> 10 files, or architectural changes"
+      },
+      "output_variable": "TASK_COMPLEXITY"
+    },
+    {
+      "name": "determine-agent-assignment",
+      "description": "SubAgent割り当てを決定",
+      "type": "script",
+      "logic": {
+        "api_task": {
+          "patterns": ["API", "endpoint", "route", "controller"],
+          "agent": "agent-1-backend-api"
+        },
+        "model_task": {
+          "patterns": ["model", "service", "business logic", "データモデル"],
+          "agent": "agent-2-backend-models"
+        },
+        "database_task": {
+          "patterns": ["database", "schema", "migration", "SQL"],
+          "agent": "agent-6-database"
+        },
+        "ui_component_task": {
+          "patterns": ["component", "button", "form", "modal", "UI部品"],
+          "agent": "agent-4-frontend-components"
+        },
+        "page_task": {
+          "patterns": ["page", "screen", "画面", "ページ"],
+          "agent": "agent-3-frontend-pages"
+        },
+        "api_client_task": {
+          "patterns": ["API client", "fetch", "axios", "状態管理"],
+          "agent": "agent-5-frontend-services"
+        },
+        "docs_task": {
+          "patterns": ["documentation", "README", "guide", "ドキュメント"],
+          "agent": "agent-7-docs"
+        }
+      },
+      "output_variable": "AGENT_ASSIGNMENTS"
+    },
+    {
+      "name": "check-parallel-feasibility",
+      "description": "並列実行の可能性をチェック",
+      "type": "script",
+      "check": {
+        "dependencies_resolved": true,
+        "no_circular_dependencies": true,
+        "agents_available": true,
+        "no_file_conflicts": true
+      },
+      "output_variable": "CAN_PARALLELIZE"
+    },
+    {
+      "name": "create-task-breakdown",
+      "description": "タスク分割計画を作成",
+      "type": "script",
+      "condition": "TASK_COMPLEXITY is complex or very_complex",
+      "breakdown_strategy": "dependency_based",
+      "output_format": {
+        "tasks": [
+          {
+            "id": "task-1",
+            "description": "...",
+            "agent": "agent-X",
+            "dependencies": [],
+            "priority": 1,
+            "estimated_duration": "..."
+          }
+        ]
+      },
+      "output_variable": "TASK_BREAKDOWN"
+    },
+    {
+      "name": "notify-agents",
+      "description": "割り当てられたエージェントに通知",
+      "type": "message-passing",
+      "condition": "CAN_PARALLELIZE is true",
+      "channel": "task-queue",
+      "message": {
+        "event": "task.assigned",
+        "request": "$PARSED_REQUEST",
+        "breakdown": "$TASK_BREAKDOWN",
+        "priority": "$PRIORITY",
+        "timestamp": "$TIMESTAMP"
+      },
+      "recipients": "$AGENT_ASSIGNMENTS",
+      "wait_for_acknowledgment": true,
+      "timeout_seconds": 5
+    },
+    {
+      "name": "coordinate-execution",
+      "description": "実行を調整",
+      "type": "orchestration",
+      "strategy": "dependency_graph",
+      "execution_groups": [
+        {
+          "name": "foundation",
+          "agents": ["agent-6-database"],
+          "parallel": false,
+          "wait_for_completion": true
+        },
+        {
+          "name": "backend",
+          "agents": ["agent-2-backend-models", "agent-1-backend-api"],
+          "parallel": true,
+          "wait_for_completion": true
+        },
+        {
+          "name": "frontend",
+          "agents": ["agent-4-frontend-components", "agent-5-frontend-services", "agent-3-frontend-pages"],
+          "parallel": true,
+          "wait_for_completion": true
+        },
+        {
+          "name": "documentation",
+          "agents": ["agent-7-docs"],
+          "parallel": false,
+          "wait_for_completion": false
+        }
+      ]
+    },
+    {
+      "name": "monitor-progress",
+      "description": "進捗をモニタリング",
+      "type": "monitoring",
+      "metrics": [
+        "tasks_started",
+        "tasks_completed",
+        "tasks_failed",
+        "conflicts_detected",
+        "estimated_completion_time"
+      ],
+      "update_interval_seconds": 10,
+      "notify_on_milestone": true
+    },
+    {
+      "name": "handle-conflicts",
+      "description": "コンフリクトを処理",
+      "type": "conflict-resolution",
+      "auto_resolve": true,
+      "strategies": [
+        "semantic-merge",
+        "priority-based",
+        "timestamp-based"
+      ],
+      "escalate_on_failure": true
+    },
+    {
+      "name": "collect-results",
+      "description": "結果を収集",
+      "type": "aggregation",
+      "wait_for_all": false,
+      "timeout_seconds": 600,
+      "output_variable": "EXECUTION_RESULTS"
+    },
+    {
+      "name": "verify-integration",
+      "description": "統合を検証",
+      "type": "integration-test",
+      "condition": "all agents completed",
+      "tests": [
+        "compilation_check",
+        "linting_check",
+        "unit_tests",
+        "integration_tests"
+      ],
+      "continue_on_error": false
+    },
+    {
+      "name": "report-completion",
+      "description": "完了レポートを作成",
+      "type": "reporting",
+      "format": "markdown",
+      "include": [
+        "task_summary",
+        "agent_assignments",
+        "execution_timeline",
+        "test_results",
+        "files_modified",
+        "next_steps"
+      ],
+      "output_variable": "COMPLETION_REPORT"
+    },
+    {
+      "name": "notify-user",
+      "description": "ユーザーに通知",
+      "type": "notification",
+      "message": "$COMPLETION_REPORT",
+      "level": "success"
+    }
+  ],
+
+  "task_templates": {
+    "full_feature": {
+      "description": "フルスタック機能実装",
+      "agents": [
+        "agent-6-database",
+        "agent-2-backend-models",
+        "agent-1-backend-api",
+        "agent-5-frontend-services",
+        "agent-4-frontend-components",
+        "agent-3-frontend-pages",
+        "agent-7-docs"
+      ],
+      "execution_order": "sequential_groups"
+    },
+    "backend_only": {
+      "description": "バックエンドのみの実装",
+      "agents": [
+        "agent-6-database",
+        "agent-2-backend-models",
+        "agent-1-backend-api"
+      ],
+      "execution_order": "sequential"
+    },
+    "frontend_only": {
+      "description": "フロントエンドのみの実装",
+      "agents": [
+        "agent-4-frontend-components",
+        "agent-5-frontend-services",
+        "agent-3-frontend-pages"
+      ],
+      "execution_order": "parallel_with_dependencies"
+    },
+    "ui_component": {
+      "description": "UIコンポーネントの実装",
+      "agents": [
+        "agent-4-frontend-components"
+      ],
+      "execution_order": "single"
+    },
+    "api_endpoint": {
+      "description": "APIエンドポイントの実装",
+      "agents": [
+        "agent-2-backend-models",
+        "agent-1-backend-api"
+      ],
+      "execution_order": "sequential"
+    }
+  },
+
+  "reporting": {
+    "enabled": true,
+    "output_file": ".claude/hooks/logs/user-prompt-submit-YYYY-MM-DD.log",
+    "format": "json",
+    "include_timestamp": true,
+    "include_agent_assignments": true,
+    "include_execution_timeline": true
+  },
+
+  "performance": {
+    "max_concurrent_agents": 7,
+    "max_queue_size": 20,
+    "timeout_seconds": 1800,
+    "enable_caching": true,
+    "cache_duration_minutes": 10
+  },
+
+  "bypass": {
+    "enabled": true,
+    "user_flag": "[no-parallel]",
+    "complexity_threshold": "simple",
+    "message": "⚠️ 並列実行がスキップされました。シングルエージェントで実行します。"
+  }
+}

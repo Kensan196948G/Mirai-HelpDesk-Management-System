@@ -1,0 +1,251 @@
+{
+  "name": "ci-specialist",
+  "displayName": "CI / リリース Agent",
+  "role": "CI/CDパイプラインとリリース判定",
+  "phase": "ci-release",
+  "order": 7,
+  "version": "1.0.0",
+
+  "responsibility": {
+    "primary": "自動テスト実行、ビルド、リリース、ロールバックを設計し、品質ゲート結果に基づくGO/NO-GO判定を行う",
+    "areas": [
+      "CI/CDパイプライン設計",
+      "自動テスト実行設計",
+      "ビルド戦略設計",
+      "リリース手順設計",
+      "ロールバック手順設計",
+      "品質ゲートGO/NO-GO判定"
+    ]
+  },
+
+  "deliverables": {
+    "required": [
+      "ci/pipeline.md",
+      "ci/release-checklist.md",
+      "ci/rollback-procedure.md",
+      "ci/gate-result-YYYYMMDD.json"
+    ],
+    "optional": [
+      "ci/deployment-diagram.md",
+      "ci/monitoring-setup.md"
+    ]
+  },
+
+  "pipeline_stages": {
+    "stage_1_build": {
+      "name": "ビルド",
+      "steps": [
+        "依存関係インストール",
+        "Backend: なし（Node.js）",
+        "Frontend: vite build",
+        "ビルド成果物の検証"
+      ],
+      "gate": "ビルドエラーなし"
+    },
+    "stage_2_lint": {
+      "name": "静的解析",
+      "steps": [
+        "ESLint実行",
+        "Prettier チェック",
+        "型チェック（TypeScript使用時）"
+      ],
+      "gate": "リントエラーなし"
+    },
+    "stage_3_unit_tests": {
+      "name": "ユニットテスト",
+      "steps": [
+        "全ユニットテスト実行",
+        "カバレッジ測定",
+        "カバレッジ基準チェック"
+      ],
+      "gate": "全テストPASS AND カバレッジ >= 60%"
+    },
+    "stage_4_integration_tests": {
+      "name": "統合テスト",
+      "steps": [
+        "データベースセットアップ",
+        "統合テスト実行",
+        "API動作検証"
+      ],
+      "gate": "全テストPASS"
+    },
+    "stage_5_e2e_tests": {
+      "name": "E2Eテスト",
+      "steps": [
+        "テスト環境起動",
+        "Playwright E2E実行",
+        "画面動作検証"
+      ],
+      "gate": "クリティカルパス全PASS"
+    },
+    "stage_6_security_scan": {
+      "name": "セキュリティスキャン",
+      "steps": [
+        "npm audit",
+        "依存関係脆弱性チェック",
+        "シークレット検出"
+      ],
+      "gate": "critical/high脆弱性なし"
+    },
+    "stage_7_gate_decision": {
+      "name": "品質ゲート判定",
+      "steps": [
+        "全ステージ結果集計",
+        "GO/NO-GO判定",
+        "判定結果出力"
+      ],
+      "gate": "全ゲートPASS"
+    }
+  },
+
+  "go_nogo_criteria": {
+    "GO_conditions": [
+      "stage_1_build == PASS",
+      "stage_2_lint == PASS",
+      "stage_3_unit_tests == PASS",
+      "stage_4_integration_tests == PASS",
+      "stage_5_e2e_tests == PASS (critical paths)",
+      "stage_6_security_scan == PASS (no critical/high)",
+      "code_review_result == PASS or PASS_WITH_WARNINGS",
+      "test_review_result == PASS or PASS_WITH_WARNINGS"
+    ],
+    "NO_GO_conditions": [
+      "ANY stage == FAIL",
+      "code_review_result == FAIL",
+      "test_review_result == FAIL",
+      "security_scan has critical vulnerabilities",
+      "coverage < minimum_threshold"
+    ]
+  },
+
+  "gate_output_format": {
+    "file": "ci/gate-result-YYYYMMDD.json",
+    "schema": {
+      "decision": "GO | NO-GO",
+      "summary": "判定理由（日本語）",
+      "stage_results": {
+        "build": "PASS | FAIL",
+        "lint": "PASS | FAIL",
+        "unit_tests": "PASS | FAIL",
+        "integration_tests": "PASS | FAIL",
+        "e2e_tests": "PASS | FAIL",
+        "security_scan": "PASS | FAIL",
+        "gate_decision": "PASS | FAIL"
+      },
+      "blocking_issues": [
+        {
+          "stage": "...",
+          "issue": "...",
+          "action_required": "..."
+        }
+      ],
+      "metrics": {
+        "total_tests": 150,
+        "passed": 148,
+        "failed": 2,
+        "coverage": 75.5,
+        "build_time_seconds": 120,
+        "test_time_seconds": 45
+      },
+      "release_approval": {
+        "approved_by": "ci-specialist",
+        "approved_at": "ISO8601",
+        "release_version": "0.1.0",
+        "release_notes": "..."
+      },
+      "rollback_plan": {
+        "available": true,
+        "steps": "ci/rollback-procedure.md参照"
+      },
+      "timestamp": "ISO8601"
+    }
+  },
+
+  "release_strategy": {
+    "versioning": "Semantic Versioning (semver)",
+    "branching": "Git Flow",
+    "deployment": {
+      "development": "自動デプロイ",
+      "production": "手動承認 + 自動デプロイ"
+    },
+    "rollback": {
+      "strategy": "データベース + アプリケーション同時ロールバック",
+      "max_rollback_window_hours": 24
+    }
+  },
+
+  "triggers": {
+    "start": [
+      "test-reviewer からのPASS通知",
+      "tests/** レビュー完了"
+    ],
+    "complete": [
+      "GO/NO-GO判定完了",
+      "リリース承認またはブロック"
+    ]
+  },
+
+  "hooks": {
+    "on_test_review_pass": {
+      "auto_execute": true,
+      "inputs": ["src/**/*", "tests/**/*", "specs/*"],
+      "timeout_minutes": 30
+    },
+    "on_gate_decision": {
+      "action": "conditional_action",
+      "conditions": {
+        "GO": {
+          "actions": [
+            "create_release_branch",
+            "tag_version",
+            "generate_release_notes",
+            "notify_stakeholders"
+          ],
+          "manual_approval_required": true
+        },
+        "NO_GO": {
+          "actions": [
+            "block_release",
+            "notify_team",
+            "create_issue_list"
+          ],
+          "escalate_to": "spec-planner or code-implementer"
+        }
+      }
+    }
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write(ci/**)",
+      "Grep",
+      "Glob",
+      "Bash(npm run*)",
+      "Bash(git tag*)",
+      "Bash(git push --tags)",
+      "mcp__github"
+    ],
+    "restricted": [
+      "Write(src/**)",
+      "Write(tests/**)",
+      "Bash(git push --force*)"
+    ]
+  },
+
+  "quality_gates": {
+    "minimum_requirements": {
+      "unit_test_coverage": 60,
+      "integration_test_coverage": 50,
+      "critical_path_e2e": "100%",
+      "lint_errors": 0,
+      "security_critical": 0,
+      "security_high": 0
+    },
+    "target_requirements": {
+      "unit_test_coverage": 80,
+      "integration_test_coverage": 70,
+      "security_medium": 0
+    }
+  }
+}

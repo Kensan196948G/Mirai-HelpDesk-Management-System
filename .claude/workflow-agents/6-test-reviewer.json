@@ -1,0 +1,238 @@
+{
+  "name": "test-reviewer",
+  "displayName": "テストレビュー Agent",
+  "role": "テスト網羅性の検証",
+  "phase": "test-review",
+  "order": 6,
+  "version": "1.0.0",
+
+  "responsibility": {
+    "primary": "テストケースの網羅性をレビューし、重要機能・異常系の抜け漏れを検出する",
+    "areas": [
+      "テスト網羅性レビュー",
+      "重要機能テスト抜け漏れ検出",
+      "異常系テスト抜け漏れ検出",
+      "カバレッジ検証",
+      "テストケース品質検証"
+    ],
+    "critical_checks": [
+      "承認フローのテスト",
+      "M365操作のテスト",
+      "監査ログのテスト",
+      "SOD原則のテスト",
+      "エラーハンドリングのテスト"
+    ]
+  },
+
+  "deliverables": {
+    "required": [
+      "reviews/test-review-YYYYMMDD.json"
+    ]
+  },
+
+  "review_checklist": {
+    "coverage_analysis": {
+      "weight": "critical",
+      "checks": [
+        {
+          "item": "ユニットテストカバレッジ",
+          "threshold": 60,
+          "target": 80,
+          "critical_paths": 100
+        },
+        {
+          "item": "統合テストカバレッジ",
+          "threshold": 50,
+          "target": 70
+        },
+        {
+          "item": "E2Eテストカバレッジ",
+          "threshold": "critical paths only",
+          "must_cover": [
+            "ログイン → チケット作成 → 承認 → 完了",
+            "権限エラーフロー",
+            "SLA期限超過検出"
+          ]
+        }
+      ]
+    },
+    "critical_feature_tests": {
+      "weight": "critical",
+      "must_have_tests": [
+        {
+          "feature": "チケット作成",
+          "tests": ["正常系", "必須項目なし", "権限なし", "無効なデータ"]
+        },
+        {
+          "feature": "承認フロー",
+          "tests": ["正常承認", "却下", "承認者≠実施者チェック", "権限なし"]
+        },
+        {
+          "feature": "M365操作",
+          "tests": ["承認済み実行", "未承認ブロック", "実施ログ記録", "SOD違反検出"]
+        },
+        {
+          "feature": "監査ログ",
+          "tests": ["自動記録", "削除不可検証", "改ざん防止", "検索機能"]
+        },
+        {
+          "feature": "SLA計算",
+          "tests": ["優先度計算", "期限計算", "期限超過検出", "通知トリガー"]
+        }
+      ]
+    },
+    "error_handling_tests": {
+      "weight": "critical",
+      "must_have_tests": [
+        "データベースエラー時の動作",
+        "外部API（M365 Graph）エラー時の動作",
+        "認証エラー時の動作",
+        "バリデーションエラー時の動作",
+        "タイムアウト時の動作"
+      ]
+    },
+    "boundary_value_tests": {
+      "weight": "high",
+      "must_test": [
+        "ファイルサイズ上限",
+        "文字列長上限",
+        "配列要素数上限",
+        "日時の境界値（過去/未来/無効）"
+      ]
+    },
+    "rbac_tests": {
+      "weight": "critical",
+      "must_test_roles": [
+        "Requester（依頼者）",
+        "Agent（一次対応）",
+        "M365 Operator（特権作業者）",
+        "Approver（承認者）",
+        "Manager（運用管理者）",
+        "Auditor（監査閲覧）"
+      ],
+      "must_test_scenarios": [
+        "各ロールができること",
+        "各ロールができないこと",
+        "権限昇格試行の防止",
+        "横断アクセスの防止"
+      ]
+    }
+  },
+
+  "review_output_format": {
+    "file": "reviews/test-review-YYYYMMDD.json",
+    "schema": {
+      "result": "PASS | FAIL | PASS_WITH_WARNINGS",
+      "summary": "総評（日本語）",
+      "blocking_issues": [
+        {
+          "category": "coverage | critical_feature | error_handling | rbac",
+          "severity": "critical | high",
+          "missing_test": "テストされていない項目",
+          "risk": "リスクの説明",
+          "recommendation": "追加すべきテストケース"
+        }
+      ],
+      "warnings": [
+        {
+          "category": "...",
+          "severity": "medium | low",
+          "description": "...",
+          "recommendation": "..."
+        }
+      ],
+      "coverage_summary": {
+        "unit": {
+          "actual": 75,
+          "threshold": 60,
+          "target": 80,
+          "status": "PASS"
+        },
+        "integration": {
+          "actual": 65,
+          "threshold": 50,
+          "target": 70,
+          "status": "PASS"
+        },
+        "e2e": {
+          "critical_paths_covered": 5,
+          "critical_paths_total": 5,
+          "status": "PASS"
+        }
+      },
+      "timestamp": "ISO8601"
+    }
+  },
+
+  "judgment_rules": {
+    "FAIL": "blocking_issues.count > 0 OR coverage < threshold",
+    "PASS_WITH_WARNINGS": "blocking_issues.count == 0 AND (warnings.count > 0 OR coverage < target)",
+    "PASS": "blocking_issues.count == 0 AND warnings.count == 0 AND coverage >= target"
+  },
+
+  "triggers": {
+    "start": [
+      "test-designer 完了通知",
+      "tests/** ファイル作成完了"
+    ],
+    "complete": [
+      "レビュー結果出力",
+      "次工程へ通知"
+    ]
+  },
+
+  "hooks": {
+    "on_test_design_complete": {
+      "auto_execute": true,
+      "inputs": ["tests/**/*", "specs/*", "src/**/*"],
+      "timeout_minutes": 15,
+      "run_coverage": true
+    },
+    "on_test_review_result": {
+      "action": "conditional_trigger",
+      "conditions": {
+        "FAIL": {
+          "target": "test-designer",
+          "action": "send_back",
+          "message": "テストの網羅性が不十分です。追加テストを設計してください。",
+          "block_next_phase": true
+        },
+        "PASS_WITH_WARNINGS": {
+          "target": "ci-specialist",
+          "notify_user": true,
+          "message": "テストカバレッジが目標未達ですが、最低基準は満たしています。",
+          "auto_proceed": false,
+          "require_user_approval": true
+        },
+        "PASS": {
+          "target": "ci-specialist",
+          "input": ["tests/**/*", "src/**/*", "specs/*"],
+          "auto_execute": true
+        }
+      }
+    }
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Write(reviews/**)",
+      "Bash(npm run test*)",
+      "Bash(npm run coverage*)"
+    ],
+    "restricted": [
+      "Write(tests/**)",
+      "Write(src/**)"
+    ]
+  },
+
+  "auto_checks": {
+    "coverage_report": {
+      "enabled": true,
+      "command": "npm run test -- --coverage",
+      "analyze_coverage": true
+    }
+  }
+}

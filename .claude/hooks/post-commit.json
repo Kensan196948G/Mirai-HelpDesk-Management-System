@@ -1,0 +1,263 @@
+{
+  "name": "post-commit",
+  "description": "コミット後の自動テスト実行 - 関連するテストを自動実行して回帰を検出",
+  "enabled": true,
+  "event": "post-commit",
+  "version": "1.0.0",
+
+  "conditions": {
+    "filePatterns": [
+      "src/**/*.js",
+      "src/**/*.ts",
+      "frontend/src/**/*.jsx",
+      "frontend/src/**/*.tsx",
+      "backend/**/*.js",
+      "backend/**/*.py"
+    ],
+    "excludePatterns": [
+      "**/*.test.js",
+      "**/*.spec.js",
+      "**/*.md",
+      "docs/**"
+    ]
+  },
+
+  "actions": [
+    {
+      "name": "get-commit-info",
+      "description": "コミット情報を取得",
+      "type": "command",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "git log -1 --pretty=format:'%h - %s (%an)'"
+        ]
+      },
+      "linux": {
+        "command": "git",
+        "args": [
+          "log",
+          "-1",
+          "--pretty=format:%h - %s (%an)"
+        ]
+      },
+      "output_variable": "COMMIT_INFO",
+      "continue_on_error": true
+    },
+    {
+      "name": "get-changed-files",
+      "description": "変更されたファイルを取得",
+      "type": "command",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "git diff-tree --no-commit-id --name-only -r HEAD"
+        ]
+      },
+      "linux": {
+        "command": "git",
+        "args": [
+          "diff-tree",
+          "--no-commit-id",
+          "--name-only",
+          "-r",
+          "HEAD"
+        ]
+      },
+      "output_variable": "CHANGED_FILES",
+      "continue_on_error": false
+    },
+    {
+      "name": "determine-test-scope",
+      "description": "テスト範囲を決定",
+      "type": "script",
+      "logic": {
+        "backend_changed": "CHANGED_FILES contains src/ or backend/",
+        "frontend_changed": "CHANGED_FILES contains frontend/src/",
+        "database_changed": "CHANGED_FILES contains database/ or migrations/",
+        "models_changed": "CHANGED_FILES contains models/ or services/",
+        "api_changed": "CHANGED_FILES contains controllers/ or routes/"
+      },
+      "output_variable": "TEST_SCOPE"
+    },
+    {
+      "name": "run-unit-tests",
+      "description": "関連するユニットテストを実行",
+      "type": "command",
+      "condition": "TEST_SCOPE.backend_changed or TEST_SCOPE.frontend_changed",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "npm run test -- --changedSince=HEAD~1"
+        ]
+      },
+      "linux": {
+        "command": "npm",
+        "args": [
+          "run",
+          "test",
+          "--",
+          "--changedSince=HEAD~1"
+        ]
+      },
+      "continue_on_error": true,
+      "timeout_seconds": 180,
+      "success_message": "✅ ユニットテスト成功",
+      "error_message": "❌ ユニットテスト失敗 - 詳細はログを確認してください"
+    },
+    {
+      "name": "run-integration-tests",
+      "description": "API統合テストを実行",
+      "type": "command",
+      "condition": "TEST_SCOPE.api_changed",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "npm run test:api-integration"
+        ]
+      },
+      "linux": {
+        "command": "npm",
+        "args": [
+          "run",
+          "test:api-integration"
+        ]
+      },
+      "continue_on_error": true,
+      "timeout_seconds": 300,
+      "success_message": "✅ 統合テスト成功",
+      "error_message": "⚠️ 統合テスト失敗 - API変更を確認してください"
+    },
+    {
+      "name": "run-e2e-tests-sample",
+      "description": "重要なE2Eテストをサンプル実行",
+      "type": "command",
+      "condition": "TEST_SCOPE.frontend_changed",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "npm run test:e2e -- --grep '@critical'"
+        ]
+      },
+      "linux": {
+        "command": "npm",
+        "args": [
+          "run",
+          "test:e2e",
+          "--",
+          "--grep",
+          "@critical"
+        ]
+      },
+      "continue_on_error": true,
+      "timeout_seconds": 600,
+      "success_message": "✅ E2Eテスト（サンプル）成功",
+      "error_message": "⚠️ E2Eテスト失敗 - UI変更の影響を確認してください"
+    },
+    {
+      "name": "coverage-check",
+      "description": "コードカバレッジをチェック",
+      "type": "command",
+      "condition": "TEST_SCOPE.backend_changed or TEST_SCOPE.models_changed",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "npm run test -- --coverage --coverageThreshold='{\"global\":{\"statements\":60}}'"
+        ]
+      },
+      "linux": {
+        "command": "npm",
+        "args": [
+          "run",
+          "test",
+          "--",
+          "--coverage",
+          "--coverageThreshold={\"global\":{\"statements\":60}}"
+        ]
+      },
+      "continue_on_error": true,
+      "warning_only": true,
+      "success_message": "✅ カバレッジ基準を満たしています",
+      "error_message": "⚠️ カバレッジが60%未満です。テストの追加を検討してください"
+    },
+    {
+      "name": "notify-agents",
+      "description": "他のエージェントに変更を通知",
+      "type": "message-passing",
+      "channel": "task-queue",
+      "message": {
+        "event": "code.committed",
+        "commit": "$COMMIT_INFO",
+        "changed_files": "$CHANGED_FILES",
+        "test_results": "$TEST_RESULTS",
+        "timestamp": "$TIMESTAMP"
+      },
+      "recipients": [
+        "all-agents"
+      ]
+    },
+    {
+      "name": "update-build-status",
+      "description": "ビルドステータスを更新",
+      "type": "script",
+      "action": "update-status-badge",
+      "output_file": "README.md"
+    },
+    {
+      "name": "success-summary",
+      "description": "テスト結果サマリーを表示",
+      "type": "notification",
+      "message": "✅ コミット後テスト完了\nコミット: $COMMIT_INFO\nテスト結果: $TEST_SUMMARY",
+      "level": "info"
+    }
+  ],
+
+  "reporting": {
+    "enabled": true,
+    "output_file": ".claude/hooks/logs/post-commit-YYYY-MM-DD.log",
+    "format": "json",
+    "include_timestamp": true,
+    "include_test_results": true,
+    "include_coverage_data": true
+  },
+
+  "performance": {
+    "parallel_execution": true,
+    "max_parallel_actions": 2,
+    "timeout_seconds": 600,
+    "background_execution": true,
+    "notify_on_completion": true
+  },
+
+  "failure_handling": {
+    "on_test_failure": {
+      "action": "notify",
+      "create_issue": false,
+      "rollback_commit": false,
+      "notify_team": true
+    },
+    "on_coverage_failure": {
+      "action": "warn",
+      "block_push": false
+    }
+  },
+
+  "bypass": {
+    "enabled": true,
+    "env_variable": "SKIP_POST_COMMIT",
+    "commit_message_flag": "[skip-tests]",
+    "warning_message": "⚠️ post-commitテストがスキップされました。"
+  }
+}

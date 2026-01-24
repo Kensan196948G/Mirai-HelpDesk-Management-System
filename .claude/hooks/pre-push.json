@@ -1,0 +1,266 @@
+{
+  "name": "pre-push",
+  "description": "プッシュ前のコンフリクト検出 - 並列開発によるコンフリクトを事前に検出",
+  "enabled": true,
+  "event": "pre-push",
+  "version": "1.0.0",
+
+  "conditions": {
+    "branches": [
+      "main",
+      "master",
+      "develop",
+      "feature/*",
+      "hotfix/*"
+    ],
+    "skip_branches": [
+      "tmp/*",
+      "experimental/*"
+    ]
+  },
+
+  "actions": [
+    {
+      "name": "get-remote-info",
+      "description": "リモート情報を取得",
+      "type": "command",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "git remote get-url origin"
+        ]
+      },
+      "linux": {
+        "command": "git",
+        "args": [
+          "remote",
+          "get-url",
+          "origin"
+        ]
+      },
+      "output_variable": "REMOTE_URL",
+      "continue_on_error": false
+    },
+    {
+      "name": "fetch-remote",
+      "description": "リモートの最新情報を取得",
+      "type": "command",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "git fetch origin"
+        ]
+      },
+      "linux": {
+        "command": "git",
+        "args": [
+          "fetch",
+          "origin"
+        ]
+      },
+      "continue_on_error": false,
+      "timeout_seconds": 60
+    },
+    {
+      "name": "check-divergence",
+      "description": "リモートとの差分をチェック",
+      "type": "command",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "git rev-list --left-right --count origin/$(git branch --show-current)...HEAD"
+        ]
+      },
+      "linux": {
+        "command": "bash",
+        "args": [
+          "-c",
+          "git rev-list --left-right --count origin/$(git branch --show-current)...HEAD"
+        ]
+      },
+      "output_variable": "DIVERGENCE",
+      "continue_on_error": true
+    },
+    {
+      "name": "detect-conflicts",
+      "description": "潜在的なコンフリクトを検出",
+      "type": "script",
+      "algorithm": "semantic-diff",
+      "check_types": [
+        "file_conflicts",
+        "import_conflicts",
+        "schema_conflicts",
+        "api_interface_conflicts"
+      ],
+      "output_variable": "CONFLICTS_DETECTED"
+    },
+    {
+      "name": "check-agent-locks",
+      "description": "他のエージェントのファイルロックをチェック",
+      "type": "script",
+      "lock_directory": ".claude/agents/locks/",
+      "action": "check_active_locks",
+      "output_variable": "ACTIVE_LOCKS"
+    },
+    {
+      "name": "verify-no-locks",
+      "description": "アクティブなロックがないことを確認",
+      "type": "condition",
+      "condition": "ACTIVE_LOCKS.count == 0",
+      "continue_on_error": false,
+      "error_message": "❌ 他のエージェントがファイルをロックしています。完了を待ってから再度プッシュしてください。\nロック中のファイル: $ACTIVE_LOCKS.files"
+    },
+    {
+      "name": "check-parallel-development-messages",
+      "description": "並列開発メッセージをチェック",
+      "type": "script",
+      "message_directory": ".claude/agents/messages/",
+      "action": "check_pending_messages",
+      "output_variable": "PENDING_MESSAGES"
+    },
+    {
+      "name": "run-all-tests",
+      "description": "全テストスイートを実行",
+      "type": "command",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "npm run test"
+        ]
+      },
+      "linux": {
+        "command": "npm",
+        "args": [
+          "run",
+          "test"
+        ]
+      },
+      "continue_on_error": false,
+      "timeout_seconds": 300,
+      "error_message": "❌ テストが失敗しました。修正してから再度プッシュしてください。"
+    },
+    {
+      "name": "run-build",
+      "description": "ビルドが成功することを確認",
+      "type": "command",
+      "condition": "BRANCH is main or master",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "npm run build"
+        ]
+      },
+      "linux": {
+        "command": "npm",
+        "args": [
+          "run",
+          "build"
+        ]
+      },
+      "continue_on_error": false,
+      "timeout_seconds": 180,
+      "error_message": "❌ ビルドが失敗しました。修正してから再度プッシュしてください。"
+    },
+    {
+      "name": "check-commit-messages",
+      "description": "コミットメッセージの形式をチェック",
+      "type": "script",
+      "format": "conventional-commits",
+      "allow_merge_commits": true,
+      "warning_only": true,
+      "error_message": "⚠️ コミットメッセージがConventional Commits形式に従っていません。"
+    },
+    {
+      "name": "check-branch-protection",
+      "description": "ブランチ保護ルールをチェック",
+      "type": "script",
+      "protected_branches": [
+        "main",
+        "master"
+      ],
+      "require_pr": true,
+      "continue_on_error": false,
+      "error_message": "❌ 保護ブランチへの直接プッシュは禁止されています。プルリクエストを作成してください。"
+    },
+    {
+      "name": "notify-push-intent",
+      "description": "プッシュ意図を他のエージェントに通知",
+      "type": "message-passing",
+      "channel": "task-queue",
+      "message": {
+        "event": "code.push_intent",
+        "branch": "$CURRENT_BRANCH",
+        "commits": "$COMMIT_COUNT",
+        "timestamp": "$TIMESTAMP"
+      },
+      "recipients": [
+        "all-agents"
+      ],
+      "wait_for_acknowledgment": true,
+      "timeout_seconds": 10
+    },
+    {
+      "name": "final-conflict-check",
+      "description": "最終コンフリクトチェック",
+      "type": "script",
+      "algorithm": "three-way-merge-simulation",
+      "compare_with": "origin/$CURRENT_BRANCH",
+      "output_variable": "FINAL_CONFLICTS"
+    },
+    {
+      "name": "verify-no-conflicts",
+      "description": "コンフリクトがないことを確認",
+      "type": "condition",
+      "condition": "FINAL_CONFLICTS.count == 0",
+      "continue_on_error": false,
+      "error_message": "❌ マージコンフリクトが検出されました。\n詳細: $FINAL_CONFLICTS.details\n\nリモートの変更をプルして解決してから再度プッシュしてください。"
+    },
+    {
+      "name": "success-notification",
+      "description": "プッシュ準備完了通知",
+      "type": "notification",
+      "message": "✅ プッシュ前チェック完了！プッシュを続行します。\nブランチ: $CURRENT_BRANCH\nコミット数: $COMMIT_COUNT",
+      "level": "success"
+    }
+  ],
+
+  "reporting": {
+    "enabled": true,
+    "output_file": ".claude/hooks/logs/pre-push-YYYY-MM-DD.log",
+    "format": "json",
+    "include_timestamp": true,
+    "include_conflict_details": true,
+    "include_test_results": true
+  },
+
+  "performance": {
+    "parallel_execution": true,
+    "max_parallel_actions": 3,
+    "timeout_seconds": 600,
+    "cache_results": false
+  },
+
+  "conflict_resolution": {
+    "auto_resolve": false,
+    "notify_on_conflict": true,
+    "suggest_resolution": true,
+    "block_on_conflict": true
+  },
+
+  "bypass": {
+    "enabled": true,
+    "env_variable": "SKIP_PRE_PUSH",
+    "git_push_flag": "--no-verify",
+    "warning_message": "⚠️ pre-pushフックがスキップされました。コンフリクトに注意してください。"
+  }
+}

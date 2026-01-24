@@ -1,0 +1,245 @@
+{
+  "name": "workflow-gates",
+  "description": "工程強制Hooks - SubAgent間の自動遷移とゲート制御",
+  "enabled": true,
+  "version": "1.0.0",
+
+  "philosophy": "工程スキップ禁止、Hookを通らない遷移は禁止、レビューFAILは必ず差し戻す",
+
+  "workflow_definition": {
+    "phases": [
+      {
+        "phase": 1,
+        "name": "要件定義",
+        "agent": "spec-planner",
+        "gate": "on-spec-complete"
+      },
+      {
+        "phase": 2,
+        "name": "設計レビュー",
+        "agent": "arch-reviewer",
+        "gate": "on-arch-approved"
+      },
+      {
+        "phase": 3,
+        "name": "実装",
+        "agent": "code-implementer",
+        "gate": "on-implementation-complete"
+      },
+      {
+        "phase": 4,
+        "name": "コードレビュー",
+        "agent": "code-reviewer",
+        "gate": "on-code-review-result"
+      },
+      {
+        "phase": 5,
+        "name": "テスト設計",
+        "agent": "test-designer",
+        "gate": "on-test-design-complete"
+      },
+      {
+        "phase": 6,
+        "name": "テストレビュー",
+        "agent": "test-reviewer",
+        "gate": "on-test-review-result"
+      },
+      {
+        "phase": 7,
+        "name": "CI/リリース判定",
+        "agent": "ci-specialist",
+        "gate": "on-release-decision"
+      }
+    ],
+    "skip_protection": {
+      "enabled": true,
+      "enforce_sequential": true,
+      "allow_skip_only_if": "ユーザーが明示的に [skip-gate:phase-N] を指定"
+    }
+  },
+
+  "hooks": {
+    "on-spec-complete": {
+      "trigger": "spec-planner が specs/* を出力完了",
+      "action": "auto_start",
+      "target_agent": "arch-reviewer",
+      "inputs": ["specs/*"],
+      "wait_for_completion": true,
+      "timeout_minutes": 30
+    },
+
+    "on-arch-approved": {
+      "trigger": "arch-reviewer が PASS を返却",
+      "action": "auto_start",
+      "target_agent": "code-implementer",
+      "inputs": ["design/*", "specs/*"],
+      "wait_for_completion": true,
+      "timeout_hours": 3,
+      "conditions": {
+        "PASS": "proceed",
+        "FAIL": "send_back_to:spec-planner",
+        "PASS_WITH_WARNINGS": "notify_user_then_proceed"
+      }
+    },
+
+    "on-implementation-complete": {
+      "trigger": "code-implementer が「実装完了」と宣言",
+      "action": "auto_start",
+      "target_agent": "code-reviewer",
+      "inputs": ["src/**/*", "specs/*", "design/*"],
+      "wait_for_completion": true,
+      "timeout_minutes": 20
+    },
+
+    "on-code-review-result": {
+      "trigger": "code-reviewer がレビュー結果を出力",
+      "action": "conditional",
+      "conditions": {
+        "FAIL": {
+          "action": "send_back",
+          "target": "code-implementer",
+          "message": "❌ コードレビューFAIL: 修正が必要です",
+          "include_review_details": true,
+          "block_next_phase": true,
+          "require_resubmit": true
+        },
+        "PASS_WITH_WARNINGS": {
+          "action": "notify_and_ask",
+          "message": "⚠️ 警告があります。テスト設計に進みますか？",
+          "target_on_approval": "test-designer",
+          "target_on_reject": "code-implementer",
+          "default_action": "proceed_after_5sec"
+        },
+        "PASS": {
+          "action": "auto_start",
+          "target": "test-designer",
+          "inputs": ["src/**/*", "specs/*"],
+          "message": "✅ コードレビューPASS: テスト設計に進みます"
+        }
+      }
+    },
+
+    "on-test-design-complete": {
+      "trigger": "test-designer が tests/* を出力完了",
+      "action": "auto_start",
+      "target_agent": "test-reviewer",
+      "inputs": ["tests/**/*", "specs/*", "src/**/*"],
+      "wait_for_completion": true,
+      "timeout_minutes": 15
+    },
+
+    "on-test-review-result": {
+      "trigger": "test-reviewer がレビュー結果を出力",
+      "action": "conditional",
+      "conditions": {
+        "FAIL": {
+          "action": "send_back",
+          "target": "test-designer",
+          "message": "❌ テストレビューFAIL: テスト網羅性が不十分です",
+          "block_next_phase": true
+        },
+        "PASS_WITH_WARNINGS": {
+          "action": "notify_and_ask",
+          "message": "⚠️ テストカバレッジが目標未達です。CI/リリース判定に進みますか？",
+          "target_on_approval": "ci-specialist",
+          "target_on_reject": "test-designer"
+        },
+        "PASS": {
+          "action": "auto_start",
+          "target": "ci-specialist",
+          "inputs": ["tests/**/*", "src/**/*", "specs/*"],
+          "message": "✅ テストレビューPASS: CI/リリース判定に進みます"
+        }
+      }
+    },
+
+    "on-release-decision": {
+      "trigger": "ci-specialist がGO/NO-GO判定を出力",
+      "action": "conditional",
+      "conditions": {
+        "GO": {
+          "actions": [
+            "create_release_tag",
+            "generate_changelog",
+            "deploy_to_production",
+            "notify_stakeholders"
+          ],
+          "require_manual_approval": true,
+          "approval_roles": ["Manager", "Approver"]
+        },
+        "NO_GO": {
+          "actions": [
+            "block_release",
+            "create_issue_tracker",
+            "notify_team",
+            "escalate_to_spec_planner"
+          ],
+          "mandatory_fix_before_retry": true
+        }
+      }
+    }
+  },
+
+  "parallel_development_rules": {
+    "functional_agents": {
+      "description": "機能領域別エージェント（agent-1～7）との連携",
+      "rule": "code-implementerの指示の下、functional agentsが並列実装可能",
+      "coordination": {
+        "code-implementer": "全体方針・インターフェース定義",
+        "agent-6-database": "Database実装",
+        "agent-2-backend-models": "Models/Services実装",
+        "agent-1-backend-api": "API実装",
+        "agent-4-frontend-components": "コンポーネント実装",
+        "agent-5-frontend-services": "サービス実装",
+        "agent-3-frontend-pages": "ページ実装"
+      },
+      "conflict_prevention": "同一ファイルへの同時書き込み禁止",
+      "shared_config": "config/* に集約",
+      "escalation": "競合発生時は spec-planner に強制エスカレーション"
+    }
+  },
+
+  "enforcement": {
+    "phase_skip_protection": {
+      "enabled": true,
+      "enforce": "sequential",
+      "exception_handling": "ユーザーが [skip-gate:phase-N] を明示的に指定した場合のみ許可"
+    },
+    "review_bypass_protection": {
+      "enabled": true,
+      "block_conditions": [
+        "code-reviewer が FAIL を返却した場合、test-designer への遷移をブロック",
+        "test-reviewer が FAIL を返却した場合、ci-specialist への遷移をブロック"
+      ]
+    },
+    "mandatory_fixes": {
+      "enabled": true,
+      "rule": "FAILから復帰するには、該当エージェントが再実行し、PASSを取得する必要がある"
+    }
+  },
+
+  "monitoring": {
+    "enabled": true,
+    "track_metrics": [
+      "各フェーズの所要時間",
+      "レビューFAIL率",
+      "差し戻し回数",
+      "品質ゲート通過率",
+      "リリース頻度"
+    ],
+    "log_directory": ".claude/workflow-agents/logs/",
+    "report_generation": "週次レポート自動生成"
+  },
+
+  "reporting": {
+    "enabled": true,
+    "output_directory": ".claude/workflow-agents/reports/",
+    "formats": ["json", "markdown"],
+    "include": [
+      "ワークフロー実行履歴",
+      "ゲート判定結果",
+      "品質メトリクス",
+      "改善提案"
+    ]
+  }
+}

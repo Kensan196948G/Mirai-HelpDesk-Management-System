@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirai HelpDesk - マルチAI統合版</title>
+    <style>
+        :root {
+            --primary: #1890ff;
+            --primary-dark: #0050b3;
+            --success: #52c41a;
+            --warning: #faad14;
+            --error: #f5222d;
+            --gray-50: #fafafa;
+            --gray-100: #f5f5f5;
+            --gray-200: #e8e8e8;
+            --gray-300: #d9d9d9;
+            --gray-500: #8c8c8c;
+            --gray-600: #595959;
+            --gray-800: #262626;
+            --sidebar-bg: #ffffff;
+            --sidebar-hover: #f0f7ff;
+            --sidebar-active: #e6f7ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .app-container { display: flex; min-height: 100vh; }
+
+        /* サイドバー - 明るい色 */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { font-size: 32px; }
+        .sidebar-header h1 { font-size: 20px; font-weight: 600; }
+        .subtitle { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+
+        .sidebar-nav { padding: 16px 12px; }
+
+        /* アコーディオン */
+        .nav-section {
+            margin-bottom: 8px;
+        }
+
+        .nav-section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--gray-600);
+            transition: all 0.2s;
+        }
+
+        .nav-section-title:hover {
+            background: var(--gray-100);
+        }
+
+        .nav-section-title .icon {
+            transition: transform 0.2s;
+        }
+
+        .nav-section.open .nav-section-title .icon {
+            transform: rotate(90deg);
+        }
+
+        .nav-section-items {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding-left: 12px;
+        }
+
+        .nav-section.open .nav-section-items {
+            max-height: 500px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            color: var(--gray-600);
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 4px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-active);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-icon { font-size: 18px; }
+        .nav-label { flex: 1; }
+        .badge {
+            background: var(--error);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .page-title { font-size: 24px; font-weight: 600; }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .user-menu:hover { background: var(--gray-100); }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), #0050b3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-name { font-size: 14px; font-weight: 500; }
+        .user-role { font-size: 12px; color: var(--gray-500); }
+
+        .content { flex: 1; padding: 24px 32px; }
+
+        /* カード */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-title { font-size: 18px; font-weight: 600; }
+
+        /* 統計グリッド */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover { transform: translateY(-2px); }
+
+        .stat-label { font-size: 14px; color: var(--gray-500); margin-bottom: 8px; }
+        .stat-value { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+        .stat-trend { font-size: 12px; color: var(--success); }
+
+        /* テーブル */
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: var(--gray-50);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--gray-600);
+            border-bottom: 2px solid var(--gray-200);
+        }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--gray-200); font-size: 14px; }
+        tr:hover { background: var(--gray-50); }
+
+        /* タグ */
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .tag-p1 { background: #fff1f0; color: #cf1322; }
+        .tag-p2 { background: #fff7e6; color: #d46b08; }
+        .tag-p3 { background: #e6f7ff; color: #0958d9; }
+        .tag-p4 { background: var(--gray-100); color: var(--gray-600); }
+        .tag-ai { background: #f9f0ff; color: #531dab; }
+
+        /* ボタン */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--error); color: white; }
+        .btn-secondary { background: var(--gray-200); color: var(--gray-700); }
+
+        /* AI Panel */
+        .ai-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 32px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .ai-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .ai-option {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .ai-option:hover { background: rgba(255,255,255,0.25); }
+        .ai-option.selected { background: rgba(255,255,255,0.35); border-color: white; }
+
+        .ai-option-icon { font-size: 40px; margin-bottom: 12px; }
+        .ai-option-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+        .ai-option-desc { font-size: 12px; opacity: 0.9; }
+
+        .query-input-wrapper {
+            background: rgba(255,255,255,0.95);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .query-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .subagent-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .subagent-item {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .subagent-item.processing {
+            background: rgba(255,255,255,0.2);
+            animation: pulse 1.5s infinite;
+        }
+
+        .subagent-item.completed {
+            background: rgba(82,196,26,0.25);
+            border-color: var(--success);
+        }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        .subagent-icon { font-size: 20px; margin-bottom: 4px; }
+
+        .result-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .quality-score {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .score-item { text-align: center; }
+        .score-value { font-size: 36px; font-weight: 700; color: var(--primary); }
+        .score-label { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--gray-300);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .hidden { display: none !important; }
+
+        /* モーダル */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            padding: 40px;
+        }
+
+        .modal-overlay.show { display: flex; align-items: center; justify-content: center; }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .modal-body { padding: 24px; }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* フォーム */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+
+        select.form-control { cursor: pointer; }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        .btn-group { display: flex; gap: 8px; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- サイドバー -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🤖</span>
+                    <h1>Mirai HelpDesk</h1>
+                </div>
+                <p class="subtitle">マルチAI統合版</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- メインメニュー -->
+                <div class="nav-section open">
+                    <div class="nav-section-title" onclick="toggleSection(this)">
+                        <span>📋 メインメニュー</span>
+                        <span class="icon">▶</span>
+                    </div>
+                    <div class="nav-section-items">
+                        <div class="nav-item active" onclick="navigate('dashboard')">
+                            <span class="nav-icon">📊</span>
+                            <span class="nav-label">ダッシュボード</span>
+                        </div>
+                        <div class="nav-item" onclick="navigate('my-tickets')">
+                            <span class="nav-icon">📋</span>
+                            <span class="nav-label">マイチケット</span>
+                            <span class="badge">5</span>
+                        </div>
+                        <div class="nav-item" onclick="navigate('create-ticket')">
+                            <span class="nav-icon">➕</span>
+                            <span class="nav-label">新規チケット作成</span>
+                        </div>
+                        <div class="nav-item" onclick="navigate('helpdesk-list')">
+                            <span class="nav-icon">📑</span>
+                            <span class="nav-label">ヘルプデスク一覧</span>
+                            <span class="badge">50</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- サポート -->
+                <div class="nav-section open">
+                    <div class="nav-section-title" onclick="toggleSection(this)">
+                        <span>🤖 サポート</span>
+                        <span class="icon">▶</span>
+                    </div>
+                    <div class="nav-section-items">
+                        <div class="nav-item" onclick="navigate('knowledge')">
+                            <span class="nav-icon">📚</span>
+                            <span class="nav-label">ナレッジベース</span>
+                            <span class="badge">30</span>
+                        </div>
+                        <div class="nav-item" onclick="navigate('ai-assistant')">
+                            <span class="nav-icon">🤖</span>
+                            <span class="nav-label">AIアシスタント</span>
+                            <span class="badge">NEW</span>
+                        </div>
+                        <div class="nav-item" onclick="navigate('ai-knowledge')">
+                            <span class="nav-icon">✨</span>
+                            <span class="nav-label">AI自動生成</span>
+                            <span class="badge">AI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- システム管理 -->
+                <div class="nav-section open">
+                    <div class="nav-section-title" onclick="toggleSection(this)">
+                        <span>⚙️ システム管理</span>
+                        <span class="icon">▶</span>
+                    </div>
+                    <div class="nav-section-items">
+                        <div class="nav-item" onclick="navigate('approvals')">
+                            <span class="nav-icon">✅</span>
+                            <span class="nav-label">承認管理</span>
+                            <span class="badge">3</span>
+                        </div>
+                        <div class="nav-item" onclick="navigate('m365')">
+                            <span class="nav-icon">🔧</span>
+                            <span class="nav-label">M365管理</span>
+                        </div>
+                        <div class="nav-item" onclick="navigate('settings')">
+                            <span class="nav-icon">⚙️</span>
+                            <span class="nav-label">システム設定</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div style="padding: 16px; border-top: 1px solid var(--gray-200); background: var(--gray-50);">
+                <div style="font-size: 11px; color: var(--gray-500); margin-bottom: 8px;">AI Status</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span style="font-size: 10px; padding: 4px 8px; background: #f6ffed; color: #389e0d; border-radius: 4px;">● Claude</span>
+                    <span style="font-size: 10px; padding: 4px 8px; background: #f6ffed; color: #389e0d; border-radius: 4px;">● Gemini</span>
+                    <span style="font-size: 10px; padding: 4px 8px; background: #f6ffed; color: #389e0d; border-radius: 4px;">● Perplexity</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <header class="header">
+                <div>
+                    <h2 class="page-title" id="page-title">ダッシュボード</h2>
+                </div>
+                <div class="user-menu">
+                    <div class="user-avatar">佐</div>
+                    <div>
+                        <div class="user-name">佐藤花子</div>
+                        <div class="user-role">Agent</div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" id="main-content">
+                <!-- ページコンテンツ -->
+            </div>
+        </main>
+    </div>
+
+    <!-- モーダル -->
+    <div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modal-title">詳細</h3>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/sample-data.js"></script>
+    <script>
+        // アコーディオントグル
+        function toggleSection(el) {
+            el.parentElement.classList.toggle('open');
+        }
+
+        // ナビゲーション
+        function navigate(page) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.nav-item').classList.add('active');
+
+            const titles = {
+                'dashboard': 'ダッシュボード',
+                'my-tickets': 'マイチケット',
+                'create-ticket': '新規チケット作成',
+                'helpdesk-list': 'ヘルプデスク一覧',
+                'knowledge': 'ナレッジベース',
+                'ai-assistant': 'AIアシスタント',
+                'ai-knowledge': 'AI自動生成ナレッジ',
+                'approvals': '承認管理',
+                'm365': 'M365管理',
+                'settings': 'システム設定',
+            };
+
+            document.getElementById('page-title').textContent = titles[page] || page;
+
+            const content = document.getElementById('main-content');
+            content.innerHTML = '<div style="text-align:center;padding:40px"><div class="loading"></div></div>';
+
+            setTimeout(() => {
+                try {
+                    content.innerHTML = renderPage(page);
+                } catch (error) {
+                    content.innerHTML = `<div class="card"><p style="color:var(--error)">エラー: ${error.message}</p></div>`;
+                }
+            }, 300);
+        }
+
+        // ページレンダリング
+        function renderPage(page) {
+            if (page === 'dashboard') return renderDashboard();
+            if (page === 'my-tickets') return renderMyTickets();
+            if (page === 'create-ticket') return renderCreateTicket();
+            if (page === 'helpdesk-list') return renderHelpdeskList();
+            if (page === 'ai-assistant') return renderAIAssistant();
+            if (page === 'ai-knowledge') return renderAIKnowledge();
+            if (page === 'knowledge') return renderKnowledge();
+            if (page === 'approvals') return renderApprovals();
+            if (page === 'm365') return renderM365();
+            if (page === 'settings') return renderSettings();
+            return '<div class="card"><h3>ページが見つかりません</h3></div>';
+        }
+
+        // ダッシュボード
+        function renderDashboard() {
+            const total = SAMPLE_TICKETS.length;
+            const newCount = SAMPLE_TICKETS.filter(t => t.status === 'New').length;
+            const progressCount = SAMPLE_TICKETS.filter(t => t.status === 'In Progress').length;
+            const resolvedCount = SAMPLE_TICKETS.filter(t => t.status === 'Resolved').length;
+            const aiCount = SAMPLE_TICKETS.filter(t => t.ai_processed).length;
+
+            return `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">全チケット</div>
+                        <div class="stat-value" style="color:var(--primary)">${total}</div>
+                        <div class="stat-trend">📈 前週比 +12%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">新規</div>
+                        <div class="stat-value" style="color:var(--warning)">${newCount}</div>
+                        <div class="stat-trend">🔥 対応待ち</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">対応中</div>
+                        <div class="stat-value" style="color:#722ed1">${progressCount}</div>
+                        <div class="stat-trend">⚡ 処理中</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">解決済み</div>
+                        <div class="stat-value" style="color:var(--success)">${resolvedCount}</div>
+                        <div class="stat-trend">✅ 完了</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🤖 マルチAI統計</h3>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+                        <div style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:24px;border-radius:12px;text-align:center">
+                            <div style="font-size:14px;opacity:0.9;margin-bottom:8px">AI処理済みチケット</div>
+                            <div style="font-size:40px;font-weight:700">${aiCount}</div>
+                            <div style="font-size:13px;opacity:0.9">総チケットの${Math.round(aiCount/total*100)}%</div>
+                        </div>
+                        <div style="background:linear-gradient(135deg,#f093fb,#f5576c);color:white;padding:24px;border-radius:12px;text-align:center">
+                            <div style="font-size:14px;opacity:0.9;margin-bottom:8px">AI生成ナレッジ</div>
+                            <div style="font-size:40px;font-weight:700">18</div>
+                            <div style="font-size:13px;opacity:0.9">品質平均 92%</div>
+                        </div>
+                        <div style="background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;padding:24px;border-radius:12px;text-align:center">
+                            <div style="font-size:14px;opacity:0.9;margin-bottom:8px">自動化成功率</div>
+                            <div style="font-size:40px;font-weight:700">89%</div>
+                            <div style="font-size:13px;opacity:0.9">平均 2.4秒</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">最近のチケット</h3>
+                        <button class="btn btn-primary" onclick="navigate('helpdesk-list')">すべて表示</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>#</th><th>件名</th><th>優先度</th><th>ステータス</th><th>ITSM</th><th>AI</th><th>作成日時</th></tr>
+                        </thead>
+                        <tbody>
+                            ${SAMPLE_TICKETS.slice(0,10).map(t => `
+                                <tr onclick="viewTicketDetail('${t.ticket_id}')">
+                                    <td>#${t.ticket_number}</td>
+                                    <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis">${t.subject}</td>
+                                    <td><span class="tag tag-${t.priority.toLowerCase()}">${t.priority}</span></td>
+                                    <td><span class="tag">${t.status}</span></td>
+                                    <td><span class="tag">${ITSM_TYPES[t.itsm_type].icon}</span></td>
+                                    <td>${t.ai_processed ? '🤖' : '-'}</td>
+                                    <td style="font-size:12px">${new Date(t.created_at).toLocaleString('ja-JP', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // マイチケット
+        function renderMyTickets() {
+            const myTickets = SAMPLE_TICKETS.filter(t => t.requester_id === 'u1').slice(0, 20);
+
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">マイチケット（${myTickets.length}件）</h3>
+                        <button class="btn btn-primary" onclick="navigate('create-ticket')">➕ 新規作成</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>#</th><th>件名</th><th>優先度</th><th>ステータス</th><th>担当者</th><th>作成日時</th><th>操作</th></tr>
+                        </thead>
+                        <tbody>
+                            ${myTickets.map(t => `
+                                <tr>
+                                    <td>#${t.ticket_number}</td>
+                                    <td>${t.subject}</td>
+                                    <td><span class="tag tag-${t.priority.toLowerCase()}">${t.priority}</span></td>
+                                    <td><span class="tag">${t.status}</span></td>
+                                    <td>${t.assignee_id ? SAMPLE_USERS.find(u => u.user_id === t.assignee_id)?.display_name || '-' : '未割当'}</td>
+                                    <td style="font-size:12px">${new Date(t.created_at).toLocaleString('ja-JP')}</td>
+                                    <td>
+                                        <button class="btn btn-primary" style="padding:6px 12px;font-size:13px" onclick="viewTicketDetail('${t.ticket_id}')">詳細</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // 新規チケット作成
+        function renderCreateTicket() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">新規チケット作成</h3>
+                    </div>
+                    <form onsubmit="createTicket(event)">
+                        <div class="form-group">
+                            <label class="form-label">種別 *</label>
+                            <select class="form-control" id="type" required>
+                                <option value="incident">🚨 障害</option>
+                                <option value="service_request">📋 サービス要求</option>
+                                <option value="change">🔄 変更</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">カテゴリー</label>
+                            <select class="form-control" id="category">
+                                <option value="">選択してください</option>
+                                <option value="hardware">ハードウェア</option>
+                                <option value="software">ソフトウェア</option>
+                                <option value="m365">Microsoft 365</option>
+                                <option value="network">ネットワーク</option>
+                                <option value="account">アカウント管理</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">タイトル *</label>
+                            <input type="text" class="form-control" id="subject" placeholder="例: PCが起動しません" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">概要説明 *</label>
+                            <textarea class="form-control" id="description" placeholder="問題の詳細を入力してください" required></textarea>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                            <div class="form-group">
+                                <label class="form-label">影響度 *</label>
+                                <select class="form-control" id="impact" required>
+                                    <option value="individual">個人</option>
+                                    <option value="department">部署</option>
+                                    <option value="company">全社</option>
+                                    <option value="external">対外影響</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">緊急度 *</label>
+                                <select class="form-control" id="urgency" required>
+                                    <option value="low">低</option>
+                                    <option value="medium" selected>中</option>
+                                    <option value="high">高</option>
+                                    <option value="critical">即時</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">作成</button>
+                            <button type="button" class="btn btn-secondary" onclick="navigate('my-tickets')">キャンセル</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        // ヘルプデスク一覧（詳細版）
+        function renderHelpdeskList() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">ヘルプデスク一覧（${SAMPLE_TICKETS.length}件）</h3>
+                        <div style="display:flex;gap:12px">
+                            <select class="form-control" style="width:200px" onchange="filterTickets()">
+                                <option value="">すべてのステータス</option>
+                                <option value="New">新規</option>
+                                <option value="In Progress">対応中</option>
+                                <option value="Resolved">解決済み</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="navigate('create-ticket')">➕ 新規作成</button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>カテゴリー</th>
+                                <th>タイトル</th>
+                                <th>概要説明</th>
+                                <th>解決方法</th>
+                                <th>状況</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${SAMPLE_TICKETS.map(t => `
+                                <tr>
+                                    <td>#${t.ticket_number}</td>
+                                    <td><span class="tag">${['ハードウェア','ソフトウェア','M365','ネットワーク'][t.ticket_number % 4]}</span></td>
+                                    <td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis">${t.subject}</td>
+                                    <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;font-size:13px;color:var(--gray-600)">${t.description}</td>
+                                    <td style="font-size:13px;color:var(--gray-600)">${t.resolved_at ? '解決済み' : '調査中'}</td>
+                                    <td><span class="tag">${t.status}</span></td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-primary" style="padding:6px 12px;font-size:13px" onclick="viewTicketDetail('${t.ticket_id}')">詳細</button>
+                                            <button class="btn btn-secondary" style="padding:6px 12px;font-size:13px" onclick="editTicket('${t.ticket_id}')">編集</button>
+                                            <button class="btn btn-danger" style="padding:6px 12px;font-size:13px" onclick="deleteTicket('${t.ticket_id}')">削除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // AIアシスタント
+        function renderAIAssistant() {
+            return `
+                <div class="ai-panel">
+                    <h2 style="margin-bottom:8px">🤖 マルチAIオーケストレーション</h2>
+                    <p style="opacity:0.9;margin-bottom:24px">Claude（統合）、Gemini（収集）、Perplexity（根拠）の3つのAIを組み合わせて最適な回答を生成</p>
+
+                    <div class="ai-selector">
+                        <div class="ai-option selected" onclick="toggleAI(this)">
+                            <div class="ai-option-icon">🧠</div>
+                            <div class="ai-option-name">Claude</div>
+                            <div class="ai-option-desc">一次判断・最終統合</div>
+                        </div>
+                        <div class="ai-option" onclick="toggleAI(this)">
+                            <div class="ai-option-icon">🔍</div>
+                            <div class="ai-option-name">Gemini</div>
+                            <div class="ai-option-desc">情報収集</div>
+                        </div>
+                        <div class="ai-option" onclick="toggleAI(this)">
+                            <div class="ai-option-icon">🌐</div>
+                            <div class="ai-option-name">Perplexity</div>
+                            <div class="ai-option-desc">根拠生成</div>
+                        </div>
+                    </div>
+
+                    <div class="query-input-wrapper">
+                        <label style="display:block;margin-bottom:8px;font-weight:600;color:var(--gray-800)">💬 問い合わせ内容</label>
+                        <textarea id="ai-query" class="query-input">PCが起動しません。どうすればいいですか？</textarea>
+                        <button class="btn btn-primary" onclick="processAI()" style="width:100%;margin-top:16px;padding:14px">
+                            🚀 マルチAI処理を実行（デモ）
+                        </button>
+                        <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.3);border-radius:4px;font-size:12px">
+                            💡 <strong>デモ:</strong> ボタンをクリックして、3つのAIと7つのSubAgentの並列処理を体験！
+                        </div>
+                    </div>
+
+                    <div style="margin-top:20px">
+                        <h4 style="margin-bottom:12px;font-size:14px">🎯 7つのSubAgent並列処理</h4>
+                        <div class="subagent-grid" id="subagent-grid">
+                            ${Object.entries(SUB_AGENTS).map(([k,a]) => `
+                                <div class="subagent-item" id="sub-${k}">
+                                    <div class="subagent-icon">${a.icon}</div>
+                                    <div style="font-weight:600;font-size:10px">${a.name.substring(0,10)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ai-result" class="hidden"></div>
+            `;
+        }
+
+        // AI自動生成ナレッジ
+        function renderAIKnowledge() {
+            const aiArticles = SAMPLE_KNOWLEDGE.filter(k => k.is_ai_generated);
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">✨ AI自動生成ナレッジ（${aiArticles.length}件）</h3>
+                        <button class="btn btn-primary">🤖 AIで新規作成</button>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+                        ${aiArticles.slice(0,12).map(k => `
+                            <div class="card" style="padding:16px;cursor:pointer" onclick="viewKnowledge('${k.article_id}')">
+                                <h4 style="font-size:15px;margin-bottom:12px">${k.title}</h4>
+                                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+                                    <span class="tag tag-ai">🤖 AI生成</span>
+                                    <span class="tag">品質: ${k.quality_score}%</span>
+                                    <span class="tag">👁️ ${k.view_count}</span>
+                                </div>
+                                <div style="font-size:11px;color:var(--gray-500);margin-top:8px">
+                                    SubAgents: ${k.subagents.join(', ')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ナレッジベース
+        function renderKnowledge() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📚 ナレッジベース（${SAMPLE_KNOWLEDGE.length}件）</h3>
+                        <input type="search" placeholder="🔍 検索..." class="form-control" style="width:300px">
+                    </div>
+                    <div style="display:grid;grid-template-columns:250px 1fr;gap:24px">
+                        <div>
+                            <h4 style="margin-bottom:16px;font-size:15px">カテゴリ</h4>
+                            ${['すべて','Microsoft 365','ハードウェア','ネットワーク','セキュリティ'].map(cat => `
+                                <div class="nav-item" style="margin-bottom:4px">📁 ${cat}</div>
+                            `).join('')}
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                            ${SAMPLE_KNOWLEDGE.slice(0,10).map(k => `
+                                <div class="card" style="padding:16px;cursor:pointer" onclick="viewKnowledge('${k.article_id}')">
+                                    <div style="font-size:32px;margin-bottom:12px">${k.is_ai_generated ? '🤖' : '📄'}</div>
+                                    <h4 style="font-size:16px;margin-bottom:8px">${k.title}</h4>
+                                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                        <span class="tag">${k.category}</span>
+                                        <span class="tag">👁️ ${k.view_count}</span>
+                                        ${k.is_ai_generated ? `<span class="tag tag-ai">AI</span>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 承認管理
+        function renderApprovals() {
+            const pending = SAMPLE_APPROVALS.filter(a => a.state === 'requested');
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">✅ 承認管理</h3>
+                        <span class="tag" style="background:var(--warning);color:white">${pending.length}件の承認待ち</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>チケット</th><th>依頼内容</th><th>依頼者</th><th>SOD検証</th><th>依頼日時</th><th>操作</th></tr>
+                        </thead>
+                        <tbody>
+                            ${pending.map(a => `
+                                <tr>
+                                    <td>#${a.ticket_number}</td>
+                                    <td>${a.description}</td>
+                                    <td>${a.requester} (${a.requester_role})</td>
+                                    <td><span class="tag" style="background:#f6ffed;color:#389e0d">✅ OK</span></td>
+                                    <td style="font-size:12px">${new Date(a.created_at).toLocaleString('ja-JP')}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-success" style="padding:6px 12px;font-size:13px" onclick="approve('${a.approval_id}')">✓ 承認</button>
+                                            <button class="btn btn-danger" style="padding:6px 12px;font-size:13px" onclick="reject('${a.approval_id}')">✗ 却下</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // M365管理
+        function renderM365() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🔧 M365操作管理</h3>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>タスクID</th><th>種別</th><th>対象UPN</th><th>承認状態</th><th>SOD検証</th><th>操作</th></tr>
+                        </thead>
+                        <tbody>
+                            ${SAMPLE_M365_TASKS.filter(t => t.state === 'pending').map(t => `
+                                <tr>
+                                    <td>${t.task_number}</td>
+                                    <td>${t.task_type}</td>
+                                    <td>${t.target_upn}</td>
+                                    <td><span class="tag" style="background:#f6ffed;color:#389e0d">✅ 承認済み</span></td>
+                                    <td><span class="tag" style="background:#f6ffed;color:#389e0d">✅ 承認者≠実施者</span></td>
+                                    <td><button class="btn btn-primary" style="padding:6px 12px;font-size:13px">🚀 実施</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // システム設定
+        function renderSettings() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">⚙️ システム設定</h3>
+                    </div>
+                    <div style="padding:20px">
+                        <h4 style="margin-bottom:16px">🤖 AI設定</h4>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+                            <div style="padding:16px;background:var(--gray-50);border-radius:8px">
+                                <label style="display:block;margin-bottom:8px;font-weight:600">Claude API Key</label>
+                                <input type="password" class="form-control" value="sk-ant-****" readonly>
+                            </div>
+                            <div style="padding:16px;background:var(--gray-50);border-radius:8px">
+                                <label style="display:block;margin-bottom:8px;font-weight:600">Gemini API Key</label>
+                                <input type="password" class="form-control" value="AIza****" readonly>
+                            </div>
+                        </div>
+                        <h4 style="margin-bottom:16px">🎯 品質保証設定</h4>
+                        <div style="padding:16px;background:var(--gray-50);border-radius:8px">
+                            <div style="margin-bottom:12px">
+                                <label><input type="checkbox" checked> Pre-Task Hook有効化</label>
+                            </div>
+                            <div style="margin-bottom:12px">
+                                <label><input type="checkbox" checked> Duplicate-Check Hook有効化（類似度閾値: 85%）</label>
+                            </div>
+                            <div style="margin-bottom:12px">
+                                <label><input type="checkbox" checked> Deviation-Check Hook有効化</label>
+                            </div>
+                            <div>
+                                <label><input type="checkbox" checked> Post-Task Hook有効化</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // チケット詳細表示
+        function viewTicketDetail(id) {
+            const ticket = SAMPLE_TICKETS.find(t => t.ticket_id === id);
+            if (!ticket) return;
+
+            document.getElementById('modal-title').textContent = `チケット詳細 #${ticket.ticket_number}`;
+            document.getElementById('modal-body').innerHTML = `
+                <h3 style="font-size:20px;margin-bottom:16px">${ticket.subject}</h3>
+                <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+                    <span class="tag tag-${ticket.priority.toLowerCase()}">${ticket.priority}</span>
+                    <span class="tag">${ticket.status}</span>
+                    <span class="tag">${ITSM_TYPES[ticket.itsm_type].icon} ${ITSM_TYPES[ticket.itsm_type].label}</span>
+                    ${ticket.ai_processed ? '<span class="tag tag-ai">🤖 AI処理済み</span>' : ''}
+                </div>
+                <div style="background:var(--gray-50);padding:20px;border-radius:8px;margin-bottom:20px">
+                    <h4 style="margin-bottom:12px">📝 詳細説明</h4>
+                    <p style="line-height:1.8">${ticket.description}</p>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:14px">
+                    <div><strong>カテゴリー:</strong> ${['ハードウェア','ソフトウェア','M365','ネットワーク'][ticket.ticket_number % 4]}</div>
+                    <div><strong>作成日時:</strong> ${new Date(ticket.created_at).toLocaleString('ja-JP')}</div>
+                    <div><strong>影響度:</strong> ${ticket.impact}</div>
+                    <div><strong>緊急度:</strong> ${ticket.urgency}</div>
+                </div>
+            `;
+            document.getElementById('modal-overlay').classList.add('show');
+        }
+
+        function viewKnowledge(id) {
+            const article = SAMPLE_KNOWLEDGE.find(k => k.article_id === id);
+            if (!article) return;
+
+            document.getElementById('modal-title').textContent = article.title;
+            document.getElementById('modal-body').innerHTML = `
+                <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+                    <span class="tag">${article.category}</span>
+                    <span class="tag">👁️ ${article.view_count}回</span>
+                    ${article.is_ai_generated ? `<span class="tag tag-ai">🤖 AI生成 - 品質${article.quality_score}%</span>` : ''}
+                </div>
+                <div style="background:var(--gray-50);padding:20px;border-radius:8px;line-height:1.8;white-space:pre-wrap">
+                    ${article.content}
+                </div>
+                ${article.is_ai_generated ? `
+                    <div style="margin-top:20px;padding:16px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-radius:8px">
+                        <h5 style="margin-bottom:8px">🎯 AI生成情報</h5>
+                        <div style="font-size:13px;opacity:0.95">
+                            <strong>SubAgents:</strong> ${article.subagents.join(', ')}<br>
+                            <strong>品質スコア:</strong> ${article.quality_score}%<br>
+                            <strong>検証:</strong> 4つのHooksで品質保証済み
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+            document.getElementById('modal-overlay').classList.add('show');
+        }
+
+        // AI処理
+        async function processAI() {
+            const query = document.getElementById('ai-query').value.trim();
+            if (!query) { alert('問い合わせ内容を入力してください'); return; }
+
+            Object.keys(SUB_AGENTS).forEach(k => document.getElementById('sub-'+k).className = 'subagent-item processing');
+
+            for (const k of Object.keys(SUB_AGENTS)) {
+                await new Promise(r => setTimeout(r, 300));
+                document.getElementById('sub-'+k).className = 'subagent-item completed';
+            }
+
+            const sample = SAMPLE_AI_RESULTS[query] || {
+                qualityScore: { overall: 88, completeness: 90, accuracy: 86, relevance: 88 },
+                answer: {
+                    summary: 'サンプル回答です。',
+                    technicalSummary: '技術者向け詳細説明です。',
+                    userSummary: '一般ユーザー向け説明です。',
+                    preventiveMeasures: '再発防止策を提示します。',
+                    improvementSuggestions: '自動化スクリプトの導入を推奨します。',
+                    automationPotential: 75
+                }
+            };
+
+            document.getElementById('ai-result').className = 'result-container';
+            document.getElementById('ai-result').innerHTML = `
+                <div class="card-header"><h3 class="card-title">🎯 マルチAI処理結果</h3></div>
+                <div class="quality-score">
+                    <div class="score-item"><div class="score-value">${sample.qualityScore.overall}%</div><div class="score-label">総合品質</div></div>
+                    <div class="score-item"><div class="score-value">${sample.qualityScore.completeness}%</div><div class="score-label">完全性</div></div>
+                    <div class="score-item"><div class="score-value">${sample.qualityScore.accuracy}%</div><div class="score-label">正確性</div></div>
+                    <div class="score-item"><div class="score-value">${sample.qualityScore.relevance}%</div><div class="score-label">関連性</div></div>
+                </div>
+                <div style="background:var(--gray-50);padding:20px;border-radius:8px;margin-bottom:16px;line-height:1.8;white-space:pre-wrap">
+                    <h4 style="margin-bottom:12px">💡 統合回答</h4>${sample.answer.summary}
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+                    <div style="background:var(--gray-50);padding:16px;border-radius:8px">
+                        <h5 style="font-size:14px;margin-bottom:8px">🔧 技術者向け</h5><p style="font-size:13px;line-height:1.6">${sample.answer.technicalSummary}</p>
+                    </div>
+                    <div style="background:var(--gray-50);padding:16px;border-radius:8px">
+                        <h5 style="font-size:14px;margin-bottom:8px">👤 一般向け</h5><p style="font-size:13px;line-height:1.6">${sample.answer.userSummary}</p>
+                    </div>
+                </div>
+                <div style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:20px;border-radius:8px">
+                    <h5 style="margin-bottom:8px">⚙️ 自動化提案</h5><p style="opacity:0.95;font-size:13px;margin-bottom:12px">${sample.answer.improvementSuggestions}</p>
+                    <div style="text-align:center;margin-top:12px"><div style="font-size:40px;font-weight:700">${sample.answer.automationPotential}%</div><div style="font-size:13px;opacity:0.9">自動化可能性</div></div>
+                </div>
+            `;
+        }
+
+        function toggleAI(el) { el.classList.toggle('selected'); }
+        function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+        function createTicket(e) { e.preventDefault(); alert('チケットを作成しました！\n\n優先度が自動計算され、SLA期限が設定されます。'); navigate('my-tickets'); }
+        function editTicket(id) { alert('チケット #' + id + ' の編集画面（実装中）'); }
+        function deleteTicket(id) { if(confirm('チケット #' + id + ' を削除しますか？')) alert('削除しました'); }
+        function approve(id) { alert('承認依頼 ' + id + ' を承認しました\n\nSOD検証: 承認者≠依頼者 ✅'); }
+        function reject(id) { alert('承認依頼 ' + id + ' を却下しました'); }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            navigate('dashboard');
+        });
+    </script>
+</body>
+</html>

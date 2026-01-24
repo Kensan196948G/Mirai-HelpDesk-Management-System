@@ -1,0 +1,176 @@
+{
+  "name": "test-designer",
+  "displayName": "テスト設計 Agent",
+  "role": "包括的なテスト設計",
+  "phase": "test-design",
+  "order": 5,
+  "version": "1.0.0",
+
+  "responsibility": {
+    "primary": "正常系・異常系・境界値・権限系を網羅したテストを設計する",
+    "areas": [
+      "正常系テスト設計",
+      "異常系テスト設計",
+      "境界値テスト設計",
+      "権限系テスト設計（RBAC）",
+      "監査・証跡テスト設計",
+      "SOD原則テスト設計"
+    ],
+    "critical_focus": [
+      "承認フロー",
+      "M365操作",
+      "監査ログ",
+      "権限チェック",
+      "SLA計算"
+    ]
+  },
+
+  "deliverables": {
+    "required": [
+      "tests/test-cases.md",
+      "tests/unit/**/*.test.js",
+      "tests/integration/**/*.test.js",
+      "tests/e2e/**/*.spec.js"
+    ],
+    "optional": [
+      "tests/coverage-report.md"
+    ]
+  },
+
+  "test_categories": {
+    "unit_tests": {
+      "description": "関数・メソッド単位のテスト",
+      "coverage_target": 80,
+      "must_test": [
+        "ビジネスロジック（Services）",
+        "バリデーション",
+        "ユーティリティ関数",
+        "優先度計算",
+        "SLA計算"
+      ]
+    },
+    "integration_tests": {
+      "description": "API統合テスト",
+      "coverage_target": 70,
+      "must_test": [
+        "全APIエンドポイント",
+        "認証フロー",
+        "承認ワークフロー",
+        "エラーハンドリング",
+        "トランザクション"
+      ]
+    },
+    "e2e_tests": {
+      "description": "エンドツーエンドテスト",
+      "coverage_target": "critical paths",
+      "must_test": [
+        "ログイン → チケット作成 → 承認 → 完了",
+        "M365操作フロー",
+        "権限エラーフロー",
+        "SLA期限超過フロー"
+      ]
+    },
+    "security_tests": {
+      "description": "セキュリティテスト",
+      "must_test": [
+        "認証バイパス試行",
+        "権限昇格試行",
+        "SQLインジェクション",
+        "XSS",
+        "CSRF"
+      ]
+    },
+    "audit_tests": {
+      "description": "監査証跡テスト",
+      "must_test": [
+        "ticket_history への自動記録",
+        "m365_execution_logs への実施記録",
+        "監査ログの削除不可検証",
+        "SOD原則違反の検出"
+      ]
+    }
+  },
+
+  "test_case_template": {
+    "unit": {
+      "structure": [
+        "describe('機能名')",
+        "  it('正常系: ...')",
+        "  it('異常系: ...')",
+        "  it('境界値: ...')"
+      ]
+    },
+    "integration": {
+      "structure": [
+        "describe('API: エンドポイント名')",
+        "  it('正常系: 200 OK')",
+        "  it('異常系: 400 Bad Request')",
+        "  it('異常系: 401 Unauthorized')",
+        "  it('異常系: 403 Forbidden')",
+        "  it('異常系: 404 Not Found')",
+        "  it('異常系: 500 Internal Server Error')"
+      ]
+    }
+  },
+
+  "coverage_requirements": {
+    "minimum": {
+      "statements": 60,
+      "branches": 50,
+      "functions": 60,
+      "lines": 60
+    },
+    "target": {
+      "statements": 80,
+      "branches": 70,
+      "functions": 80,
+      "lines": 80
+    },
+    "critical_paths": {
+      "statements": 100,
+      "branches": 100
+    }
+  },
+
+  "triggers": {
+    "start": [
+      "code-reviewer からのPASS通知",
+      "code-reviewer からのPASS_WITH_WARNINGS通知（ユーザー承認後）"
+    ],
+    "complete": [
+      "テストケース定義完了",
+      "test-reviewer へ通知"
+    ]
+  },
+
+  "hooks": {
+    "on_code_review_pass": {
+      "auto_execute": true,
+      "inputs": ["src/**/*", "specs/*"],
+      "timeout_minutes": 40
+    },
+    "on_test_design_complete": {
+      "action": "trigger_agent",
+      "target": "test-reviewer",
+      "input": ["tests/**/*", "specs/*"],
+      "auto_execute": true
+    }
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write(tests/**)",
+      "Edit(tests/**)",
+      "Grep",
+      "Glob",
+      "Bash(npm run test*)",
+      "mcp__playwright"
+    ],
+    "restricted": [
+      "Write(src/**)",
+      "Write(specs/**)",
+      "Write(design/**)"
+    ]
+  }
+}

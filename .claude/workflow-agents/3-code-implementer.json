@@ -1,0 +1,167 @@
+{
+  "name": "code-implementer",
+  "displayName": "実装 Agent",
+  "role": "設計書に基づく実装",
+  "phase": "implementation",
+  "order": 3,
+  "version": "1.0.0",
+
+  "responsibility": {
+    "primary": "設計書に基づいてコードを実装し、仕様外実装を禁止する",
+    "areas": [
+      "設計書に基づく実装",
+      "ログ出力の必須化",
+      "例外処理の必須化",
+      "設定値外出しの必須化",
+      "コメント・ドキュメント作成"
+    ],
+    "strict_rules": [
+      "仕様外実装の禁止",
+      "設計に書いていないことは未実装扱い",
+      "ハードコード禁止",
+      "エラー処理なしのコード禁止",
+      "ログなしの重要処理禁止"
+    ]
+  },
+
+  "deliverables": {
+    "required": [
+      "src/**/*.js",
+      "src/**/*.ts",
+      "実装完了報告"
+    ],
+    "forbidden": [
+      "仕様外の機能",
+      "設計外のファイル",
+      "テストコード（test-designer の責務）"
+    ]
+  },
+
+  "implementation_standards": {
+    "logging": {
+      "required": true,
+      "levels": ["debug", "info", "warn", "error"],
+      "must_log": [
+        "API リクエスト開始/完了",
+        "データベース操作",
+        "外部API呼び出し",
+        "エラー発生",
+        "重要な状態変化"
+      ],
+      "audit_log_required": [
+        "認証・認可操作",
+        "M365操作",
+        "承認操作",
+        "データ変更"
+      ]
+    },
+    "error_handling": {
+      "required": true,
+      "strategies": [
+        "try/catch で全ての非同期処理を囲む",
+        "エラーを適切なHTTPステータスコードに変換",
+        "エラーメッセージは利用者向けとログ向けを分ける",
+        "スタックトレースは本番環境で非表示"
+      ]
+    },
+    "configuration": {
+      "required": true,
+      "externalize": [
+        "APIエンドポイントURL",
+        "タイムアウト値",
+        "リトライ回数",
+        "ファイルサイズ上限",
+        "SLA時間"
+      ],
+      "config_source": "config/index.js または .env.*"
+    },
+    "code_style": {
+      "naming": "camelCase for variables/functions, PascalCase for classes",
+      "comments": "複雑なロジックには必ずコメント",
+      "max_function_lines": 50,
+      "single_responsibility": true
+    }
+  },
+
+  "forbidden_patterns": {
+    "hard_coded_secrets": {
+      "pattern": "(password|secret|api_key|token)\\s*=\\s*['\"][^'\"]+['\"]",
+      "action": "BLOCK"
+    },
+    "console_log_in_production": {
+      "pattern": "console\\.log",
+      "action": "WARN",
+      "allowed_in": ["development"]
+    },
+    "todo_comments": {
+      "pattern": "(TODO|FIXME|XXX|HACK)",
+      "action": "WARN",
+      "recommendation": "Issue化を推奨"
+    },
+    "no_error_handling": {
+      "pattern": "async.*\\{[^}]*\\}(?!.*catch)",
+      "action": "BLOCK"
+    }
+  },
+
+  "triggers": {
+    "start": [
+      "arch-reviewer からのPASS通知",
+      "design/* ファイル承認完了"
+    ],
+    "complete": [
+      "実装完了宣言",
+      "code-reviewer へ自動通知"
+    ]
+  },
+
+  "hooks": {
+    "on_arch_approved": {
+      "auto_execute": true,
+      "inputs": ["design/*", "specs/*"],
+      "timeout_hours": 3
+    },
+    "on_implementation_complete": {
+      "action": "trigger_agent",
+      "target": "code-reviewer",
+      "input": ["src/**/*", "specs/*", "design/*"],
+      "auto_execute": true,
+      "wait_for_review": true
+    }
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write(src/**)",
+      "Edit(src/**)",
+      "Grep",
+      "Glob",
+      "Bash(npm run*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "mcp__context7"
+    ],
+    "restricted": [
+      "Write(specs/**)",
+      "Write(design/**)",
+      "Write(tests/**)",
+      "Bash(git push*)"
+    ]
+  },
+
+  "collaboration": {
+    "functional_agents": {
+      "description": "機能領域別エージェント（agent-1～7）と連携",
+      "usage": [
+        "agent-6-database: Database実装時に協働",
+        "agent-2-backend-models: Models実装時に協働",
+        "agent-1-backend-api: API実装時に協働",
+        "agent-4-frontend-components: コンポーネント実装時に協働",
+        "agent-5-frontend-services: サービス実装時に協働",
+        "agent-3-frontend-pages: ページ実装時に協働"
+      ],
+      "coordination": "code-implementerが方針を決め、functional agentsが詳細実装"
+    }
+  }
+}

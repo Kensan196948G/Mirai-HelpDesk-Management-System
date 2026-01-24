@@ -1,0 +1,138 @@
+{
+  "name": "agent-7-docs",
+  "displayName": "Documentation Agent",
+  "role": "ドキュメント作成と維持管理担当",
+  "description": "技術ドキュメント、API仕様、ユーザーガイド、README等を担当。プロジェクトのドキュメンテーションを管理する。",
+
+  "responsibility": {
+    "filePatterns": [
+      "docs/**/*.md",
+      "README.md",
+      "CLAUDE.md",
+      "GEMINI.md",
+      "API_SPEC.md",
+      "DEPLOYMENT.md",
+      "frontend/docs/**/*.md",
+      "backend/docs/**/*.md",
+      ".claude/**/*.md"
+    ],
+    "excludePatterns": [
+      "node_modules/**",
+      ".git/**"
+    ],
+    "description": "プロジェクトドキュメント、API仕様、ユーザーガイド"
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write",
+      "Edit",
+      "Grep",
+      "Glob",
+      "Bash(git*)",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "restricted": []
+  },
+
+  "priority": 4,
+
+  "dependencies": {
+    "requires": [
+      "agent-1-backend-api",
+      "agent-2-backend-models",
+      "agent-3-frontend-pages",
+      "agent-6-database"
+    ],
+    "requiredBy": [],
+    "description": "全てのエージェントの成果物に基づいてドキュメントを作成"
+  },
+
+  "conflict_prevention": {
+    "file_locking": true,
+    "lock_timeout_seconds": 30,
+    "merge_strategy": "manual",
+    "rules": [
+      {
+        "rule": "no_concurrent_same_doc",
+        "action": "wait_for_lock"
+      },
+      {
+        "rule": "cross_reference_conflict",
+        "action": "notify_and_merge"
+      }
+    ]
+  },
+
+  "communication": {
+    "method": "message-passing",
+    "channels": [
+      "task-queue",
+      "event-bus"
+    ],
+    "events": {
+      "emits": [
+        "docs.updated",
+        "docs.api_spec.changed",
+        "docs.deployment_guide.updated"
+      ],
+      "listens": [
+        "api.route.created",
+        "model.schema.changed",
+        "page.created",
+        "database.migration.completed",
+        "deployment.config.changed"
+      ]
+    }
+  },
+
+  "task_distribution": {
+    "max_concurrent_tasks": 2,
+    "auto_assign": true,
+    "task_types": [
+      "update_api_docs",
+      "write_user_guide",
+      "update_readme",
+      "create_deployment_guide",
+      "document_architecture"
+    ]
+  },
+
+  "quality_checks": {
+    "pre_commit": [
+      "markdownlint docs/**/*.md",
+      "check-links docs/**/*.md"
+    ],
+    "post_commit": []
+  },
+
+  "documentation_standards": {
+    "format": "Markdown",
+    "language": "日本語",
+    "diagrams": "Mermaid",
+    "api_spec_format": "OpenAPI 3.0",
+    "code_examples": true,
+    "screenshots": true,
+    "version_control": true
+  },
+
+  "auto_generation": {
+    "api_docs": {
+      "source": "src/api/routes/**/*.js",
+      "output": "docs/api/",
+      "format": "OpenAPI"
+    },
+    "database_schema": {
+      "source": "database/migrations/**/*.js",
+      "output": "docs/database/schema.md",
+      "format": "Markdown + ERD"
+    },
+    "changelog": {
+      "source": "git log",
+      "output": "CHANGELOG.md",
+      "format": "Keep a Changelog"
+    }
+  }
+}

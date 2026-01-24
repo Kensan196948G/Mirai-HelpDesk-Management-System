@@ -1,0 +1,192 @@
+{
+  "name": "pre-commit",
+  "description": "コミット前のコード品質チェック - ESLint、Prettier、型チェックを自動実行",
+  "enabled": true,
+  "event": "pre-commit",
+  "version": "1.0.0",
+
+  "conditions": {
+    "filePatterns": [
+      "src/**/*.js",
+      "src/**/*.ts",
+      "frontend/src/**/*.jsx",
+      "frontend/src/**/*.tsx",
+      "backend/**/*.js",
+      "backend/**/*.py"
+    ],
+    "excludePatterns": [
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      "coverage/**",
+      "*.min.js"
+    ]
+  },
+
+  "actions": [
+    {
+      "name": "detect-platform",
+      "description": "実行プラットフォームを検出",
+      "type": "script",
+      "platform": "auto-detect",
+      "continue_on_error": false
+    },
+    {
+      "name": "staged-files-check",
+      "description": "ステージングされたファイルを確認",
+      "type": "command",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "git diff --cached --name-only --diff-filter=ACM"
+        ]
+      },
+      "linux": {
+        "command": "git",
+        "args": [
+          "diff",
+          "--cached",
+          "--name-only",
+          "--diff-filter=ACM"
+        ]
+      },
+      "continue_on_error": false,
+      "output_variable": "STAGED_FILES"
+    },
+    {
+      "name": "eslint-check",
+      "description": "ESLintによるコード品質チェック",
+      "type": "command",
+      "condition": "STAGED_FILES contains .js or .jsx or .ts or .tsx",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "npm run lint"
+        ]
+      },
+      "linux": {
+        "command": "npm",
+        "args": [
+          "run",
+          "lint"
+        ]
+      },
+      "continue_on_error": false,
+      "error_message": "❌ ESLintエラーが検出されました。修正してから再度コミットしてください。",
+      "timeout_seconds": 60
+    },
+    {
+      "name": "prettier-check",
+      "description": "Prettierによるフォーマットチェック",
+      "type": "command",
+      "condition": "STAGED_FILES contains .js or .jsx or .ts or .tsx",
+      "windows": {
+        "command": "powershell",
+        "args": [
+          "-NoProfile",
+          "-Command",
+          "npx prettier --check $env:STAGED_FILES"
+        ]
+      },
+      "linux": {
+        "command": "npx",
+        "args": [
+          "prettier",
+          "--check",
+          "$STAGED_FILES"
+        ]
+      },
+      "continue_on_error": false,
+      "auto_fix": {
+        "enabled": true,
+        "command": {
+          "windows": "powershell -NoProfile -Command 'npm run format'",
+          "linux": "npm run format"
+        },
+        "auto_stage": true
+      },
+      "error_message": "❌ フォーマットエラーが検出されました。自動修正を試みます...",
+      "timeout_seconds": 60
+    },
+    {
+      "name": "no-debug-statements",
+      "description": "デバッグステートメントの検出",
+      "type": "grep",
+      "pattern": "(console\\.log|debugger|print\\()",
+      "files": "$STAGED_FILES",
+      "continue_on_error": false,
+      "warning_only": true,
+      "error_message": "⚠️ デバッグステートメント（console.log、debugger等）が検出されました。削除を推奨します。"
+    },
+    {
+      "name": "no-todo-comments",
+      "description": "TODOコメントの警告",
+      "type": "grep",
+      "pattern": "(TODO|FIXME|XXX|HACK)",
+      "files": "$STAGED_FILES",
+      "continue_on_error": true,
+      "warning_only": true,
+      "error_message": "⚠️ TODOコメントが検出されました。Issue化を検討してください。"
+    },
+    {
+      "name": "file-size-check",
+      "description": "大きすぎるファイルの検出",
+      "type": "script",
+      "max_file_size_kb": 500,
+      "continue_on_error": false,
+      "error_message": "❌ 500KB以上のファイルが検出されました。ファイルサイズを削減してください。"
+    },
+    {
+      "name": "conflict-markers-check",
+      "description": "コンフリクトマーカーの検出",
+      "type": "grep",
+      "pattern": "(<<<<<<< |======= |>>>>>>> )",
+      "files": "$STAGED_FILES",
+      "continue_on_error": false,
+      "error_message": "❌ コンフリクトマーカーが残っています。解決してから再度コミットしてください。"
+    },
+    {
+      "name": "secrets-detection",
+      "description": "シークレット情報の検出",
+      "type": "grep",
+      "pattern": "(password|secret|api_key|token)\\s*=\\s*['\"][^'\"]{8,}",
+      "files": "$STAGED_FILES",
+      "continue_on_error": false,
+      "error_message": "❌ シークレット情報がハードコードされている可能性があります。環境変数を使用してください。"
+    },
+    {
+      "name": "success-notification",
+      "description": "品質チェック完了通知",
+      "type": "notification",
+      "message": "✅ コード品質チェック完了！コミットを続行します。",
+      "level": "info"
+    }
+  ],
+
+  "reporting": {
+    "enabled": true,
+    "output_file": ".claude/hooks/logs/pre-commit-YYYY-MM-DD.log",
+    "format": "json",
+    "include_timestamp": true,
+    "include_file_list": true
+  },
+
+  "performance": {
+    "parallel_execution": true,
+    "max_parallel_actions": 3,
+    "timeout_seconds": 120,
+    "cache_results": true,
+    "cache_duration_minutes": 5
+  },
+
+  "bypass": {
+    "enabled": true,
+    "env_variable": "SKIP_PRE_COMMIT",
+    "commit_message_flag": "[skip-hooks]",
+    "warning_message": "⚠️ pre-commitフックがスキップされました。"
+  }
+}

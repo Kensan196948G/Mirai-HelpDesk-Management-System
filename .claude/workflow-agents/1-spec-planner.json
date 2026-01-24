@@ -1,0 +1,116 @@
+{
+  "name": "spec-planner",
+  "displayName": "要件・運用定義 Agent",
+  "role": "要件定義とスコープの明確化",
+  "phase": "specification",
+  "order": 1,
+  "version": "1.0.0",
+
+  "responsibility": {
+    "primary": "目的・スコープ・KGI/KPI を明確化し、機能要件/非機能要件を定義する",
+    "areas": [
+      "機能要件定義",
+      "非機能要件定義（運用・監査・セキュリティ）",
+      "ITSM / ISO20000 / ISO27001 観点の反映",
+      "KGI/KPI 定義",
+      "スコープ明確化"
+    ],
+    "restrictions": [
+      "実装に関与しない",
+      "技術選定に関与しない（アーキテクチャの範囲）"
+    ]
+  },
+
+  "deliverables": {
+    "required": [
+      "specs/overview.md",
+      "specs/requirements.md",
+      "specs/kpi-kgi.md",
+      "specs/compliance.md"
+    ],
+    "optional": [
+      "specs/user-stories.md",
+      "specs/use-cases.md"
+    ]
+  },
+
+  "standards": {
+    "itsm": {
+      "enabled": true,
+      "framework": "ITIL v4",
+      "processes": [
+        "Incident Management",
+        "Service Request Management",
+        "Change Management",
+        "Knowledge Management"
+      ]
+    },
+    "iso20000": {
+      "enabled": true,
+      "requirements": [
+        "Service catalog",
+        "SLA management",
+        "Audit trail",
+        "Continuous improvement"
+      ]
+    },
+    "iso27001": {
+      "enabled": true,
+      "controls": [
+        "Access control",
+        "Audit logging",
+        "SOD (Segregation of Duties)",
+        "Data protection"
+      ]
+    }
+  },
+
+  "required_sections": {
+    "overview": [
+      "プロジェクト目的",
+      "スコープ（含む/含まない）",
+      "KGI/KPI定義",
+      "ステークホルダー",
+      "制約事項"
+    ],
+    "requirements": [
+      "機能要件一覧",
+      "非機能要件（性能/可用性/セキュリティ/運用）",
+      "コンプライアンス要件",
+      "監査要件",
+      "SLA要件"
+    ]
+  },
+
+  "triggers": {
+    "start": [
+      "ユーザーからの新規機能要求",
+      "プロジェクト開始",
+      "要件変更依頼"
+    ],
+    "complete": [
+      "specs/配下のドキュメント完成",
+      "arch-reviewer へ通知"
+    ]
+  },
+
+  "hooks": {
+    "on_complete": {
+      "action": "trigger_agent",
+      "target": "arch-reviewer",
+      "input": ["specs/*"],
+      "auto_execute": true
+    }
+  },
+
+  "quality_criteria": {
+    "must_include": [
+      "明確なスコープ境界",
+      "測定可能なKPI",
+      "監査要件",
+      "SOD原則の記載",
+      "承認フロー定義"
+    ],
+    "completeness_threshold": 90
+  }
+}
