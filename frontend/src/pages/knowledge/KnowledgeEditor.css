@@ -1,0 +1,85 @@
+.knowledge-editor-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.knowledge-editor-page .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132),
+    0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+}
+
+.knowledge-editor-page .ant-card-head {
+  background-color: #faf9f8;
+  border-bottom: 1px solid #edebe9;
+}
+
+.knowledge-editor-page .ant-form-item-label > label {
+  font-weight: 600;
+  color: #323130;
+}
+
+.knowledge-editor-page .ant-input,
+.knowledge-editor-page .ant-input-textarea,
+.knowledge-editor-page .ant-select-selector {
+  border-color: #8a8886;
+  border-radius: 2px;
+}
+
+.knowledge-editor-page .ant-input:hover,
+.knowledge-editor-page .ant-input-textarea:hover,
+.knowledge-editor-page .ant-select-selector:hover {
+  border-color: #323130;
+}
+
+.knowledge-editor-page .ant-input:focus,
+.knowledge-editor-page .ant-input-textarea:focus,
+.knowledge-editor-page .ant-select-focused .ant-select-selector {
+  border-color: #0078d4;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+.knowledge-editor-page .ant-btn-primary {
+  background-color: #0078d4;
+  border-color: #0078d4;
+  font-weight: 600;
+}
+
+.knowledge-editor-page .ant-btn-primary:hover {
+  background-color: #106ebe;
+  border-color: #106ebe;
+}
+
+.knowledge-editor-page .ant-switch-checked {
+  background-color: #0078d4;
+}
+
+/* プレビューモーダル */
+.knowledge-preview-modal {
+  padding: 8px;
+}
+
+.knowledge-preview-modal .markdown-preview {
+  margin-top: 16px;
+  padding: 0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .knowledge-editor-page {
+    padding: 16px;
+  }
+
+  .knowledge-editor-page .ant-space {
+    flex-direction: column;
+  }
+
+  .knowledge-editor-page .ant-space-item {
+    width: 100%;
+  }
+
+  .knowledge-editor-page .ant-space-item .ant-btn {
+    width: 100%;
+  }
+}

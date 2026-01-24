@@ -1,0 +1,80 @@
+# Mirai ヘルプデスク - バックエンド起動スクリプト (Windows PowerShell)
+
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "🚀 Mirai ヘルプデスク - バックエンド起動" -ForegroundColor Green
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host ""
+
+# IPアドレス取得
+Write-Host "🔍 ネットワーク情報を取得中..." -ForegroundColor Yellow
+$ipAddresses = Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -ne "127.0.0.1" -and $_.PrefixOrigin -eq "Dhcp" -or $_.PrefixOrigin -eq "Manual" }
+$mainIP = $ipAddresses | Select-Object -First 1 -ExpandProperty IPAddress
+
+if ($mainIP) {
+    Write-Host "✅ IPアドレス: $mainIP" -ForegroundColor Green
+} else {
+    $mainIP = "localhost"
+    Write-Host "⚠️ IPアドレスが取得できませんでした。localhostを使用します。" -ForegroundColor Yellow
+}
+
+Write-Host ""
+
+# Node.jsバージョン確認
+Write-Host "🔍 Node.js バージョン確認..." -ForegroundColor Yellow
+$nodeVersion = node --version
+Write-Host "✅ Node.js: $nodeVersion" -ForegroundColor Green
+
+# npmバージョン確認
+$npmVersion = npm --version
+Write-Host "✅ npm: $npmVersion" -ForegroundColor Green
+Write-Host ""
+
+# backendディレクトリに移動
+Set-Location backend
+
+# .envファイルの確認と更新
+Write-Host "🔧 環境変数の設定..." -ForegroundColor Yellow
+if (Test-Path .env) {
+    Write-Host "✅ .env ファイルが見つかりました" -ForegroundColor Green
+
+    # CORS_ORIGINを動的に更新
+    $envContent = Get-Content .env -Raw
+    $envContent = $envContent -replace "CORS_ORIGIN=.*", "CORS_ORIGIN=http://localhost:3001,http://${mainIP}:3001"
+    Set-Content .env $envContent
+    Write-Host "✅ CORS設定を更新: http://localhost:3001, http://${mainIP}:3001" -ForegroundColor Green
+} else {
+    Write-Host "⚠️ .env ファイルが見つかりません。.env.exampleをコピーしてください。" -ForegroundColor Red
+    Copy-Item .env.example .env
+    Write-Host "✅ .env ファイルを作成しました。必要に応じて編集してください。" -ForegroundColor Yellow
+}
+
+Write-Host ""
+
+# node_modulesの確認
+if (-not (Test-Path node_modules)) {
+    Write-Host "📦 依存関係をインストール中..." -ForegroundColor Yellow
+    npm install
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✅ 依存関係のインストール完了" -ForegroundColor Green
+    } else {
+        Write-Host "❌ 依存関係のインストールに失敗しました" -ForegroundColor Red
+        exit 1
+    }
+} else {
+    Write-Host "✅ 依存関係は既にインストール済み" -ForegroundColor Green
+}
+
+Write-Host ""
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "🎉 バックエンドサーバーを起動します" -ForegroundColor Green
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "📍 アクセスURL:" -ForegroundColor Cyan
+Write-Host "  - http://localhost:3000" -ForegroundColor White
+Write-Host "  - http://${mainIP}:3000" -ForegroundColor White
+Write-Host ""
+Write-Host "🛑 停止するには Ctrl+C を押してください" -ForegroundColor Yellow
+Write-Host ""
+
+# 開発サーバー起動
+npm run dev

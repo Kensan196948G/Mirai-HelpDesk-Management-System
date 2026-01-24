@@ -1,0 +1,468 @@
+/**
+ * Microsoft Fluent Design System
+ * Mirai ヘルプデスク管理システム
+ *
+ * Microsoft公式のFluent Designシステムを実装
+ * カラーパレット、タイポグラフィ、シャドウ、アニメーションを定義
+ */
+
+/* ==========================================================================
+   CSS変数定義 - Microsoft Fluent Design Colors
+   ========================================================================== */
+
+:root {
+  /* Microsoft公式ブランドカラー */
+  --ms-blue: #0078d4;
+  --ms-blue-hover: #106ebe;
+  --ms-blue-active: #005a9e;
+  --ms-blue-light: #deecf9;
+  --ms-blue-lighter: #eff6fc;
+
+  /* グレースケール - Fluent Design */
+  --fluent-gray-10: #faf9f8;
+  --fluent-gray-20: #f3f2f1;
+  --fluent-gray-30: #edebe9;
+  --fluent-gray-40: #e1dfdd;
+  --fluent-gray-50: #d2d0ce;
+  --fluent-gray-60: #c8c6c4;
+  --fluent-gray-70: #a19f9d;
+  --fluent-gray-80: #8a8886;
+  --fluent-gray-90: #605e5c;
+  --fluent-gray-100: #484644;
+  --fluent-gray-110: #323130;
+  --fluent-gray-120: #201f1e;
+
+  /* 背景色 */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f2f1;
+  --bg-tertiary: #edebe9;
+  --bg-canvas: #faf9f8;
+
+  /* テキストカラー */
+  --text-primary: #323130;
+  --text-secondary: #605e5c;
+  --text-tertiary: #8a8886;
+  --text-disabled: #a19f9d;
+  --text-white: #ffffff;
+  --text-link: #0078d4;
+  --text-link-hover: #106ebe;
+
+  /* ボーダー */
+  --border-color: #edebe9;
+  --border-hover: #8a8886;
+  --border-focus: #0078d4;
+
+  /* セマンティックカラー */
+  --success: #107c10;
+  --success-bg: #dff6dd;
+  --success-border: #107c10;
+
+  --warning: #ff8c00;
+  --warning-bg: #fff4ce;
+  --warning-border: #ff8c00;
+
+  --error: #d13438;
+  --error-bg: #fde7e9;
+  --error-border: #d13438;
+
+  --info: #0078d4;
+  --info-bg: #deecf9;
+  --info-border: #0078d4;
+
+  /* 優先度カラー（ヘルプデスクシステム用） */
+  --priority-p1: #d13438;
+  --priority-p1-bg: #fde7e9;
+  --priority-p2: #ff8c00;
+  --priority-p2-bg: #fff4ce;
+  --priority-p3: #0078d4;
+  --priority-p3-bg: #deecf9;
+  --priority-p4: #107c10;
+  --priority-p4-bg: #dff6dd;
+
+  /* ステータスカラー（チケットステータス用） */
+  --status-new: #0078d4;
+  --status-triage: #8661c5;
+  --status-assigned: #00b7c3;
+  --status-in-progress: #ff8c00;
+  --status-pending: #8a8886;
+  --status-resolved: #107c10;
+  --status-closed: #605e5c;
+
+  /* Fluent Design Shadow Depths */
+  --shadow-depth-2: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.132), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.108);
+  --shadow-depth-4: 0 3.2px 7.2px 0 rgba(0, 0, 0, 0.132), 0 0.6px 1.8px 0 rgba(0, 0, 0, 0.108);
+  --shadow-depth-8: 0 6.4px 14.4px 0 rgba(0, 0, 0, 0.132), 0 1.2px 3.6px 0 rgba(0, 0, 0, 0.108);
+  --shadow-depth-16: 0 12.8px 28.8px 0 rgba(0, 0, 0, 0.132), 0 2.4px 7.2px 0 rgba(0, 0, 0, 0.108);
+  --shadow-depth-64: 0 25.6px 57.6px 0 rgba(0, 0, 0, 0.220), 0 4.8px 14.4px 0 rgba(0, 0, 0, 0.180);
+
+  /* Fluent Design Border Radius */
+  --border-radius-small: 2px;
+  --border-radius-medium: 4px;
+  --border-radius-large: 8px;
+  --border-radius-circle: 50%;
+
+  /* Spacing System - 8px grid */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 24px;
+  --spacing-xxxl: 32px;
+  --spacing-huge: 40px;
+
+  /* Typography - Font Sizes */
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 0.9375rem; /* 15px */
+  --font-size-md: 1rem;        /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-xxl: 1.5rem;     /* 24px */
+  --font-size-xxxl: 1.75rem;   /* 28px */
+  --font-size-hero: 2.625rem;  /* 42px */
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Transition Durations - Fluent Motion */
+  --duration-ultra-fast: 50ms;
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 367ms;
+  --duration-ultra-slow: 500ms;
+
+  /* Z-Index Scale */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* ==========================================================================
+   ダークモード対応（将来の拡張用）
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #3a3a3a;
+    --bg-canvas: #141414;
+
+    --text-primary: #ffffff;
+    --text-secondary: #d1d1d1;
+    --text-tertiary: #a8a8a8;
+    --text-disabled: #6e6e6e;
+
+    --border-color: #3a3a3a;
+    --border-hover: #6e6e6e;
+
+    /* セマンティックカラーは明るさを調整 */
+    --success: #54b054;
+    --warning: #ffa940;
+    --error: #f5555d;
+    --info: #3aa0f3;
+
+    --shadow-depth-2: 0 1.6px 3.6px 0 rgba(0, 0, 0, 0.4), 0 0.3px 0.9px 0 rgba(0, 0, 0, 0.3);
+    --shadow-depth-4: 0 3.2px 7.2px 0 rgba(0, 0, 0, 0.4), 0 0.6px 1.8px 0 rgba(0, 0, 0, 0.3);
+    --shadow-depth-8: 0 6.4px 14.4px 0 rgba(0, 0, 0, 0.4), 0 1.2px 3.6px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ==========================================================================
+   基本リセットとタイポグラフィ
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo', 'Hiragino Sans', 'ヒラギノ角ゴ ProN W3', 'Hiragino Kaku Gothic ProN', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+  background-color: var(--bg-canvas);
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Fluent Design タイポグラフィクラス
+   ========================================================================== */
+
+.ms-font-hero {
+  font-size: var(--font-size-hero);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.ms-font-xxl {
+  font-size: var(--font-size-xxxl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.ms-font-xl {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.ms-font-lg {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+}
+
+.ms-font-md {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+}
+
+.ms-font-base {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+.ms-font-sm {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+.ms-font-xs {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+/* Font Weight Utilities */
+.ms-font-weight-light { font-weight: var(--font-weight-light); }
+.ms-font-weight-regular { font-weight: var(--font-weight-regular); }
+.ms-font-weight-medium { font-weight: var(--font-weight-medium); }
+.ms-font-weight-semibold { font-weight: var(--font-weight-semibold); }
+.ms-font-weight-bold { font-weight: var(--font-weight-bold); }
+
+/* ==========================================================================
+   Fluent Design Motion System
+   ========================================================================== */
+
+.ms-motion-fade-in {
+  animation: fadeIn var(--duration-normal) ease-out;
+}
+
+.ms-motion-fade-out {
+  animation: fadeOut var(--duration-normal) ease-out;
+}
+
+.ms-motion-slide-up {
+  animation: slideUp var(--duration-normal) ease-out;
+}
+
+.ms-motion-slide-down {
+  animation: slideDown var(--duration-normal) ease-out;
+}
+
+.ms-motion-scale-up {
+  animation: scaleUp var(--duration-normal) ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ==========================================================================
+   Fluent Design ユーティリティクラス
+   ========================================================================== */
+
+/* Shadow Utilities */
+.ms-depth-2 { box-shadow: var(--shadow-depth-2); }
+.ms-depth-4 { box-shadow: var(--shadow-depth-4); }
+.ms-depth-8 { box-shadow: var(--shadow-depth-8); }
+.ms-depth-16 { box-shadow: var(--shadow-depth-16); }
+.ms-depth-64 { box-shadow: var(--shadow-depth-64); }
+
+/* Border Radius Utilities */
+.ms-border-radius-sm { border-radius: var(--border-radius-small); }
+.ms-border-radius-md { border-radius: var(--border-radius-medium); }
+.ms-border-radius-lg { border-radius: var(--border-radius-large); }
+.ms-border-radius-circle { border-radius: var(--border-radius-circle); }
+
+/* Spacing Utilities */
+.ms-p-xs { padding: var(--spacing-xs); }
+.ms-p-sm { padding: var(--spacing-sm); }
+.ms-p-md { padding: var(--spacing-md); }
+.ms-p-lg { padding: var(--spacing-lg); }
+.ms-p-xl { padding: var(--spacing-xl); }
+.ms-p-xxl { padding: var(--spacing-xxl); }
+
+.ms-m-xs { margin: var(--spacing-xs); }
+.ms-m-sm { margin: var(--spacing-sm); }
+.ms-m-md { margin: var(--spacing-md); }
+.ms-m-lg { margin: var(--spacing-lg); }
+.ms-m-xl { margin: var(--spacing-xl); }
+.ms-m-xxl { margin: var(--spacing-xxl); }
+
+/* Background Color Utilities */
+.ms-bg-primary { background-color: var(--bg-primary); }
+.ms-bg-secondary { background-color: var(--bg-secondary); }
+.ms-bg-tertiary { background-color: var(--bg-tertiary); }
+.ms-bg-canvas { background-color: var(--bg-canvas); }
+
+/* Text Color Utilities */
+.ms-text-primary { color: var(--text-primary); }
+.ms-text-secondary { color: var(--text-secondary); }
+.ms-text-tertiary { color: var(--text-tertiary); }
+.ms-text-disabled { color: var(--text-disabled); }
+.ms-text-white { color: var(--text-white); }
+.ms-text-link { color: var(--text-link); }
+
+/* Semantic Color Utilities */
+.ms-text-success { color: var(--success); }
+.ms-text-warning { color: var(--warning); }
+.ms-text-error { color: var(--error); }
+.ms-text-info { color: var(--info); }
+
+.ms-bg-success { background-color: var(--success-bg); }
+.ms-bg-warning { background-color: var(--warning-bg); }
+.ms-bg-error { background-color: var(--error-bg); }
+.ms-bg-info { background-color: var(--info-bg); }
+
+/* ==========================================================================
+   Fluent Design アクセシビリティ
+   ========================================================================== */
+
+/* フォーカスインジケーター */
+.ms-focus-visible:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--ms-blue-light);
+}
+
+/* スクリーンリーダー専用テキスト */
+.ms-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 高コントラストモード対応 */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #000000;
+    --border-hover: #000000;
+    --text-secondary: #000000;
+  }
+}
+
+/* 動きを減らす設定への対応 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   印刷スタイル
+   ========================================================================== */
+
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  .ms-no-print {
+    display: none !important;
+  }
+
+  .ms-depth-2,
+  .ms-depth-4,
+  .ms-depth-8,
+  .ms-depth-16,
+  .ms-depth-64 {
+    box-shadow: none;
+    border: 1px solid #e1e1e1;
+  }
+}

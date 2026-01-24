@@ -1,0 +1,442 @@
+/* Microsoft Fluent Design - Dashboard Styles */
+
+.dashboard-container {
+  padding: var(--spacing-xxl);
+  background-color: var(--bg-canvas);
+  min-height: calc(100vh - 64px);
+  animation: fadeIn var(--duration-normal) ease;
+}
+
+.dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-lg);
+  min-height: calc(100vh - 64px);
+  background-color: var(--bg-canvas);
+}
+
+.dashboard-error {
+  padding: var(--spacing-xxl);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Ant Design カスタマイズ - Fluent Design 統合 */
+.dashboard-container .ant-card {
+  box-shadow: var(--shadow-depth-2);
+  border-radius: var(--border-radius-large);
+  border: 1px solid transparent;
+  background: var(--bg-primary);
+  transition: all var(--duration-normal) ease;
+}
+
+.dashboard-container .ant-card-head {
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--spacing-lg) var(--spacing-xxl);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.dashboard-container .ant-card-body {
+  padding: var(--spacing-xxl);
+}
+
+.dashboard-container .ant-statistic {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.dashboard-container .ant-statistic-title {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-container .ant-statistic-content {
+  font-size: var(--font-size-xxxl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.dashboard-container .ant-table {
+  background: transparent;
+}
+
+.dashboard-container .ant-table-thead > tr > th {
+  background: var(--fluent-gray-10);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border-color);
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.dashboard-container .ant-table-tbody > tr {
+  transition: background-color var(--duration-fast) ease;
+}
+
+.dashboard-container .ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--spacing-md) var(--spacing-lg);
+  color: var(--text-primary);
+}
+
+.dashboard-container .ant-table-row:hover {
+  background-color: var(--fluent-gray-10);
+  cursor: pointer;
+}
+
+.dashboard-container .ant-badge-status-text {
+  font-size: var(--font-size-sm);
+  margin-left: var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+.dashboard-container .ant-badge-status-dot {
+  width: 8px;
+  height: 8px;
+}
+
+/* SLA アラート */
+.dashboard-container .ant-alert {
+  border-radius: var(--border-radius-medium);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-depth-2);
+  animation: slideDown var(--duration-normal) ease-out;
+  margin-bottom: var(--spacing-xxl);
+}
+
+.dashboard-container .ant-alert-warning {
+  background-color: var(--warning-bg);
+  border-color: var(--warning-border);
+}
+
+.dashboard-container .ant-alert-error {
+  background-color: var(--error-bg);
+  border-color: var(--error-border);
+}
+
+.dashboard-container .ant-alert-info {
+  background-color: var(--info-bg);
+  border-color: var(--info-border);
+}
+
+.dashboard-container .ant-alert-success {
+  background-color: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+.dashboard-container .ant-alert-message {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+}
+
+.dashboard-container .ant-alert-description {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* カードホバーエフェクト */
+.dashboard-container .ant-card:hover {
+  box-shadow: var(--shadow-depth-8);
+  transform: translateY(-4px);
+  border-color: var(--fluent-gray-30);
+}
+
+/* 統計カードのアイコン */
+.dashboard-container .ant-statistic-content-prefix {
+  margin-right: var(--spacing-sm);
+  font-size: var(--font-size-xl);
+  display: flex;
+  align-items: center;
+}
+
+/* タグのスタイル調整 */
+.dashboard-container .ant-tag {
+  margin-right: 0;
+  border-radius: var(--border-radius-small);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  border: 1px solid transparent;
+}
+
+/* 優先度タグ */
+.dashboard-container .ant-tag[color="error"],
+.dashboard-container .ant-tag[color="red"] {
+  background-color: var(--priority-p1-bg);
+  color: var(--priority-p1);
+  border-color: var(--priority-p1);
+}
+
+.dashboard-container .ant-tag[color="warning"],
+.dashboard-container .ant-tag[color="orange"] {
+  background-color: var(--priority-p2-bg);
+  color: var(--priority-p2);
+  border-color: var(--priority-p2);
+}
+
+.dashboard-container .ant-tag[color="processing"],
+.dashboard-container .ant-tag[color="blue"] {
+  background-color: var(--priority-p3-bg);
+  color: var(--priority-p3);
+  border-color: var(--priority-p3);
+}
+
+.dashboard-container .ant-tag[color="success"],
+.dashboard-container .ant-tag[color="green"] {
+  background-color: var(--priority-p4-bg);
+  color: var(--priority-p4);
+  border-color: var(--priority-p4);
+}
+
+/* ステータス別カラー */
+.dashboard-container .ant-tag[color="default"],
+.dashboard-container .ant-tag[color="gray"] {
+  background-color: var(--fluent-gray-20);
+  color: var(--fluent-gray-90);
+  border-color: var(--fluent-gray-40);
+}
+
+/* グリッドレイアウト */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xxl);
+}
+
+/* チケットリンク */
+.dashboard-container .ticket-link {
+  color: var(--text-link);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--duration-fast) ease;
+}
+
+.dashboard-container .ticket-link:hover {
+  color: var(--text-link-hover);
+  text-decoration: underline;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1200px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: var(--spacing-lg);
+  }
+
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .dashboard-container .ant-card {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .dashboard-container .ant-card-head {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+  }
+
+  .dashboard-container .ant-card-body {
+    padding: var(--spacing-lg);
+  }
+
+  .dashboard-container .ant-statistic-content {
+    font-size: var(--font-size-xxl);
+  }
+
+  .dashboard-container .ant-table-thead > tr > th,
+  .dashboard-container .ant-table-tbody > tr > td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+  }
+
+  .dashboard-container .ant-alert {
+    margin-bottom: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: var(--spacing-md);
+  }
+
+  .dashboard-container .ant-statistic-content {
+    font-size: var(--font-size-xl);
+  }
+
+  .dashboard-container .ant-card-head {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .dashboard-container .ant-card-body {
+    padding: var(--spacing-md);
+  }
+}
+
+/* アニメーション */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* チャートスタイル */
+.dashboard-container .ant-progress-circle {
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard-container .ant-progress-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-container .ant-timeline {
+  margin-top: var(--spacing-md);
+}
+
+.dashboard-container .ant-timeline-item {
+  padding-bottom: var(--spacing-lg);
+}
+
+.dashboard-container .ant-timeline-item-tail {
+  border-left-color: var(--border-color);
+}
+
+.dashboard-container .ant-timeline-item-head {
+  background-color: transparent;
+  border: none;
+}
+
+/* SLA状況カード */
+.sla-status-card {
+  transition: all var(--duration-normal) ease;
+}
+
+.sla-status-card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-depth-8);
+}
+
+/* プログレスバーのカスタマイズ */
+.dashboard-container .ant-progress-bg {
+  border-radius: var(--border-radius-small);
+}
+
+.dashboard-container .ant-progress-line {
+  font-size: var(--font-size-sm);
+}
+
+/* サービス稼働状況 */
+.service-status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: var(--spacing-xs);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* アクティビティタイムライン */
+.activity-item {
+  transition: background-color var(--duration-fast) ease;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-small);
+}
+
+.activity-item:hover {
+  background-color: var(--fluent-gray-10);
+}
+
+/* 統計カードのトレンド */
+.stat-trend {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.stat-trend.positive {
+  color: var(--success-text);
+}
+
+.stat-trend.negative {
+  color: var(--error-text);
+}
+
+/* 印刷対応 */
+@media print {
+  .dashboard-container {
+    background: white;
+    padding: 0;
+  }
+
+  .dashboard-container .ant-card {
+    box-shadow: none;
+    border: 1px solid #e1e1e1;
+    page-break-inside: avoid;
+  }
+
+  .dashboard-container .ant-card:hover {
+    transform: none;
+  }
+
+  .dashboard-container .ant-alert {
+    box-shadow: none;
+    border: 1px solid currentColor;
+  }
+
+  .sla-status-card:hover {
+    transform: none;
+  }
+
+  .activity-item:hover {
+    background-color: transparent;
+  }
+}

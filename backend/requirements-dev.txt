@@ -1,0 +1,26 @@
+# Mirai HelpDesk Management System - Development Requirements
+# Python 3.11+
+# テスト環境用の依存関係
+
+# Base requirements
+-r requirements.txt
+
+# Testing Framework
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+
+# HTTP Testing
+httpx>=0.26.0
+
+# Test Data Generation
+faker>=22.0.0
+
+# Code Quality
+ruff>=0.1.0
+black>=24.0.0
+mypy>=1.8.0
+
+# Debug
+ipython>=8.20.0

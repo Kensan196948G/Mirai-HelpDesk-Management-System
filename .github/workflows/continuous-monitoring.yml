@@ -1,0 +1,96 @@
+name: 🔄 継続的監視・無限ループシステム
+
+on:
+  # 定期実行（5分ごと）
+  schedule:
+    - cron: '*/5 * * * *'
+
+  # 手動実行
+  workflow_dispatch:
+
+  # ワークフロー完了後に自動再実行
+  workflow_run:
+    workflows: ["🤖 自動エラー検知・修復システム"]
+    types:
+      - completed
+
+jobs:
+  continuous-monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 チェックアウト
+        uses: actions/checkout@v4
+
+      - name: 🔍 未解決Issue確認
+        id: check-issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'auto-detected,needs-fix'
+            });
+
+            console.log(`🔍 未解決エラー: ${issues.data.length}件`);
+            core.setOutput('has_open_issues', issues.data.length > 0);
+            core.setOutput('issue_count', issues.data.length);
+
+            return issues.data.length;
+
+      - name: ⏰ 待機カウンター確認
+        id: check-wait
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            // 最後の実行時刻を確認
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'auto-error-detection.yml',
+              per_page: 1
+            });
+
+            if (runs.data.workflow_runs.length === 0) {
+              core.setOutput('should_trigger', 'true');
+              return;
+            }
+
+            const lastRun = runs.data.workflow_runs[0];
+            const lastRunTime = new Date(lastRun.created_at);
+            const now = new Date();
+            const minutesSinceLastRun = (now - lastRunTime) / 1000 / 60;
+
+            console.log(`⏰ 最終実行: ${minutesSinceLastRun.toFixed(1)}分前`);
+
+            // 30分経過していれば再実行
+            const shouldTrigger = minutesSinceLastRun >= 30;
+            core.setOutput('should_trigger', shouldTrigger);
+
+      - name: 🚀 エラー検知ワークフローをトリガー
+        if: |
+          steps.check-issues.outputs.has_open_issues == 'true' &&
+          steps.check-wait.outputs.should_trigger == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'auto-error-detection.yml',
+              ref: 'main'
+            });
+
+            console.log('🚀 エラー検知ワークフローを起動しました');
+
+      - name: 📊 監視統計表示
+        run: |
+          echo "📊 継続的監視システム統計"
+          echo "  - 未解決Issue: ${{ steps.check-issues.outputs.issue_count }}件"
+          echo "  - 次回実行判定: ${{ steps.check-wait.outputs.should_trigger }}"
+          echo "  - 実行日時: $(date)"
+          echo "  - システム: 正常稼働中 ✅"

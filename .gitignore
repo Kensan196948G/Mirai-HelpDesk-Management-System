@@ -1,120 +1,99 @@
-# ===================================
-# Mirai HelpDesk Management System
-# .gitignore
-# ===================================
-
-# ----- Dependencies -----
+# Dependencies
 node_modules/
-.pnp/
-.pnp.js
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-# ----- Build outputs -----
+# Build outputs
 dist/
 build/
-out/
-.next/
-.nuxt/
+*.tsbuildinfo
 
-# ----- Environment variables -----
+# Environment variables
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env*.local
+.env.*.local
+.env.mcp
+backend/.env
+frontend/.env
 
-# ----- Logs -----
+# MCP Configuration (contains API keys - DO NOT COMMIT)
+.mcp.json
+
+# Backup files
+*.bak
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database/data/
+
+# Logs
 logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
-# ----- Database -----
-*.db
-*.sqlite
-*.sqlite3
-data/*.db
-
-# ----- IDE / Editor -----
-.idea/
+# IDE
 .vscode/
+.idea/
 *.swp
 *.swo
 *~
-.project
-.classpath
-.settings/
 
-# ----- OS generated files -----
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
-desktop.ini
 
-# ----- Test coverage -----
+# Testing
 coverage/
 .nyc_output/
-*.lcov
 
-# ----- Temporary files -----
+# Temporary files
 tmp/
 temp/
 *.tmp
-*.temp
 
-# ----- Secrets / Credentials -----
-*.pem
-*.key
-*.crt
-credentials.json
-secrets.json
-service-account.json
-
-# ----- Uploaded files -----
+# Uploaded files
+backend/uploads/
 uploads/
-!uploads/.gitkeep
 
-# ----- Cache -----
-.cache/
-.parcel-cache/
-.eslintcache
-.stylelintcache
-*.tsbuildinfo
+# Claude Code local settings
+.claude/settings.local.json
+.claude/*.local.json
 
-# ----- Package manager lock files (choose one) -----
-# Uncomment if using npm only:
-# yarn.lock
-# pnpm-lock.yaml
+# Reference projects (not part of this repository)
+Enterprise-IT-Helpdesk-AI/
+MicrosoftProductManagementSystem/
 
-# ----- TypeScript -----
-*.tsbuildinfo
+# Python virtual environments
+backend/.venv-win/
+backend/.venv-linux/
+backend/venv/
+backend/.venv/
 
-# ----- Python (if used) -----
+# Data directories
+backend/data/
+backend/logs/
+
+# Test outputs
+playwright-report/
+test-results/
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Temporary test files
+backend/*.db
+backend/test_*.py
+backend/check_env.py
+backend/seed_sla.py
+
+# Python cache files
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 .Python
-venv/
-.venv/
-pip-log.txt
-
-# ----- Backup files -----
-*.bak
-*.backup
-*~
-
-# ----- Documentation build -----
-docs/_build/
-
-# ----- Playwright -----
-test-results/
-playwright-report/
-playwright/.cache/
-.env.mcp
-worktrees/

@@ -8,13 +8,14 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "memory",
-    "playwright",
     "github",
     "brave-search",
-    "context7",
-    "sequential-thinking",
-    "chrome-devtools"
+    "sequential-thinking"
   ],
+  "statusLine": {
+    "type": "command",
+    "command": "npx --yes ccstatusline@latest"
+  },
   "enabledPlugins": {
     "claude-mem@thedotmack": true
   }

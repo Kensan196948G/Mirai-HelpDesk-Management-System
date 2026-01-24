@@ -1,0 +1,91 @@
+name: 🐛 バグレポート
+description: バグや問題を報告する
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## バグレポート
+
+        バグや問題を報告してください。詳細な情報を提供していただくことで、迅速な解決につながります。
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 影響を受けるコンポーネント
+      description: 問題が発生しているコンポーネントを選択してください
+      options:
+        - バックエンドAPI
+        - フロントエンド
+        - データベース
+        - Microsoft 365連携
+        - 認証・認可
+        - その他
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 重要度
+      description: バグの重要度を選択してください
+      options:
+        - P1 - 全社停止（Critical）
+        - P2 - 部門影響（High）
+        - P3 - 個人影響（Medium）
+        - P4 - 軽微（Low）
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 問題の説明
+      description: 何が起きているか詳しく説明してください
+      placeholder: 問題の詳細を記述...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: 問題を再現するための手順を記述してください
+      placeholder: |
+        1. '...'に移動
+        2. '...'をクリック
+        3. '...'まで下にスクロール
+        4. エラーを確認
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待される動作
+      description: 本来どう動作すべきか説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作
+      description: 実際に何が起きたか説明してください
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: ログ・エラーメッセージ
+      description: 関連するログやエラーメッセージを貼り付けてください
+      render: shell
+
+  - type: input
+    id: environment
+    attributes:
+      label: 環境
+      description: OS、ブラウザ、Node.jsバージョン等
+      placeholder: "例: Windows 11, Chrome 120, Node.js 18.17.0"

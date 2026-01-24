@@ -1,84 +1,65 @@
 {
-  "name": "@mirai-helpdesk/backend",
-  "version": "0.1.0",
-  "description": "Backend API for Mirai HelpDesk Management System",
-  "private": true,
-  "type": "commonjs",
-  "main": "src/server.js",
+  "name": "mirai-helpdesk-backend",
+  "version": "1.0.0",
+  "description": "Mirai ヘルプデスク管理システム - バックエンドAPI",
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon src/server.js",
-    "start": "NODE_ENV=production node src/server.js",
-    "prod": "NODE_ENV=production node src/server.js",
-    "build": "echo 'No build step required for Node.js backend'",
-    "test": "NODE_ENV=test jest --coverage",
-    "test:watch": "NODE_ENV=test jest --watch",
-    "test:api-integration": "NODE_ENV=test jest --testPathPattern=tests/integration",
-    "lint": "eslint src/ --ext .js",
-    "lint:fix": "eslint src/ --ext .js --fix",
-    "format": "prettier --write \"src/**/*.js\"",
-    "db:migrate": "node scripts/migrate.js",
-    "db:seed": "node scripts/seed.js",
-    "db:reset": "node scripts/reset-db.js",
-    "db:backup": "node scripts/backup-db.js",
-    "clean": "rm -rf node_modules coverage .nyc_output"
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "migrate": "node -r ts-node/register database/migrate.ts",
+    "migrate:rollback": "node -r ts-node/register database/migrate.ts rollback",
+    "seed": "node -r ts-node/register database/seed.ts",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [
     "helpdesk",
-    "api",
-    "backend",
-    "express",
-    "sqlite"
+    "ticketing",
+    "microsoft365",
+    "itil"
   ],
-  "author": "Mirai IT Team",
+  "author": "",
   "license": "UNLICENSED",
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "dependencies": {
-    "express": "^4.21.0",
+    "@azure/identity": "^4.0.0",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
-    "compression": "^1.7.4",
-    "morgan": "^1.10.0",
-    "dotenv": "^16.4.7",
-    "better-sqlite3": "^11.3.0",
     "jsonwebtoken": "^9.0.2",
-    "bcryptjs": "^2.4.3",
-    "uuid": "^10.0.0",
-    "date-fns": "^4.1.0",
-    "express-validator": "^7.2.0",
-    "express-rate-limit": "^7.4.1",
-    "winston": "^3.17.0",
-    "winston-daily-rotate-file": "^5.0.0",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
-    "node-cron": "^3.0.3"
+    "nodemailer": "^6.9.7",
+    "pg": "^8.11.3",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.11",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.10.6",
+    "@types/nodemailer": "^6.4.14",
+    "@types/pg": "^8.10.9",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/parser": "^6.17.0",
+    "eslint": "^8.56.0",
     "jest": "^29.7.0",
-    "supertest": "^7.0.0",
-    "eslint": "^8.57.1",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.31.0",
-    "prettier": "^3.4.2"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "coverageDirectory": "coverage",
-    "collectCoverageFrom": [
-      "src/**/*.js",
-      "!src/server.js"
-    ],
-    "testMatch": [
-      "**/tests/**/*.test.js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 60,
-        "branches": 50,
-        "functions": 60,
-        "lines": 60
-      }
-    }
+    "nodemon": "^3.0.2",
+    "prettier": "^3.1.1",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }
