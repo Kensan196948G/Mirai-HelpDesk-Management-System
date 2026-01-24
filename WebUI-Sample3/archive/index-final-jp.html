@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirai HelpDesk - マルチAI統合版</title>
+    <link rel="stylesheet" href="css/professional.css">
+    <link rel="stylesheet" href="css/chat-styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- サイドバー -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">Mirai HelpDesk</span>
+                        <span class="logo-subtitle">マルチAI統合版</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- メインメニュー -->
+                <div class="nav-section">
+                    <span class="nav-section-title">メイン</span>
+                    <a class="nav-item active" data-section="ai-support">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>AIサポート</span>
+                        <span class="nav-badge">New</span>
+                    </a>
+                    <a class="nav-item" data-section="my-tickets">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <span>マイチケット</span>
+                        <span class="nav-count">5</span>
+                    </a>
+                    <a class="nav-item" data-section="create-ticket">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="16"/>
+                            <line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                        <span>新規チケット作成</span>
+                    </a>
+                    <a class="nav-item" data-section="helpdesk-list">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="8" y1="6" x2="21" y2="6"/>
+                            <line x1="8" y1="12" x2="21" y2="12"/>
+                            <line x1="8" y1="18" x2="21" y2="18"/>
+                            <line x1="3" y1="6" x2="3.01" y2="6"/>
+                            <line x1="3" y1="12" x2="3.01" y2="12"/>
+                            <line x1="3" y1="18" x2="3.01" y2="18"/>
+                        </svg>
+                        <span>ヘルプデスク一覧</span>
+                        <span class="nav-count">50</span>
+                    </a>
+                    <a class="nav-item" data-section="faq">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        <span>FAQ</span>
+                    </a>
+                </div>
+
+                <!-- カテゴリ -->
+                <div class="nav-section">
+                    <span class="nav-section-title">カテゴリ</span>
+                    <a class="nav-item category" data-category="network">
+                        <span class="category-dot network"></span>
+                        <span>ネットワーク</span>
+                    </a>
+                    <a class="nav-item category" data-category="software">
+                        <span class="category-dot software"></span>
+                        <span>ソフトウェア</span>
+                    </a>
+                    <a class="nav-item category" data-category="hardware">
+                        <span class="category-dot hardware"></span>
+                        <span>ハードウェア</span>
+                    </a>
+                    <a class="nav-item category" data-category="security">
+                        <span class="category-dot security"></span>
+                        <span>セキュリティ</span>
+                    </a>
+                    <a class="nav-item category" data-category="account">
+                        <span class="category-dot account"></span>
+                        <span>アカウント</span>
+                    </a>
+                </div>
+
+                <!-- システム管理 -->
+                <div class="nav-section">
+                    <span class="nav-section-title">システム管理</span>
+                    <a class="nav-item" data-section="approvals">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>承認管理</span>
+                        <span class="nav-count">3</span>
+                    </a>
+                    <a class="nav-item" data-section="m365">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                        </svg>
+                        <span>M365管理</span>
+                    </a>
+                    <a class="nav-item" data-section="settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6M3.93 6.93l4.24 4.24m8.49 8.49l4.24 4.24M1 12h6m6 0h6m-12.07 6.07l4.24-4.24m8.49-8.49l4.24-4.24"/>
+                        </svg>
+                        <span>システム設定</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <div class="status-indicator online"></div>
+                    <span>全システム稼働中</span>
+                </div>
+                <div class="user-card">
+                    <div class="user-avatar">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">佐藤花子</span>
+                        <span class="user-dept">Agent</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <!-- ヘッダー -->
+            <header class="main-header">
+                <div class="header-left">
+                    <h1 id="page-heading">AIサポートチャット</h1>
+                    <div class="breadcrumb">
+                        <span>IT HelpDesk</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6"/>
+                        </svg>
+                        <span class="current" id="breadcrumb-current">AIサポート</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="header-btn" onclick="navigate('create-ticket')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        <span>新規チケット</span>
+                    </button>
+                    <button class="header-icon-btn" title="通知">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="notification-badge">2</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- セクション: AIサポート -->
+            <div class="section-content" id="section-ai-support">
+                <div class="chat-area">
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- ウェルカムカード -->
+                        <div class="welcome-card">
+                            <div class="welcome-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                            </div>
+                            <h2>ITサポートへようこそ</h2>
+                            <p>AIアシスタントが技術的な問題解決をサポートします。<br>質問を入力するか、下のトピックから選択してください。</p>
+
+                            <div class="quick-topics">
+                                <button class="topic-btn" onclick="selectTopic('wifi')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+                                        <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+                                        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+                                        <line x1="12" y1="20" x2="12.01" y2="20"/>
+                                    </svg>
+                                    <span>WiFi接続</span>
+                                </button>
+                                <button class="topic-btn" onclick="selectTopic('vpn')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                    </svg>
+                                    <span>VPN設定</span>
+                                </button>
+                                <button class="topic-btn" onclick="selectTopic('password')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                                    </svg>
+                                    <span>パスワード</span>
+                                </button>
+                                <button class="topic-btn" onclick="selectTopic('printer')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 6 2 18 2 18 9"/>
+                                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                                        <rect x="6" y="14" width="12" height="8"/>
+                                    </svg>
+                                    <span>プリンター</span>
+                                </button>
+                                <button class="topic-btn" onclick="selectTopic('software')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                        <line x1="8" y1="21" x2="16" y2="21"/>
+                                        <line x1="12" y1="17" x2="12" y2="21"/>
+                                    </svg>
+                                    <span>ソフトウェア</span>
+                                </button>
+                                <button class="topic-btn" onclick="selectTopic('email')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                        <polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                    <span>メール設定</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI処理インジケーター -->
+                    <div class="ai-processing" id="aiProcessing" style="display: none;">
+                        <div class="processing-content">
+                            <div class="processing-stages">
+                                <div class="stage" id="stageAnalyze">
+                                    <div class="stage-icon">🔍</div>
+                                    <div class="stage-label">問題分析</div>
+                                    <div class="stage-progress"></div>
+                                </div>
+                                <div class="stage" id="stageSearch">
+                                    <div class="stage-icon">📚</div>
+                                    <div class="stage-label">KB検索</div>
+                                    <div class="stage-progress"></div>
+                                </div>
+                                <div class="stage" id="stageGenerate">
+                                    <div class="stage-icon">🤖</div>
+                                    <div class="stage-label">回答生成</div>
+                                    <div class="stage-progress"></div>
+                                </div>
+                            </div>
+                            <div class="processing-text" id="processingText">問題を分析しています...</div>
+                        </div>
+                    </div>
+
+                    <!-- 入力エリア -->
+                    <div class="input-area">
+                        <div class="input-toolbar">
+                            <button class="toolbar-btn" title="ファイル添付">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                                </svg>
+                            </button>
+                            <button class="toolbar-btn" title="スクリーンショット">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="input-container">
+                            <textarea
+                                id="messageInput"
+                                placeholder="IT関連の質問を入力してください..."
+                                rows="1"
+                                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"
+                            ></textarea>
+                            <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"/>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="input-footer">
+                            <span class="ai-badge">
+                                <span class="ai-dot"></span>
+                                AI Powered by Claude + Gemini + Perplexity
+                            </span>
+                            <span class="shortcut-hint">Enter で送信 • Shift+Enter で改行</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- セクション: マイチケット -->
+            <div class="section-content" id="section-my-tickets" style="display: none;">
+                <div class="content-area">
+                    <div class="content-header">
+                        <h2>マイチケット</h2>
+                        <p>あなたのサポートチケット一覧</p>
+                    </div>
+                    <div class="tickets-container">
+                        <div class="tickets-filter">
+                            <button class="filter-btn active" data-filter="all" onclick="filterTickets('all')">すべて</button>
+                            <button class="filter-btn" data-filter="new" onclick="filterTickets('new')">新規</button>
+                            <button class="filter-btn" data-filter="open" onclick="filterTickets('open')">未対応</button>
+                            <button class="filter-btn" data-filter="in-progress" onclick="filterTickets('in-progress')">対応中</button>
+                            <button class="filter-btn" data-filter="pending" onclick="filterTickets('pending')">保留中</button>
+                            <button class="filter-btn" data-filter="resolved" onclick="filterTickets('resolved')">解決済み</button>
+                            <button class="filter-btn" data-filter="closed" onclick="filterTickets('closed')">完了</button>
+                        </div>
+                        <div class="tickets-list" id="ticketsList">
+                            <!-- チケットカードがここに表示されます -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- セクション: ヘルプデスク一覧 -->
+            <div class="section-content" id="section-helpdesk-list" style="display: none;"></div>
+
+            <!-- セクション: 新規チケット作成 -->
+            <div class="section-content" id="section-create-ticket" style="display: none;"></div>
+
+            <!-- セクション: FAQ -->
+            <div class="section-content" id="section-faq" style="display: none;"></div>
+
+            <!-- セクション: 承認管理 -->
+            <div class="section-content" id="section-approvals" style="display: none;"></div>
+
+            <!-- セクション: M365管理 -->
+            <div class="section-content" id="section-m365" style="display: none;"></div>
+
+            <!-- セクション: システム設定 -->
+            <div class="section-content" id="section-settings" style="display: none;"></div>
+        </main>
+    </div>
+
+    <script src="js/sample-data.js"></script>
+    <script src="js/ai-orchestration.js"></script>
+    <script>
+        console.log('%c🚀 Mirai HelpDesk - 日本語版完成', 'color: #3b82f6; font-size: 20px; font-weight: bold;');
+        console.log('%cWebUI-Sample2のAIサポート + マルチAI機能統合', 'color: #10b981; font-size: 14px;');
+
+        let currentFilter = 'all';
+
+        // ナビゲーション
+        document.querySelectorAll('[data-section]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = item.dataset.section;
+
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                console.log('📄 Navigate to:', section);
+                loadSection(section);
+            });
+        });
+
+        function navigate(section) {
+            const navItem = document.querySelector(`[data-section="${section}"]`);
+            if (navItem) navItem.click();
+        }
+
+        function loadSection(section) {
+            // すべてのセクションを非表示
+            document.querySelectorAll('.section-content').forEach(s => s.style.display = 'none');
+
+            // ヘッダー更新
+            const titles = {
+                'ai-support': 'AIサポートチャット',
+                'my-tickets': 'マイチケット',
+                'create-ticket': '新規チケット作成',
+                'helpdesk-list': 'ヘルプデスク一覧',
+                'faq': 'よくある質問',
+                'approvals': '承認管理',
+                'm365': 'M365管理',
+                'settings': 'システム設定',
+            };
+            const breadcrumbs = {
+                'ai-support': 'AIサポート',
+                'my-tickets': 'マイチケット',
+                'create-ticket': '新規作成',
+                'helpdesk-list': 'ヘルプデスク一覧',
+                'faq': 'FAQ',
+                'approvals': '承認管理',
+                'm365': 'M365',
+                'settings': '設定',
+            };
+
+            document.getElementById('page-heading').textContent = titles[section] || section;
+            document.getElementById('breadcrumb-current').textContent = breadcrumbs[section] || section;
+
+            // セクション表示
+            const sectionElement = document.getElementById(`section-${section}`);
+            if (sectionElement) {
+                sectionElement.style.display = 'block';
+
+                // コンテンツを動的に生成
+                if (section === 'my-tickets') {
+                    renderMyTickets();
+                } else if (section === 'helpdesk-list') {
+                    renderHelpdeskList();
+                } else if (section === 'create-ticket') {
+                    renderCreateTicket();
+                } else if (section === 'faq') {
+                    renderFAQ();
+                } else if (section === 'approvals') {
+                    renderApprovals();
+                } else if (section === 'm365') {
+                    renderM365();
+                } else if (section === 'settings') {
+                    renderSettings();
+                }
+            }
+        }
+
+        // マイチケット表示
+        function renderMyTickets() {
+            loadTicketCards('all');
+        }
+
+        function loadTicketCards(filter) {
+            currentFilter = filter;
+            const ticketsList = document.getElementById('ticketsList');
+            const myTickets = SAMPLE_TICKETS.filter(t => t.requester_id === 'u1');
+
+            let filteredTickets = myTickets;
+            if (filter === 'new') filteredTickets = myTickets.filter(t => t.status === 'New');
+            else if (filter === 'open') filteredTickets = myTickets.filter(t => t.status === 'New' || t.status === 'Triage');
+            else if (filter === 'in-progress') filteredTickets = myTickets.filter(t => t.status === 'In Progress' || t.status === 'Assigned');
+            else if (filter === 'pending') filteredTickets = myTickets.filter(t => t.status.includes('Pending'));
+            else if (filter === 'resolved') filteredTickets = myTickets.filter(t => t.status === 'Resolved');
+            else if (filter === 'closed') filteredTickets = myTickets.filter(t => t.status === 'Closed');
+
+            ticketsList.innerHTML = filteredTickets.map(t => {
+                const statusClass = t.status === 'New' || t.status === 'Triage' ? 'open' :
+                                  t.status.includes('Progress') || t.status === 'Assigned' ? 'in-progress' :
+                                  t.status === 'Resolved' ? 'resolved' : 'closed';
+                const statusLabel = t.status === 'New' ? '新規' :
+                                  t.status === 'Triage' ? '未対応' :
+                                  t.status.includes('Progress') ? '対応中' :
+                                  t.status === 'Assigned' ? '担当割当済み' :
+                                  t.status.includes('Pending') ? '保留中' :
+                                  t.status === 'Resolved' ? '解決済み' : '完了';
+
+                return `
+                    <div class="ticket-card" data-status="${statusClass}">
+                        <div class="ticket-header">
+                            <span class="ticket-id">#TKT-${t.ticket_number.toString().padStart(4, '0')}</span>
+                            <span class="ticket-status-badge ${statusClass}">${statusLabel}</span>
+                        </div>
+                        <h3 class="ticket-title">${t.subject}</h3>
+                        <p class="ticket-desc">${t.description}</p>
+                        <div class="ticket-meta">
+                            <span class="ticket-category">
+                                <span class="category-dot ${['network','software','hardware','security','account'][t.ticket_number % 5]}"></span>
+                                ${['ネットワーク','ソフトウェア','ハードウェア','セキュリティ','アカウント'][t.ticket_number % 5]}
+                            </span>
+                            <span class="ticket-date">${t.resolved_at ? '✅ ' + new Date(t.resolved_at).toLocaleDateString('ja-JP') + ' 解決' : '📅 ' + new Date(t.created_at).toLocaleDateString('ja-JP') + ' 作成'}</span>
+                        </div>
+                        ${statusClass === 'in-progress' ? `
+                            <div class="ticket-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${Math.random() * 40 + 40}%;"></div>
+                                </div>
+                                <span class="progress-text">担当: ${t.assignee_id ? SAMPLE_USERS.find(u => u.user_id === t.assignee_id)?.display_name : '未割当'} - 調査中</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterTickets(filter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                }
+            });
+            loadTicketCards(filter);
+        }
+
+        // トピック選択
+        function selectTopic(topic) {
+            const topicMessages = {
+                wifi: 'WiFiに接続できません',
+                vpn: 'VPNの設定方法を教えてください',
+                password: 'パスワードをリセットしたいです',
+                printer: 'プリンターに接続できません',
+                software: 'ソフトウェアのインストール方法',
+                email: 'メール設定について教えてください'
+            };
+
+            document.getElementById('messageInput').value = topicMessages[topic] || '';
+            sendMessage();
+        }
+
+        // メッセージ送信
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            console.log('💬 Message:', message);
+
+            // ユーザーメッセージを表示
+            addMessage(message, 'user');
+            input.value = '';
+
+            // AI処理表示
+            document.getElementById('aiProcessing').style.display = 'block';
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+
+            // AI処理シミュレーション
+            await processWithAI(message);
+        }
+
+        function addMessage(text, type) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+
+            if (type === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="message-content">${escapeHtml(text)}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'})}</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                        </svg>
+                    </div>
+                    <div class="message-bubble">
+                        <div class="message-content">${text}</div>
+                        <div class="message-time">${new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'})}</div>
+                    </div>
+                `;
+            }
+
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function processWithAI(message) {
+            const stages = ['analyze', 'search', 'generate'];
+            const stageTexts = [
+                '問題を分析しています...',
+                'ナレッジベースを検索しています...',
+                'AI回答を生成しています...'
+            ];
+
+            for (let i = 0; i < stages.length; i++) {
+                document.getElementById('processingText').textContent = stageTexts[i];
+                document.getElementById('stage' + stages[i].charAt(0).toUpperCase() + stages[i].slice(1)).classList.add('active');
+
+                await new Promise(r => setTimeout(r, 800));
+
+                document.getElementById('stage' + stages[i].charAt(0).toUpperCase() + stages[i].slice(1)).classList.add('completed');
+            }
+
+            // AI応答を生成
+            const response = generateAIResponse(message);
+
+            document.getElementById('aiProcessing').style.display = 'none';
+
+            // ステージをリセット
+            document.querySelectorAll('.stage').forEach(s => {
+                s.classList.remove('active', 'completed');
+            });
+
+            addMessage(response, 'assistant');
+        }
+
+        function generateAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+
+            if (lowerMessage.includes('wifi') || lowerMessage.includes('ネットワーク') || lowerMessage.includes('接続')) {
+                return `WiFi接続のトラブルシューティングをご案内します：\n\n1. WiFiがオンになっているか確認してください\n2. ネットワーク一覧から社内WiFi「CORP-WIFI」を選択\n3. 接続できない場合は、一度WiFiをオフ→オンにしてください\n4. 問題が続く場合は、PCを再起動してください\n\nそれでも解決しない場合は、ネットワーク障害の可能性があります。IT部門（内線: 3456）にお問い合わせください。`;
+            } else if (lowerMessage.includes('パスワード') || lowerMessage.includes('password')) {
+                return `パスワードリセットの手順をご案内します：\n\n1. パスワードリセットポータル: https://passwordreset.company.co.jp にアクセス\n2. 登録済みメールアドレスまたは電話番号で本人確認\n3. 新しいパスワードを設定（8文字以上、大小英字+数字+記号）\n4. パスワード変更後、全デバイスで再ログインが必要\n\n※ アカウントロック時は30分後に自動解除されます。急ぎの場合はIT部門にお問い合わせください。`;
+            } else if (lowerMessage.includes('プリンター') || lowerMessage.includes('printer') || lowerMessage.includes('印刷')) {
+                return `プリンターのトラブルシューティングをご案内します：\n\n1. プリンターの電源とネットワーク接続を確認\n2. 印刷キューに溜まっているジョブを削除\n3. プリンタードライバーを再インストール\n4. 「設定」→「プリンターとスキャナー」から再設定\n\nプリンター故障の場合は、総務部（内線: 4567）にお問い合わせください。`;
+            } else if (lowerMessage.includes('vpn')) {
+                return `VPN接続の手順をご案内します：\n\n1. FortiClient VPNアプリを起動\n2. 接続先: vpn.company.co.jp を選択\n3. ユーザーID: 社員番号を入力\n4. パスワード: ADパスワードを入力\n5. 二要素認証: Microsoft Authenticatorのコードを入力\n\n※ VPNサーバーの問題の場合は、IT部門（内線: 3456）にお問い合わせください。`;
+            } else if (lowerMessage.includes('メール') || lowerMessage.includes('outlook')) {
+                return `メール設定のサポートをご案内します：\n\n1. Outlook / Microsoft 365にサインイン\n2. 社員メール: firstname.lastname@company.co.jp\n3. パスワード: ADパスワードと同じ\n4. 2段階認証が必要な場合はAuthenticatorアプリを使用\n\n添付ファイルサイズ上限: 25MB\n大きなファイルはOneDriveリンクで共有してください。`;
+            } else {
+                return `ご質問ありがとうございます。\n\n${message}について、AIが回答を生成しました。\n\nより詳しいサポートが必要な場合は、新規チケットを作成するか、IT部門（内線: 3456）にお問い合わせください。`;
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/\n/g, '<br>');
+        }
+
+        // ページ切り替えは次のスクリプトで...
+    </script>
+
+    <script src="js/pages-jp.js"></script>
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirai HelpDesk - マルチAI統合デモ</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/sample-data.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- サイドバー -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🤖</span>
+                    <h1>Mirai HelpDesk</h1>
+                </div>
+                <p class="subtitle">マルチAI統合デモ</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">ダッシュボード</span>
+                </a>
+                <a href="#" class="nav-item" data-page="tickets">
+                    <span class="nav-icon">🎫</span>
+                    <span class="nav-label">チケット管理</span>
+                    <span class="badge">50</span>
+                </a>
+                <a href="#" class="nav-item" data-page="ai-assistant">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-label">AIアシスタント</span>
+                    <span class="badge">NEW</span>
+                </a>
+                <a href="#" class="nav-item" data-page="ai-knowledge">
+                    <span class="nav-icon">✨</span>
+                    <span class="nav-label">AI自動生成</span>
+                    <span class="badge">AI</span>
+                </a>
+                <a href="#" class="nav-item" data-page="knowledge">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-label">ナレッジベース</span>
+                    <span class="badge">30</span>
+                </a>
+                <a href="#" class="nav-item" data-page="approvals">
+                    <span class="nav-icon">✅</span>
+                    <span class="nav-label">承認管理</span>
+                    <span class="badge">3</span>
+                </a>
+                <a href="#" class="nav-item" data-page="m365">
+                    <span class="nav-icon">🔧</span>
+                    <span class="nav-label">M365操作</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div style="padding: 12px; background: rgba(255,255,255,0.1); border-radius: var(--radius); margin-bottom: 12px;">
+                    <div style="font-size: 11px; opacity: 0.7; margin-bottom: 8px;">マルチAIステータス</div>
+                    <div class="ai-status">
+                        <div class="ai-status-item">
+                            <span class="ai-indicator active"></span>
+                            <span>Claude (統合)</span>
+                        </div>
+                        <div class="ai-status-item">
+                            <span class="ai-indicator active"></span>
+                            <span>Gemini (収集)</span>
+                        </div>
+                        <div class="ai-status-item">
+                            <span class="ai-indicator active"></span>
+                            <span>Perplexity (根拠)</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size: 10px; opacity: 0.5; text-align: center;">
+                    v1.0.0 | 2026-01-24
+                </div>
+            </div>
+        </aside>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h2 class="page-title" id="page-title">ダッシュボード</h2>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-icon" title="通知">
+                        <span>🔔</span>
+                        <span class="badge badge-sm">3</span>
+                    </button>
+                    <div class="user-menu">
+                        <div class="user-avatar">佐</div>
+                        <div class="user-info">
+                            <div class="user-name">佐藤花子</div>
+                            <div class="user-role">Agent</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" id="main-content">
+                <!-- ページコンテンツがここに表示されます -->
+            </div>
+        </main>
+    </div>
+
+    <!-- モーダル -->
+    <div id="modal-overlay" class="modal-overlay"></div>
+
+    <script src="js/ai-orchestration.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // ページを読み込み時に自動表示
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPage('dashboard');
+        });
+
+        // ページ読み込み
+        async function loadPage(pageName) {
+            const content = document.getElementById('main-content');
+            content.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading"></div></div>';
+
+            try {
+                let html = '';
+
+                if (pageName === 'dashboard') {
+                    html = await renderDashboard();
+                } else if (pageName === 'ai-assistant') {
+                    html = renderAIAssistant();
+                } else if (pageName === 'tickets') {
+                    html = renderTickets();
+                } else if (pageName === 'ai-knowledge') {
+                    html = renderAIKnowledge();
+                } else if (pageName === 'knowledge') {
+                    html = renderKnowledge();
+                } else if (pageName === 'approvals') {
+                    html = renderApprovals();
+                } else if (pageName === 'm365') {
+                    html = renderM365();
+                }
+
+                content.innerHTML = html;
+            } catch (error) {
+                content.innerHTML = `<div class="card"><p style="color: var(--error);">エラー: ${error.message}</p></div>`;
+            }
+        }
+
+        // ナビゲーション
+        function navigateTo(page) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === page) {
+                    item.classList.add('active');
+                }
+            });
+
+            const titles = {
+                'dashboard': 'ダッシュボード',
+                'tickets': 'チケット管理',
+                'ai-assistant': 'AIアシスタント',
+                'ai-knowledge': 'AI自動生成ナレッジ',
+                'knowledge': 'ナレッジベース',
+                'approvals': '承認管理',
+                'm365': 'M365操作',
+            };
+            document.getElementById('page-title').textContent = titles[page] || page;
+
+            loadPage(page);
+        }
+
+        // ダッシュボードレンダリング
+        async function renderDashboard() {
+            const total = SAMPLE_TICKETS.length;
+            const stats = {
+                new: SAMPLE_TICKETS.filter(t => t.status === 'New').length,
+                progress: SAMPLE_TICKETS.filter(t => t.status === 'In Progress').length,
+                resolved: SAMPLE_TICKETS.filter(t => t.status === 'Resolved').length,
+                ai: SAMPLE_TICKETS.filter(t => t.ai_processed).length,
+            };
+
+            return `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">全チケット</div>
+                        <div class="stat-value" style="color: var(--primary);">${total}</div>
+                        <div class="stat-trend">📈 前週比 +12%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">新規</div>
+                        <div class="stat-value" style="color: var(--warning);">${stats.new}</div>
+                        <div class="stat-trend">🔥 対応待ち</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">対応中</div>
+                        <div class="stat-value" style="color: #722ed1;">${stats.progress}</div>
+                        <div class="stat-trend">⚡ 処理中</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">解決済み</div>
+                        <div class="stat-value" style="color: var(--success);">${stats.resolved}</div>
+                        <div class="stat-trend">✅ 完了</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🤖 マルチAI統計</h3>
+                    </div>
+                    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <div class="stat-label" style="color: rgba(255,255,255,0.9);">AI処理済みチケット</div>
+                            <div class="stat-value">${stats.ai}</div>
+                            <div class="stat-trend" style="color: rgba(255,255,255,0.9);">📊 ${Math.round((stats.ai/total)*100)}%</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                            <div class="stat-label" style="color: rgba(255,255,255,0.9);">AI生成ナレッジ</div>
+                            <div class="stat-value">${SAMPLE_KNOWLEDGE.filter(k => k.is_ai_generated).length}</div>
+                            <div class="stat-trend" style="color: rgba(255,255,255,0.9);">✨ 品質平均 ${AI_STATS.averageQualityScore}%</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                            <div class="stat-label" style="color: rgba(255,255,255,0.9);">自動化成功率</div>
+                            <div class="stat-value">${AI_STATS.automationSuccessRate}%</div>
+                            <div class="stat-trend" style="color: rgba(255,255,255,0.9);">🎯 処理${AI_STATS.averageProcessingTime}秒</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">最近のチケット</h3>
+                        <button class="btn btn-primary" onclick="navigateTo('tickets')">すべて表示</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>件名</th>
+                                    <th>優先度</th>
+                                    <th>ステータス</th>
+                                    <th>ITSM</th>
+                                    <th>AI</th>
+                                    <th>作成</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${SAMPLE_TICKETS.slice(0, 10).map(t => `
+                                    <tr onclick="viewTicket('${t.ticket_id}')">
+                                        <td>#${t.ticket_number}</td>
+                                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${t.subject}</td>
+                                        <td><span class="tag tag-${t.priority.toLowerCase()}">${t.priority}</span></td>
+                                        <td><span class="tag tag-${t.status.toLowerCase().replace(/ /g, '-')}">${t.status}</span></td>
+                                        <td><span class="tag">${ITSM_TYPES[t.itsm_type].icon}</span></td>
+                                        <td>${t.ai_processed ? '🤖' : '-'}</td>
+                                        <td style="font-size: 12px;">${new Date(t.created_at).toLocaleString('ja-JP', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // AIアシスタントレンダリング
+        function renderAIAssistant() {
+            return `
+                <div class="ai-panel">
+                    <h2 style="margin-bottom: 8px;">🤖 マルチAIオーケストレーション</h2>
+                    <p style="opacity: 0.9; margin-bottom: 24px;">
+                        Claude（統合）、Gemini（収集）、Perplexity（根拠）を組み合わせて最適な回答を生成
+                    </p>
+
+                    <div class="ai-selector">
+                        <div class="ai-option selected" data-ai="CLAUDE">
+                            <div class="ai-option-icon">🧠</div>
+                            <div class="ai-option-name">Claude</div>
+                            <div class="ai-option-desc">一次判断・最終統合</div>
+                        </div>
+                        <div class="ai-option" data-ai="GEMINI">
+                            <div class="ai-option-icon">🔍</div>
+                            <div class="ai-option-name">Gemini</div>
+                            <div class="ai-option-desc">情報収集</div>
+                        </div>
+                        <div class="ai-option" data-ai="PERPLEXITY">
+                            <div class="ai-option-icon">🌐</div>
+                            <div class="ai-option-name">Perplexity</div>
+                            <div class="ai-option-desc">根拠生成</div>
+                        </div>
+                    </div>
+
+                    <div class="query-input-wrapper">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--gray-800);">
+                            💬 問い合わせ内容
+                        </label>
+                        <textarea id="ai-query" class="query-input" placeholder="例: PCが起動しません。どうすればいいですか？">PCが起動しません。どうすればいいですか？</textarea>
+
+                        <div style="margin-top: 16px;">
+                            <button class="btn btn-primary" onclick="processAIQuery()" style="width: 100%; padding: 14px;">
+                                🚀 マルチAI処理を実行（デモ）
+                            </button>
+                        </div>
+
+                        <div style="margin-top: 12px; padding: 12px; background: rgba(255,255,255,0.3); border-radius: 4px; font-size: 12px;">
+                            💡 <strong>デモ:</strong> 上記のサンプルクエリで、3つのAIと7つのSubAgentの並列処理を体験できます！
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <h4 style="margin-bottom: 12px; font-size: 14px;">🎯 7つのSubAgent並列処理</h4>
+                        <div class="subagent-grid" id="subagent-grid">
+                            ${Object.entries(SUB_AGENTS).map(([key, agent]) => `
+                                <div class="subagent-item" id="subagent-${key}">
+                                    <div class="subagent-icon">${agent.icon}</div>
+                                    <div style="font-weight: 600; font-size: 10px;">${agent.name.replace('Knowledge', 'K.')}</div>
+                                    <div style="font-size: 9px; opacity: 0.8; margin-top: 2px;">${agent.role.substring(0, 10)}...</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ai-result-container" class="hidden"></div>
+            `;
+        }
+
+        // AI処理実行（デモ）
+        async function processAIQuery() {
+            const query = document.getElementById('ai-query').value.trim();
+            if (!query) {
+                alert('問い合わせ内容を入力してください');
+                return;
+            }
+
+            // SubAgentを処理中状態に
+            Object.keys(SUB_AGENTS).forEach(key => {
+                document.getElementById(`subagent-${key}`).className = 'subagent-item processing';
+            });
+
+            // 処理シミュレーション（各SubAgentを順次完了）
+            for (const [key, agent] of Object.entries(SUB_AGENTS)) {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                document.getElementById(`subagent-${key}`).className = 'subagent-item completed';
+            }
+
+            // サンプル結果を表示
+            const sampleResult = SAMPLE_AI_RESULTS[query] || createGenericResult(query);
+            displayAIResult(sampleResult, query);
+        }
+
+        // 汎用AI結果生成
+        function createGenericResult(query) {
+            return {
+                queryType: 'FAQ',
+                itsmType: 'INCIDENT',
+                processingTime: 2400,
+                qualityScore: { overall: 88, completeness: 90, accuracy: 86, relevance: 88 },
+                answer: {
+                    summary: `「${query}」について回答します。この問題は一般的なトラブルであり、以下の手順で解決できる可能性が高いです。`,
+                    technicalSummary: '【技術者向け】システムログを確認し、エラーコードを特定してください。',
+                    userSummary: '【一般ユーザー向け】まず、再起動を試してください。',
+                    preventiveMeasures: '再発防止策: 定期的なメンテナンスを推奨します。',
+                    improvementSuggestions: '改善提案: 自動診断ツールの導入を検討してください。',
+                    automationPotential: 70,
+                    sources: [
+                        { title: '公式ドキュメント', url: 'https://docs.microsoft.com' },
+                    ],
+                },
+                aiResponses: {
+                    CLAUDE: {
+                        model: 'Claude',
+                        answer: `Claudeによる回答: ${query}について分析します。`,
+                        confidence: 92,
+                        sources: [],
+                    },
+                },
+            };
+        }
+
+        // AI結果表示
+        function displayAIResult(result, query) {
+            const container = document.getElementById('ai-result-container');
+            container.className = 'result-container';
+
+            const aiCount = result.aiResponses ? Object.keys(result.aiResponses).length : 1;
+
+            container.innerHTML = `
+                <div class="card-header">
+                    <h3 class="card-title">🎯 マルチAI処理結果</h3>
+                    <div style="display: flex; gap: 12px;">
+                        <span class="tag tag-ai">${aiCount}つのAI</span>
+                        <span class="tag">7つのSubAgent</span>
+                        <span class="tag tag-auto">⏱️ ${(result.processingTime/1000).toFixed(1)}秒</span>
+                    </div>
+                </div>
+
+                <div class="quality-score">
+                    <div class="score-item">
+                        <div class="score-value">${result.qualityScore.overall}%</div>
+                        <div class="score-label">総合品質</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value">${result.qualityScore.completeness}%</div>
+                        <div class="score-label">完全性</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value">${result.qualityScore.accuracy}%</div>
+                        <div class="score-label">正確性</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value">${result.qualityScore.relevance}%</div>
+                        <div class="score-label">関連性</div>
+                    </div>
+                </div>
+
+                <div style="background: var(--gray-50); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 20px;">
+                    <h4 style="margin-bottom: 12px;">💡 統合回答</h4>
+                    <div style="line-height: 1.8; white-space: pre-wrap;">${result.answer.summary}</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                    <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius);">
+                        <h5 style="font-size: 14px; margin-bottom: 8px;">🔧 技術者向け</h5>
+                        <p style="font-size: 13px; line-height: 1.6;">${result.answer.technicalSummary}</p>
+                    </div>
+                    <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius);">
+                        <h5 style="font-size: 14px; margin-bottom: 8px;">👤 一般向け</h5>
+                        <p style="font-size: 13px; line-height: 1.6;">${result.answer.userSummary}</p>
+                    </div>
+                </div>
+
+                <div style="background: var(--gray-50); padding: 16px; border-radius: var(--radius); margin-bottom: 16px;">
+                    <h5 style="font-size: 14px; margin-bottom: 8px;">🛡️ 再発防止策</h5>
+                    <p style="font-size: 13px; line-height: 1.6;">${result.answer.preventiveMeasures}</p>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px; border-radius: var(--radius); margin-bottom: 16px;">
+                    <h5 style="margin-bottom: 8px;">⚙️ 自動化提案</h5>
+                    <p style="opacity: 0.95; font-size: 13px; margin-bottom: 12px;">${result.answer.improvementSuggestions}</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 4px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: 700;">${result.answer.automationPotential}%</div>
+                        <div style="font-size: 11px; opacity: 0.9;">自動化可能性</div>
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 12px;">📚 参照元・エビデンス</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    ${result.answer.sources.map(source => `
+                        <div style="background: var(--gray-50); padding: 12px; border-radius: var(--radius); display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 20px;">🔗</span>
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px;">${source.title}</div>
+                                <div style="font-size: 12px; color: var(--gray-500); margin-top: 2px;">
+                                    <a href="${source.url}" target="_blank" style="color: var(--primary);">${source.url}</a>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // その他のレンダリング関数は省略してシンプルに実装
+        function renderTickets() { return '<div class="card"><h3>チケット一覧 - 実装中</h3><p>demo-full.htmlでサンプル表示中</p></div>'; }
+        function renderAIKnowledge() { return '<div class="card"><h3>AI自動生成 - 実装中</h3></div>'; }
+        function renderKnowledge() { return '<div class="card"><h3>ナレッジ - 実装中</h3></div>'; }
+        function renderApprovals() { return '<div class="card"><h3>承認管理 - 実装中</h3></div>'; }
+        function renderM365() { return '<div class="card"><h3>M365操作 - 実装中</h3></div>'; }
+
+        function viewTicket(id) { alert('チケット詳細: ' + id); }
+        function closeModal() { document.getElementById('modal-overlay').className = 'modal-overlay'; }
+    </script>
+</body>
+</html>
