@@ -1,0 +1,109 @@
+{
+  "name": "agent-2-backend-models",
+  "displayName": "Backend Models Agent",
+  "role": "データモデルとビジネスロジックの実装担当",
+  "description": "Models, Services, ビジネスロジックを担当。データベース操作とビジネスルールを実装する。",
+
+  "responsibility": {
+    "filePatterns": [
+      "src/models/**/*.js",
+      "src/services/**/*.js",
+      "src/utils/**/*.js"
+    ],
+    "excludePatterns": [
+      "**/*.test.js",
+      "**/*.spec.js"
+    ],
+    "description": "データモデル、ビジネスサービス、ユーティリティ関数"
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write",
+      "Edit",
+      "Grep",
+      "Glob",
+      "Bash(npm run*)",
+      "Bash(git*)",
+      "Bash(sqlite3*)"
+    ],
+    "restricted": [
+      "Write(src/api/controllers/**)",
+      "Write(src/api/routes/**)"
+    ]
+  },
+
+  "priority": 1,
+
+  "dependencies": {
+    "requires": [
+      "agent-6-database"
+    ],
+    "requiredBy": [
+      "agent-1-backend-api",
+      "agent-3-frontend-pages"
+    ],
+    "description": "Databaseスキーマに依存し、API/Frontendから利用される"
+  },
+
+  "conflict_prevention": {
+    "file_locking": true,
+    "lock_timeout_seconds": 30,
+    "merge_strategy": "three-way-merge",
+    "rules": [
+      {
+        "rule": "no_concurrent_same_model",
+        "action": "wait_for_lock"
+      },
+      {
+        "rule": "service_interface_conflict",
+        "action": "notify_and_wait"
+      },
+      {
+        "rule": "database_query_conflict",
+        "action": "auto_merge"
+      }
+    ]
+  },
+
+  "communication": {
+    "method": "message-passing",
+    "channels": [
+      "task-queue",
+      "event-bus"
+    ],
+    "events": {
+      "emits": [
+        "model.schema.changed",
+        "service.interface.changed",
+        "business_rule.updated"
+      ],
+      "listens": [
+        "database.migration.completed",
+        "api.requirement.changed"
+      ]
+    }
+  },
+
+  "task_distribution": {
+    "max_concurrent_tasks": 2,
+    "auto_assign": true,
+    "task_types": [
+      "implement_model",
+      "add_service_method",
+      "update_business_logic",
+      "optimize_query"
+    ]
+  },
+
+  "quality_checks": {
+    "pre_commit": [
+      "eslint src/models/**/*.js src/services/**/*.js",
+      "prettier --check src/models/**/*.js src/services/**/*.js"
+    ],
+    "post_commit": [
+      "npm run test -- src/models/ src/services/"
+    ]
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "name": "agent-3-frontend-pages",
+  "displayName": "Frontend Pages Agent",
+  "role": "ページコンポーネントの実装担当",
+  "description": "Reactページコンポーネントを担当。ダッシュボード、チケット管理、承認画面などの実装を行う。",
+
+  "responsibility": {
+    "filePatterns": [
+      "frontend/src/pages/**/*.jsx",
+      "frontend/src/pages/**/*.tsx",
+      "frontend/src/pages/**/*.css",
+      "frontend/src/pages/**/*.scss"
+    ],
+    "excludePatterns": [
+      "**/*.test.jsx",
+      "**/*.test.tsx",
+      "**/*.spec.jsx",
+      "**/*.spec.tsx"
+    ],
+    "description": "ページレベルのReactコンポーネント、ページ固有のスタイル"
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write",
+      "Edit",
+      "Grep",
+      "Glob",
+      "Bash(npm run*)",
+      "Bash(git*)",
+      "ToolSearch(select:chrome-devtools*)"
+    ],
+    "restricted": [
+      "Write(frontend/src/components/**)",
+      "Write(frontend/src/services/**)"
+    ]
+  },
+
+  "priority": 3,
+
+  "dependencies": {
+    "requires": [
+      "agent-4-frontend-components",
+      "agent-5-frontend-services"
+    ],
+    "requiredBy": [],
+    "description": "共通コンポーネントとサービスに依存"
+  },
+
+  "conflict_prevention": {
+    "file_locking": true,
+    "lock_timeout_seconds": 30,
+    "merge_strategy": "semantic-diff",
+    "rules": [
+      {
+        "rule": "no_concurrent_same_page",
+        "action": "wait_for_lock"
+      },
+      {
+        "rule": "component_import_conflict",
+        "action": "auto_resolve"
+      },
+      {
+        "rule": "route_path_conflict",
+        "action": "notify_and_manual_resolve"
+      }
+    ]
+  },
+
+  "communication": {
+    "method": "message-passing",
+    "channels": [
+      "task-queue",
+      "event-bus"
+    ],
+    "events": {
+      "emits": [
+        "page.created",
+        "page.route.changed",
+        "page.component.dependency.added"
+      ],
+      "listens": [
+        "component.interface.changed",
+        "service.api.changed",
+        "design.theme.updated"
+      ]
+    }
+  },
+
+  "task_distribution": {
+    "max_concurrent_tasks": 3,
+    "auto_assign": true,
+    "task_types": [
+      "implement_page",
+      "add_page_route",
+      "update_page_layout",
+      "integrate_components"
+    ]
+  },
+
+  "quality_checks": {
+    "pre_commit": [
+      "eslint frontend/src/pages/**/*.{jsx,tsx}",
+      "prettier --check frontend/src/pages/**/*.{jsx,tsx}"
+    ],
+    "post_commit": [
+      "npm run test -- frontend/src/pages/",
+      "chrome-devtools verify-no-errors"
+    ]
+  },
+
+  "webui_validation": {
+    "tool": "chrome-devtools",
+    "rules": [
+      "no_console_errors",
+      "no_network_errors",
+      "no_accessibility_violations",
+      "responsive_design_check"
+    ],
+    "auto_fix": true
+  }
+}

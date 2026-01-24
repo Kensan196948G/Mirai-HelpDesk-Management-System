@@ -1,0 +1,127 @@
+{
+  "name": "agent-5-frontend-services",
+  "displayName": "Frontend Services Agent",
+  "role": "フロントエンドサービスレイヤーの実装担当",
+  "description": "API通信、状態管理、認証処理を担当。Backend APIとの連携、グローバル状態管理を実装する。",
+
+  "responsibility": {
+    "filePatterns": [
+      "frontend/src/services/**/*.js",
+      "frontend/src/services/**/*.ts",
+      "frontend/src/api/**/*.js",
+      "frontend/src/api/**/*.ts",
+      "frontend/src/store/**/*.js",
+      "frontend/src/store/**/*.ts",
+      "frontend/src/context/**/*.jsx",
+      "frontend/src/context/**/*.tsx"
+    ],
+    "excludePatterns": [
+      "**/*.test.js",
+      "**/*.test.ts",
+      "**/*.spec.js",
+      "**/*.spec.ts"
+    ],
+    "description": "API通信、状態管理、認証サービス、データフェッチング"
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write",
+      "Edit",
+      "Grep",
+      "Glob",
+      "Bash(npm run*)",
+      "Bash(git*)",
+      "WebFetch"
+    ],
+    "restricted": [
+      "Write(frontend/src/components/**)",
+      "Write(frontend/src/pages/**)"
+    ]
+  },
+
+  "priority": 2,
+
+  "dependencies": {
+    "requires": [
+      "agent-1-backend-api"
+    ],
+    "requiredBy": [
+      "agent-3-frontend-pages"
+    ],
+    "description": "Backend APIに依存し、ページから利用される"
+  },
+
+  "conflict_prevention": {
+    "file_locking": true,
+    "lock_timeout_seconds": 30,
+    "merge_strategy": "semantic-diff",
+    "rules": [
+      {
+        "rule": "no_concurrent_same_service",
+        "action": "wait_for_lock"
+      },
+      {
+        "rule": "api_interface_conflict",
+        "action": "notify_and_wait"
+      },
+      {
+        "rule": "state_schema_conflict",
+        "action": "manual_resolve"
+      }
+    ]
+  },
+
+  "communication": {
+    "method": "message-passing",
+    "channels": [
+      "task-queue",
+      "event-bus"
+    ],
+    "events": {
+      "emits": [
+        "service.api.changed",
+        "state.schema.updated",
+        "auth.flow.changed"
+      ],
+      "listens": [
+        "api.route.created",
+        "api.controller.updated",
+        "backend.schema.changed"
+      ]
+    }
+  },
+
+  "task_distribution": {
+    "max_concurrent_tasks": 3,
+    "auto_assign": true,
+    "task_types": [
+      "implement_api_client",
+      "add_state_management",
+      "update_auth_service",
+      "add_data_fetching_hook"
+    ]
+  },
+
+  "quality_checks": {
+    "pre_commit": [
+      "eslint frontend/src/services/**/*.{js,ts}",
+      "prettier --check frontend/src/services/**/*.{js,ts}"
+    ],
+    "post_commit": [
+      "npm run test -- frontend/src/services/",
+      "npm run test:api-integration"
+    ]
+  },
+
+  "api_integration": {
+    "backend_base_url": {
+      "development": "http://localhost:3001",
+      "production": "https://192.168.0.187:8001"
+    },
+    "auth_method": "JWT",
+    "error_handling": "centralized",
+    "retry_strategy": "exponential_backoff"
+  }
+}

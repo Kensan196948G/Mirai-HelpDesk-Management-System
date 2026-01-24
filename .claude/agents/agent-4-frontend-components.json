@@ -1,0 +1,132 @@
+{
+  "name": "agent-4-frontend-components",
+  "displayName": "Frontend Components Agent",
+  "role": "再利用可能なコンポーネントの実装担当",
+  "description": "共通のReactコンポーネントを担当。ボタン、フォーム、テーブル、モーダルなどの再利用可能なUIパーツを実装する。",
+
+  "responsibility": {
+    "filePatterns": [
+      "frontend/src/components/**/*.jsx",
+      "frontend/src/components/**/*.tsx",
+      "frontend/src/components/**/*.css",
+      "frontend/src/components/**/*.scss",
+      "frontend/src/hooks/**/*.js",
+      "frontend/src/hooks/**/*.ts"
+    ],
+    "excludePatterns": [
+      "**/*.test.jsx",
+      "**/*.test.tsx",
+      "**/*.spec.jsx",
+      "**/*.spec.tsx"
+    ],
+    "description": "再利用可能なUIコンポーネント、カスタムフック"
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write",
+      "Edit",
+      "Grep",
+      "Glob",
+      "Bash(npm run*)",
+      "Bash(git*)",
+      "ToolSearch(select:chrome-devtools*)"
+    ],
+    "restricted": [
+      "Write(frontend/src/pages/**)",
+      "Write(frontend/src/services/**)"
+    ]
+  },
+
+  "priority": 2,
+
+  "dependencies": {
+    "requires": [],
+    "requiredBy": [
+      "agent-3-frontend-pages"
+    ],
+    "description": "他のコンポーネントに依存せず、ページから利用される"
+  },
+
+  "conflict_prevention": {
+    "file_locking": true,
+    "lock_timeout_seconds": 30,
+    "merge_strategy": "semantic-diff",
+    "rules": [
+      {
+        "rule": "no_concurrent_same_component",
+        "action": "wait_for_lock"
+      },
+      {
+        "rule": "component_props_interface_conflict",
+        "action": "notify_and_wait"
+      },
+      {
+        "rule": "style_conflict",
+        "action": "auto_merge_css"
+      }
+    ]
+  },
+
+  "communication": {
+    "method": "message-passing",
+    "channels": [
+      "task-queue",
+      "event-bus"
+    ],
+    "events": {
+      "emits": [
+        "component.created",
+        "component.interface.changed",
+        "component.props.updated",
+        "hook.created"
+      ],
+      "listens": [
+        "design.system.updated",
+        "theme.changed",
+        "accessibility.requirement.added"
+      ]
+    }
+  },
+
+  "task_distribution": {
+    "max_concurrent_tasks": 4,
+    "auto_assign": true,
+    "task_types": [
+      "implement_component",
+      "update_component_props",
+      "add_custom_hook",
+      "refactor_component",
+      "add_component_story"
+    ]
+  },
+
+  "quality_checks": {
+    "pre_commit": [
+      "eslint frontend/src/components/**/*.{jsx,tsx}",
+      "prettier --check frontend/src/components/**/*.{jsx,tsx}"
+    ],
+    "post_commit": [
+      "npm run test -- frontend/src/components/",
+      "chrome-devtools verify-component-rendering"
+    ]
+  },
+
+  "webui_validation": {
+    "tool": "chrome-devtools",
+    "rules": [
+      "no_console_errors",
+      "proper_prop_types",
+      "accessibility_compliance",
+      "visual_regression_test"
+    ],
+    "auto_fix": true
+  },
+
+  "design_system": {
+    "framework": "Ant Design",
+    "custom_theme": true,
+    "style_guide": "frontend/docs/style-guide.md"
+  }
+}

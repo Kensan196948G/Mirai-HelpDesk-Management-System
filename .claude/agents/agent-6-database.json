@@ -1,0 +1,140 @@
+{
+  "name": "agent-6-database",
+  "displayName": "Database Agent",
+  "role": "データベース設計とマイグレーション担当",
+  "description": "データベーススキーマ、マイグレーション、シードデータを担当。SQLiteデータベースの設計と管理を行う。",
+
+  "responsibility": {
+    "filePatterns": [
+      "database/**/*.sql",
+      "database/migrations/**/*.js",
+      "database/seeds/**/*.js",
+      "scripts/migrate.js",
+      "scripts/seed.js",
+      "data/**/*.db"
+    ],
+    "excludePatterns": [
+      "**/*.test.js",
+      "**/*.spec.js"
+    ],
+    "description": "データベーススキーマ、マイグレーションスクリプト、シードデータ"
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write",
+      "Edit",
+      "Grep",
+      "Glob",
+      "Bash(npm run db:*)",
+      "Bash(sqlite3*)",
+      "Bash(git*)"
+    ],
+    "restricted": [
+      "Write(src/models/**)",
+      "Write(src/services/**)"
+    ]
+  },
+
+  "priority": 1,
+
+  "dependencies": {
+    "requires": [],
+    "requiredBy": [
+      "agent-2-backend-models"
+    ],
+    "description": "他に依存せず、Modelsから利用される"
+  },
+
+  "conflict_prevention": {
+    "file_locking": true,
+    "lock_timeout_seconds": 60,
+    "merge_strategy": "sequential",
+    "rules": [
+      {
+        "rule": "no_concurrent_migration",
+        "action": "strict_sequential"
+      },
+      {
+        "rule": "schema_conflict",
+        "action": "manual_resolve_required"
+      },
+      {
+        "rule": "seed_data_conflict",
+        "action": "notify_and_wait"
+      }
+    ]
+  },
+
+  "communication": {
+    "method": "message-passing",
+    "channels": [
+      "task-queue",
+      "event-bus"
+    ],
+    "events": {
+      "emits": [
+        "database.migration.completed",
+        "database.schema.changed",
+        "database.seed.completed"
+      ],
+      "listens": [
+        "model.requirement.added",
+        "business_rule.requires_schema_change"
+      ]
+    }
+  },
+
+  "task_distribution": {
+    "max_concurrent_tasks": 1,
+    "auto_assign": false,
+    "task_types": [
+      "create_migration",
+      "update_schema",
+      "add_seed_data",
+      "create_index"
+    ]
+  },
+
+  "quality_checks": {
+    "pre_commit": [
+      "npm run db:validate-schema",
+      "eslint database/**/*.js"
+    ],
+    "post_commit": [
+      "npm run db:migrate -- --dry-run",
+      "npm run db:test-rollback"
+    ]
+  },
+
+  "database_config": {
+    "type": "SQLite",
+    "development": {
+      "path": "./data/development/helpdesk.db"
+    },
+    "production": {
+      "path": "./data/production/helpdesk.db"
+    },
+    "migration_strategy": "sequential",
+    "backup_before_migration": true,
+    "rollback_support": true
+  },
+
+  "schema_rules": {
+    "naming_convention": "snake_case",
+    "audit_trail": {
+      "required": true,
+      "tables": [
+        "ticket_history",
+        "m365_execution_logs",
+        "approvals"
+      ]
+    },
+    "soft_delete": false,
+    "timestamps": {
+      "created_at": true,
+      "updated_at": true
+    }
+  }
+}

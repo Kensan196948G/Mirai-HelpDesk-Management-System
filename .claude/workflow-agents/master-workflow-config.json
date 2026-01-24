@@ -1,0 +1,249 @@
+{
+  "version": "1.0.0",
+  "name": "master-workflow-config",
+  "description": "工程管理SubAgentと機能領域SubAgentの統合マスター設定",
+
+  "agent_architecture": {
+    "description": "2層エージェント構造",
+    "layers": {
+      "workflow_layer": {
+        "description": "工程管理層 - ワークフローとゲート制御",
+        "location": ".claude/workflow-agents/",
+        "agents": [
+          "spec-planner",
+          "arch-reviewer",
+          "code-implementer",
+          "code-reviewer",
+          "test-designer",
+          "test-reviewer",
+          "ci-specialist"
+        ],
+        "responsibility": "工程管理、品質ゲート、GO/NO-GO判定"
+      },
+      "functional_layer": {
+        "description": "機能実装層 - 領域別並列開発",
+        "location": ".claude/agents/",
+        "agents": [
+          "agent-6-database",
+          "agent-2-backend-models",
+          "agent-1-backend-api",
+          "agent-4-frontend-components",
+          "agent-5-frontend-services",
+          "agent-3-frontend-pages",
+          "agent-7-docs"
+        ],
+        "responsibility": "詳細実装、並列開発、コンフリクト回避"
+      }
+    },
+    "coordination": {
+      "principle": "工程管理層が方針決定、機能実装層が詳細実装",
+      "example": "code-implementer が全体設計 → agent-1,2,6 が並列実装"
+    }
+  },
+
+  "workflow_execution": {
+    "standard_flow": [
+      {
+        "step": 1,
+        "workflow_agent": "spec-planner",
+        "functional_agents": [],
+        "output": "specs/*",
+        "gate": "on-spec-complete"
+      },
+      {
+        "step": 2,
+        "workflow_agent": "arch-reviewer",
+        "functional_agents": [],
+        "input": "specs/*",
+        "output": "design/*, reviews/arch-review-*.json",
+        "gate": "on-arch-approved",
+        "pass_condition": "result == PASS"
+      },
+      {
+        "step": 3,
+        "workflow_agent": "code-implementer",
+        "functional_agents": [
+          "agent-6-database",
+          "agent-2-backend-models",
+          "agent-1-backend-api"
+        ],
+        "coordination": "code-implementer が方針決定、functional agents が並列実装",
+        "input": "design/*, specs/*",
+        "output": "src/**/*",
+        "gate": "on-implementation-complete"
+      },
+      {
+        "step": 4,
+        "workflow_agent": "code-reviewer",
+        "functional_agents": [],
+        "input": "src/**/*,specs/*,design/*",
+        "output": "reviews/code-review-*.json",
+        "gate": "on-code-review-result",
+        "pass_condition": "result == PASS OR PASS_WITH_WARNINGS",
+        "fail_action": "send_back_to:code-implementer"
+      },
+      {
+        "step": 5,
+        "workflow_agent": "test-designer",
+        "functional_agents": [],
+        "input": "src/**/*,specs/*",
+        "output": "tests/**/*",
+        "gate": "on-test-design-complete"
+      },
+      {
+        "step": 6,
+        "workflow_agent": "test-reviewer",
+        "functional_agents": [],
+        "input": "tests/**/*,src/**/*,specs/*",
+        "output": "reviews/test-review-*.json",
+        "gate": "on-test-review-result",
+        "pass_condition": "result == PASS OR PASS_WITH_WARNINGS",
+        "fail_action": "send_back_to:test-designer"
+      },
+      {
+        "step": 7,
+        "workflow_agent": "ci-specialist",
+        "functional_agents": [],
+        "input": "tests/**/*,src/**/*,specs/*",
+        "output": "ci/*, ci/gate-result-*.json",
+        "gate": "on-release-decision",
+        "go_condition": "decision == GO",
+        "nogo_action": "block_release"
+      }
+    ]
+  },
+
+  "gate_enforcement": {
+    "enabled": true,
+    "strict_mode": true,
+    "rules": [
+      {
+        "rule": "no_phase_skip",
+        "description": "工程スキップ禁止（spec → arch → code → ... の順序厳守）",
+        "exception": "[skip-gate:phase-N] フラグがある場合のみ許可",
+        "violation_action": "block_and_notify"
+      },
+      {
+        "rule": "no_hook_bypass",
+        "description": "Hook を通らない遷移は禁止",
+        "enforcement": "全遷移はworkflow-gates.jsonを経由必須",
+        "violation_action": "block_and_escalate"
+      },
+      {
+        "rule": "mandatory_sendback_on_fail",
+        "description": "レビューFAILは必ず差し戻す",
+        "targets": ["code-reviewer", "test-reviewer"],
+        "action": "auto_sendback_to_previous_phase"
+      },
+      {
+        "rule": "no_out_of_spec_implementation",
+        "description": "仕様外実装禁止",
+        "enforcement": "code-reviewer が検出時に FAIL 判定",
+        "remediation": "spec-planner で要件追加してからやり直し"
+      },
+      {
+        "rule": "design_completeness",
+        "description": "設計に書いていないことは未実装扱い",
+        "enforcement": "arch-reviewer が設計の完全性を検証"
+      }
+    ]
+  },
+
+  "parallel_execution": {
+    "enabled": true,
+    "coordination": {
+      "method": "code-implementer orchestration",
+      "description": "code-implementerが機能領域別エージェントを並列起動・調整",
+      "example": {
+        "task": "チケット管理機能実装",
+        "execution": [
+          {
+            "phase": "sequential",
+            "agent": "agent-6-database",
+            "action": "ticketsテーブル作成"
+          },
+          {
+            "phase": "sequential",
+            "agent": "agent-2-backend-models",
+            "action": "Ticketモデル作成"
+          },
+          {
+            "phase": "parallel",
+            "agents": [
+              {
+                "agent": "agent-1-backend-api",
+                "action": "Ticket API作成"
+              },
+              {
+                "agent": "agent-4-frontend-components",
+                "action": "TicketFormコンポーネント作成"
+              }
+            ]
+          },
+          {
+            "phase": "sequential",
+            "agent": "agent-5-frontend-services",
+            "action": "Ticket API Client作成"
+          },
+          {
+            "phase": "sequential",
+            "agent": "agent-3-frontend-pages",
+            "action": "チケット一覧ページ作成"
+          }
+        ]
+      }
+    },
+    "conflict_prevention": {
+      "file_locking": true,
+      "same_file_concurrent_write": "禁止",
+      "shared_config_location": "config/*",
+      "conflict_escalation": "spec-planner"
+    }
+  },
+
+  "monitoring_and_logging": {
+    "enabled": true,
+    "log_directory": ".claude/workflow-agents/logs/",
+    "metrics": [
+      "各フェーズ所要時間",
+      "レビューFAIL率",
+      "差し戻し回数",
+      "品質ゲート通過率",
+      "GO/NO-GO比率"
+    ],
+    "alerts": {
+      "review_fail_threshold": 3,
+      "phase_timeout": "notify",
+      "gate_block": "escalate"
+    }
+  },
+
+  "quality_assurance": {
+    "minimum_standards": {
+      "code_review": "blocking_issues == 0",
+      "test_coverage": 60,
+      "integration_test_pass_rate": 100,
+      "security_scan": "no critical/high vulnerabilities"
+    },
+    "target_standards": {
+      "code_review": "warnings == 0",
+      "test_coverage": 80,
+      "e2e_critical_paths": 100
+    }
+  },
+
+  "documentation_requirements": {
+    "mandatory": [
+      "specs/overview.md",
+      "specs/requirements.md",
+      "design/architecture.md",
+      "design/security.md",
+      "tests/test-cases.md",
+      "ci/pipeline.md"
+    ],
+    "auto_generated": [
+      "reviews/*.json",
+      "ci/gate-result-*.json"
+    ]
+  }
+}

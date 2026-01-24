@@ -1,0 +1,65 @@
+{
+  "name": "@mirai-helpdesk/frontend",
+  "version": "0.1.0",
+  "description": "Frontend UI for Mirai HelpDesk Management System",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000",
+    "start": "vite preview --host 0.0.0.0 --port 8000",
+    "prod": "vite preview --host 0.0.0.0 --port 8000",
+    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "build:prod": "vite build --mode production",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,json}\"",
+    "clean": "rm -rf node_modules dist .vite coverage test-results playwright-report"
+  },
+  "keywords": [
+    "helpdesk",
+    "frontend",
+    "react",
+    "vite",
+    "antd"
+  ],
+  "author": "Mirai IT Team",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "antd": "^5.22.5",
+    "@ant-design/icons": "^5.5.2",
+    "axios": "^1.7.9",
+    "dayjs": "^1.11.13",
+    "zustand": "^5.0.2",
+    "react-query": "^3.39.3",
+    "recharts": "^2.15.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.5",
+    "vitest": "^2.1.8",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/user-event": "^14.5.2",
+    "@playwright/test": "^1.49.1",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "prettier": "^3.4.2",
+    "sass": "^1.83.0"
+  }
+}

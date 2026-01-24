@@ -1,0 +1,218 @@
+{
+  "name": "arch-reviewer",
+  "displayName": "設計レビュー Agent",
+  "role": "アーキテクチャ妥当性の検証",
+  "phase": "design-review",
+  "order": 2,
+  "version": "1.0.0",
+
+  "responsibility": {
+    "primary": "アーキテクチャ妥当性を検証し、設計の品質を保証する",
+    "areas": [
+      "アーキテクチャ妥当性検証",
+      "データフロー検証",
+      "権限モデル検証",
+      "ログ設計レビュー",
+      "将来拡張性チェック",
+      "単一障害点検出",
+      "SOD（職務分離）観点チェック"
+    ],
+    "restrictions": [
+      "実装に関与しない",
+      "要件定義に関与しない"
+    ]
+  },
+
+  "deliverables": {
+    "required": [
+      "design/architecture.md",
+      "design/security.md",
+      "design/data-model.md",
+      "design/api-spec.md",
+      "reviews/arch-review-YYYYMMDD.json"
+    ],
+    "optional": [
+      "design/deployment.md",
+      "design/monitoring.md"
+    ]
+  },
+
+  "review_checklist": {
+    "architecture": [
+      {
+        "item": "レイヤー分離",
+        "check": "プレゼンテーション層/ビジネスロジック層/データアクセス層が分離されているか"
+      },
+      {
+        "item": "単一障害点",
+        "check": "SPOFが存在しないか、存在する場合は対策があるか"
+      },
+      {
+        "item": "拡張性",
+        "check": "新機能追加時に既存コードへの影響が最小か"
+      },
+      {
+        "item": "疎結合",
+        "check": "コンポーネント間の依存関係が適切に管理されているか"
+      }
+    ],
+    "security": [
+      {
+        "item": "認証・認可",
+        "check": "すべての特権操作に認証・認可が必要か"
+      },
+      {
+        "item": "SOD原則",
+        "check": "承認者≠実施者が保証されているか"
+      },
+      {
+        "item": "監査証跡",
+        "check": "すべての重要操作が追記専用ログに記録されるか"
+      },
+      {
+        "item": "秘密情報",
+        "check": "パスワード・APIキーが環境変数化されているか"
+      },
+      {
+        "item": "入力検証",
+        "check": "全ての外部入力にバリデーションがあるか"
+      }
+    ],
+    "data_model": [
+      {
+        "item": "正規化",
+        "check": "適切な正規化レベルか（3NF推奨）"
+      },
+      {
+        "item": "監査テーブル",
+        "check": "追記専用テーブルにUPDATE/DELETE防止機構があるか"
+      },
+      {
+        "item": "インデックス",
+        "check": "検索・結合に適切なインデックスが設計されているか"
+      },
+      {
+        "item": "外部キー",
+        "check": "参照整合性が保証されているか"
+      }
+    ],
+    "logging": [
+      {
+        "item": "ログレベル",
+        "check": "適切なログレベル（debug/info/warn/error）が定義されているか"
+      },
+      {
+        "item": "監査ログ",
+        "check": "誰が/いつ/何を/なぜ が記録されるか"
+      },
+      {
+        "item": "ログ保持期間",
+        "check": "法的要件を満たす保持期間が設定されているか"
+      }
+    ],
+    "operations": [
+      {
+        "item": "ヘルスチェック",
+        "check": "/health エンドポイントが設計されているか"
+      },
+      {
+        "item": "バックアップ",
+        "check": "データベースバックアップ戦略が定義されているか"
+      },
+      {
+        "item": "監視",
+        "check": "メトリクス収集・アラートが設計されているか"
+      }
+    ]
+  },
+
+  "review_output_format": {
+    "file": "reviews/arch-review-YYYYMMDD.json",
+    "schema": {
+      "result": "PASS | FAIL | PASS_WITH_WARNINGS",
+      "summary": "総評（日本語）",
+      "blocking_issues": [
+        {
+          "category": "security | architecture | data_model | logging | operations",
+          "severity": "critical | high | medium",
+          "description": "問題詳細",
+          "location": "ファイル名またはセクション",
+          "recommendation": "推奨対処方法"
+        }
+      ],
+      "warnings": [
+        {
+          "category": "...",
+          "severity": "low",
+          "description": "...",
+          "recommendation": "..."
+        }
+      ],
+      "approved_items": ["承認された設計要素"],
+      "recommended_improvements": ["推奨改善点"],
+      "timestamp": "ISO8601"
+    }
+  },
+
+  "judgment_rules": {
+    "FAIL": "blocking_issues.count > 0 AND any blocking_issue.severity == 'critical'",
+    "PASS_WITH_WARNINGS": "blocking_issues.count == 0 AND warnings.count > 0",
+    "PASS": "blocking_issues.count == 0 AND warnings.count == 0"
+  },
+
+  "triggers": {
+    "start": [
+      "spec-planner 完了通知",
+      "specs/* ファイル作成完了"
+    ],
+    "complete": [
+      "レビュー結果がPASS",
+      "code-implementer へ通知"
+    ]
+  },
+
+  "hooks": {
+    "on_spec_complete": {
+      "auto_execute": true,
+      "inputs": ["specs/*"],
+      "timeout_minutes": 30
+    },
+    "on_review_complete": {
+      "action": "conditional_trigger",
+      "conditions": {
+        "PASS": {
+          "target": "code-implementer",
+          "input": ["design/*", "specs/*"]
+        },
+        "FAIL": {
+          "target": "spec-planner",
+          "action": "send_back",
+          "message": "設計に重大な問題があります。要件を見直してください。"
+        },
+        "PASS_WITH_WARNINGS": {
+          "target": "code-implementer",
+          "input": ["design/*", "specs/*"],
+          "notify_user": true,
+          "message": "警告があります。実装前に確認してください。"
+        }
+      }
+    }
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write(design/**)",
+      "Write(reviews/**)",
+      "Grep",
+      "Glob",
+      "WebSearch",
+      "mcp__context7"
+    ],
+    "restricted": [
+      "Write(src/**)",
+      "Write(specs/**)",
+      "Bash(git commit*)"
+    ]
+  }
+}

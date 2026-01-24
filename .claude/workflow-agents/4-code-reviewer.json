@@ -1,0 +1,295 @@
+{
+  "name": "code-reviewer",
+  "displayName": "自動レビューゲート Agent",
+  "role": "コード品質の自動検証とゲート判定",
+  "phase": "code-review",
+  "order": 4,
+  "version": "1.0.0",
+
+  "responsibility": {
+    "primary": "実装されたコードが仕様・設計・運用要件に準拠しているかを自動検証する",
+    "areas": [
+      "仕様準拠チェック",
+      "設計準拠チェック",
+      "例外処理検証",
+      "ログ出力検証",
+      "権限チェック検証",
+      "将来変更耐性検証",
+      "セキュリティ脆弱性検出"
+    ],
+    "gate_function": "PASS/FAIL/PASS_WITH_WARNINGSの機械的判定"
+  },
+
+  "deliverables": {
+    "required": [
+      "reviews/code-review-YYYYMMDD-feature-xxx.json"
+    ],
+    "format": "JSON（機械判定可能）"
+  },
+
+  "review_checklist": {
+    "specification_compliance": {
+      "weight": "critical",
+      "checks": [
+        {
+          "item": "入出力仕様準拠",
+          "verify": "specs/requirements.md の入出力定義と実装が一致するか"
+        },
+        {
+          "item": "要件網羅性",
+          "verify": "要件一覧の全項目が実装されているか"
+        },
+        {
+          "item": "仕様外実装",
+          "verify": "要件にない機能が実装されていないか（FORBIDDEN）"
+        }
+      ]
+    },
+    "error_handling": {
+      "weight": "critical",
+      "checks": [
+        {
+          "item": "try/catch 網羅",
+          "verify": "全ての非同期処理がtry/catchで囲まれているか",
+          "pattern": "async function.*\\{[^}]*await[^}]*\\}(?!.*catch)",
+          "action": "FAIL if found"
+        },
+        {
+          "item": "エラー時の異常終了防止",
+          "verify": "エラー時にプロセスが停止しないか"
+        },
+        {
+          "item": "エラーログ出力",
+          "verify": "catchブロックに必ずログ出力があるか",
+          "pattern": "catch.*\\{[^}]*\\}(?!.*logger\\.error|console\\.error)",
+          "action": "FAIL if found"
+        }
+      ]
+    },
+    "logging_and_audit": {
+      "weight": "critical",
+      "checks": [
+        {
+          "item": "成功ログ",
+          "verify": "重要処理の成功時にinfoレベルログがあるか"
+        },
+        {
+          "item": "失敗ログ",
+          "verify": "重要処理の失敗時にerrorレベルログがあるか"
+        },
+        {
+          "item": "監査証跡",
+          "verify": "認証・承認・M365操作で「誰が/いつ/何を/なぜ」が記録されるか",
+          "must_include": ["user_id", "timestamp", "action", "resource", "result"]
+        },
+        {
+          "item": "追記専用ログ保護",
+          "verify": "ticket_history, m365_execution_logsにUPDATE/DELETEがないか",
+          "pattern": "(UPDATE|DELETE).*ticket_history|m365_execution_logs",
+          "action": "FAIL if found"
+        }
+      ]
+    },
+    "authorization_and_sod": {
+      "weight": "critical",
+      "checks": [
+        {
+          "item": "権限チェック存在",
+          "verify": "特権操作の前に権限チェックがあるか"
+        },
+        {
+          "item": "SOD原則",
+          "verify": "承認者≠実施者のチェックがあるか（approvals, m365_tasks）"
+        },
+        {
+          "item": "管理系操作の無制限実行防止",
+          "verify": "管理者でも監査ログ削除ができないか"
+        }
+      ]
+    },
+    "configuration_externalization": {
+      "weight": "high",
+      "checks": [
+        {
+          "item": "ハードコード検出",
+          "verify": "URL、タイムアウト、上限値等がハードコードされていないか",
+          "pattern": "(http://|https://|timeout\\s*=\\s*\\d+|maxSize\\s*=\\s*\\d+)",
+          "exceptions": ["tests/**"],
+          "action": "WARN if found"
+        },
+        {
+          "item": "シークレット検出",
+          "verify": "パスワード・APIキーがハードコードされていないか",
+          "pattern": "(password|secret|api_key|token)\\s*=\\s*['\"][^'\"]{8,}['\"]",
+          "action": "FAIL if found"
+        },
+        {
+          "item": "環境変数使用",
+          "verify": "設定値がprocess.env または config/ から取得されているか"
+        }
+      ]
+    },
+    "future_resilience": {
+      "weight": "medium",
+      "checks": [
+        {
+          "item": "魔法の数値排除",
+          "verify": "意味のある数値が定数化されているか"
+        },
+        {
+          "item": "依存注入",
+          "verify": "外部依存が注入可能な設計か"
+        },
+        {
+          "item": "テスタビリティ",
+          "verify": "ユニットテストが書きやすい構造か"
+        }
+      ]
+    },
+    "security": {
+      "weight": "critical",
+      "checks": [
+        {
+          "item": "SQLインジェクション対策",
+          "verify": "動的SQL組み立てがなく、プリペアドステートメント使用か",
+          "pattern": "\\$\\{.*\\}.*SELECT|INSERT.*\\$\\{",
+          "action": "FAIL if found"
+        },
+        {
+          "item": "XSS対策",
+          "verify": "ユーザー入力のサニタイズがあるか"
+        },
+        {
+          "item": "CSRF対策",
+          "verify": "状態変更APIにCSRFトークンまたはSameSite設定があるか"
+        },
+        {
+          "item": "認証バイパス防止",
+          "verify": "全ての保護されたエンドポイントに認証ミドルウェアがあるか"
+        }
+      ]
+    }
+  },
+
+  "review_output_format": {
+    "file": "reviews/code-review-YYYYMMDD-feature-xxx.json",
+    "schema": {
+      "result": "PASS | FAIL | PASS_WITH_WARNINGS",
+      "summary": "総評（日本語）",
+      "blocking_issues": [
+        {
+          "category": "specification | error_handling | logging | authorization | security | configuration",
+          "severity": "critical | high",
+          "file": "src/path/to/file.js",
+          "line": 42,
+          "description": "問題詳細",
+          "code_snippet": "該当コード",
+          "recommendation": "修正方法"
+        }
+      ],
+      "warnings": [
+        {
+          "category": "...",
+          "severity": "medium | low",
+          "file": "...",
+          "description": "...",
+          "recommendation": "..."
+        }
+      ],
+      "approved_files": ["承認されたファイル一覧"],
+      "metrics": {
+        "files_reviewed": 10,
+        "issues_found": 5,
+        "warnings_found": 3,
+        "review_duration_seconds": 45
+      },
+      "timestamp": "ISO8601"
+    }
+  },
+
+  "judgment_rules": {
+    "FAIL": "blocking_issues.count > 0",
+    "PASS_WITH_WARNINGS": "blocking_issues.count == 0 AND warnings.count > 0",
+    "PASS": "blocking_issues.count == 0 AND warnings.count == 0"
+  },
+
+  "triggers": {
+    "start": [
+      "code-implementer 完了宣言",
+      "src/** ファイル変更検出"
+    ],
+    "complete": [
+      "レビュー結果出力",
+      "次工程へ通知"
+    ]
+  },
+
+  "hooks": {
+    "on_implementation_complete": {
+      "auto_execute": true,
+      "inputs": ["src/**/*", "specs/*", "design/*"],
+      "timeout_minutes": 20
+    },
+    "on_review_result": {
+      "action": "conditional_trigger",
+      "conditions": {
+        "FAIL": {
+          "target": "code-implementer",
+          "action": "send_back",
+          "message": "コードレビューで重大な問題が検出されました。修正してください。",
+          "include_details": true,
+          "block_next_phase": true
+        },
+        "PASS_WITH_WARNINGS": {
+          "target": "test-designer",
+          "notify_user": true,
+          "message": "警告があります。確認の上、テスト設計に進みます。",
+          "auto_proceed": false,
+          "require_user_approval": true
+        },
+        "PASS": {
+          "target": "test-designer",
+          "input": ["src/**/*", "specs/*"],
+          "auto_execute": true
+        }
+      }
+    }
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Write(reviews/**)",
+      "Bash(npm run lint*)",
+      "Bash(npm run test*)"
+    ],
+    "restricted": [
+      "Write(src/**)",
+      "Write(specs/**)",
+      "Write(design/**)",
+      "Bash(git commit*)",
+      "Bash(git push*)"
+    ]
+  },
+
+  "auto_checks": {
+    "eslint": {
+      "enabled": true,
+      "command": "npm run lint",
+      "fail_on_error": true
+    },
+    "prettier": {
+      "enabled": true,
+      "command": "npm run format:check",
+      "auto_fix": true
+    },
+    "unit_tests": {
+      "enabled": true,
+      "command": "npm run test",
+      "fail_on_error": false,
+      "warn_on_error": true
+    }
+  }
+}

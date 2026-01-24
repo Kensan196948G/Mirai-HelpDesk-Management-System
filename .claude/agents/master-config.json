@@ -1,0 +1,235 @@
+{
+  "version": "1.0.0",
+  "project": "Mirai-HelpDesk-Management-System",
+  "description": "SubAgent並列開発マスター設定",
+
+  "agents": {
+    "total": 7,
+    "list": [
+      "agent-1-backend-api",
+      "agent-2-backend-models",
+      "agent-3-frontend-pages",
+      "agent-4-frontend-components",
+      "agent-5-frontend-services",
+      "agent-6-database",
+      "agent-7-docs"
+    ],
+    "priority_order": [
+      "agent-6-database",
+      "agent-2-backend-models",
+      "agent-1-backend-api",
+      "agent-4-frontend-components",
+      "agent-5-frontend-services",
+      "agent-3-frontend-pages",
+      "agent-7-docs"
+    ]
+  },
+
+  "communication": {
+    "protocol": "message-passing",
+    "transport": {
+      "primary": "redis",
+      "fallback": "file-based",
+      "config": {
+        "redis": {
+          "host": "localhost",
+          "port": 6379,
+          "db": 0,
+          "prefix": "mirai:agents:"
+        },
+        "file": {
+          "path": ".claude/agents/messages/",
+          "format": "json"
+        }
+      }
+    },
+    "message_types": [
+      "task_assigned",
+      "task_completed",
+      "task_failed",
+      "dependency_ready",
+      "schema_changed",
+      "api_updated",
+      "conflict_detected",
+      "merge_required"
+    ]
+  },
+
+  "task_distribution": {
+    "strategy": "priority_based",
+    "max_concurrent_agents": 7,
+    "task_queue": {
+      "type": "priority_queue",
+      "max_size": 100,
+      "timeout_seconds": 300
+    },
+    "auto_assignment": {
+      "enabled": true,
+      "algorithm": "round_robin_with_priority",
+      "load_balancing": true
+    },
+    "dependency_resolution": {
+      "enabled": true,
+      "wait_for_dependencies": true,
+      "timeout_seconds": 600
+    }
+  },
+
+  "conflict_prevention": {
+    "global_rules": [
+      {
+        "name": "file_locking",
+        "enabled": true,
+        "timeout_seconds": 30,
+        "retry_attempts": 3
+      },
+      {
+        "name": "semantic_merge",
+        "enabled": true,
+        "algorithm": "three-way-merge",
+        "auto_resolve": true
+      },
+      {
+        "name": "dependency_check",
+        "enabled": true,
+        "block_on_violation": true
+      }
+    ],
+    "file_lock_manager": {
+      "type": "distributed",
+      "storage": ".claude/agents/locks/",
+      "cleanup_interval_seconds": 60
+    }
+  },
+
+  "coordination": {
+    "dependency_graph": {
+      "agent-6-database": {
+        "depends_on": [],
+        "required_by": ["agent-2-backend-models"]
+      },
+      "agent-2-backend-models": {
+        "depends_on": ["agent-6-database"],
+        "required_by": ["agent-1-backend-api", "agent-3-frontend-pages"]
+      },
+      "agent-1-backend-api": {
+        "depends_on": ["agent-2-backend-models"],
+        "required_by": ["agent-5-frontend-services"]
+      },
+      "agent-4-frontend-components": {
+        "depends_on": [],
+        "required_by": ["agent-3-frontend-pages"]
+      },
+      "agent-5-frontend-services": {
+        "depends_on": ["agent-1-backend-api"],
+        "required_by": ["agent-3-frontend-pages"]
+      },
+      "agent-3-frontend-pages": {
+        "depends_on": ["agent-4-frontend-components", "agent-5-frontend-services"],
+        "required_by": []
+      },
+      "agent-7-docs": {
+        "depends_on": ["agent-1-backend-api", "agent-2-backend-models", "agent-3-frontend-pages", "agent-6-database"],
+        "required_by": []
+      }
+    },
+    "parallel_execution": {
+      "enabled": true,
+      "groups": [
+        {
+          "name": "foundation",
+          "agents": ["agent-6-database"],
+          "parallel": false
+        },
+        {
+          "name": "backend_core",
+          "agents": ["agent-2-backend-models"],
+          "parallel": false
+        },
+        {
+          "name": "api_and_components",
+          "agents": ["agent-1-backend-api", "agent-4-frontend-components"],
+          "parallel": true
+        },
+        {
+          "name": "services",
+          "agents": ["agent-5-frontend-services"],
+          "parallel": false
+        },
+        {
+          "name": "pages_and_docs",
+          "agents": ["agent-3-frontend-pages", "agent-7-docs"],
+          "parallel": true
+        }
+      ]
+    }
+  },
+
+  "monitoring": {
+    "enabled": true,
+    "metrics": [
+      "tasks_completed",
+      "tasks_failed",
+      "conflicts_detected",
+      "conflicts_resolved",
+      "average_task_duration",
+      "agent_utilization"
+    ],
+    "logging": {
+      "level": "info",
+      "output": ".claude/agents/logs/",
+      "format": "json",
+      "rotation": "daily"
+    },
+    "alerts": {
+      "enabled": true,
+      "conditions": [
+        {
+          "type": "task_timeout",
+          "threshold_seconds": 300,
+          "action": "notify"
+        },
+        {
+          "type": "conflict_unresolved",
+          "threshold_count": 3,
+          "action": "escalate"
+        },
+        {
+          "type": "agent_failure",
+          "threshold_count": 2,
+          "action": "pause_and_notify"
+        }
+      ]
+    }
+  },
+
+  "environment": {
+    "development": {
+      "max_concurrent_agents": 7,
+      "auto_recovery": true,
+      "verbose_logging": true
+    },
+    "production": {
+      "max_concurrent_agents": 5,
+      "auto_recovery": true,
+      "verbose_logging": false
+    }
+  },
+
+  "integration": {
+    "git": {
+      "auto_commit": false,
+      "branch_strategy": "feature_per_agent",
+      "merge_strategy": "squash"
+    },
+    "testing": {
+      "run_tests_after_task": true,
+      "parallel_test_execution": true,
+      "coverage_threshold": 60
+    },
+    "ci_cd": {
+      "trigger_on_merge": true,
+      "deployment_approval_required": true
+    }
+  }
+}

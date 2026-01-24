@@ -1,0 +1,91 @@
+{
+  "name": "parallel-development",
+  "description": "並列開発機能 - 複数エージェントによる同時開発とコンフリクト防止",
+  "enabled": true,
+  "config": {
+    "maxConcurrency": 7,
+    "conflictDetection": {
+      "enabled": true,
+      "algorithm": "semantic-diff",
+      "realtime": true
+    },
+    "conflictResolution": {
+      "strategy": "auto-merge",
+      "fallback": "manual-review",
+      "mergeAlgorithm": "three-way-merge"
+    },
+    "fileLoacking": {
+      "enabled": true,
+      "lockTimeout": 30000,
+      "optimisticLocking": true
+    },
+    "communicationProtocol": {
+      "type": "message-passing",
+      "channel": "redis",
+      "fallback": "file-based"
+    }
+  },
+  "agents": [
+    {
+      "id": "agent-1",
+      "name": "backend-api",
+      "scope": "backend/src/{controllers,routes,middleware}/**/*",
+      "priority": "high"
+    },
+    {
+      "id": "agent-2",
+      "name": "backend-models",
+      "scope": "backend/src/{models,services}/**/*",
+      "priority": "high"
+    },
+    {
+      "id": "agent-3",
+      "name": "frontend-pages",
+      "scope": "frontend/src/pages/**/*",
+      "priority": "medium"
+    },
+    {
+      "id": "agent-4",
+      "name": "frontend-components",
+      "scope": "frontend/src/components/**/*",
+      "priority": "medium"
+    },
+    {
+      "id": "agent-5",
+      "name": "frontend-services",
+      "scope": "frontend/src/services/**/*",
+      "priority": "medium"
+    },
+    {
+      "id": "agent-6",
+      "name": "database",
+      "scope": "database/**/*",
+      "priority": "high"
+    },
+    {
+      "id": "agent-7",
+      "name": "docs",
+      "scope": "docs/**/*,*.md",
+      "priority": "low"
+    }
+  ],
+  "conflictPrevention": {
+    "rules": [
+      {
+        "name": "no-concurrent-same-file",
+        "description": "同じファイルの同時編集を防止",
+        "action": "lock-file"
+      },
+      {
+        "name": "semantic-merge-check",
+        "description": "意味的な競合を検出",
+        "action": "notify-and-wait"
+      },
+      {
+        "name": "import-conflict-detection",
+        "description": "import文の競合を検出",
+        "action": "auto-resolve"
+      }
+    ]
+  }
+}

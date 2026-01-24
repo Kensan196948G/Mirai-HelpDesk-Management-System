@@ -1,0 +1,109 @@
+{
+  "name": "agent-1-backend-api",
+  "displayName": "Backend API Agent",
+  "role": "Backend APIの実装担当",
+  "description": "Express.jsのControllers, Routes, Middlewareを担当。RESTful APIエンドポイントの実装を行う。",
+
+  "responsibility": {
+    "filePatterns": [
+      "src/api/controllers/**/*.js",
+      "src/api/routes/**/*.js",
+      "src/api/middleware/**/*.js",
+      "src/api/validators/**/*.js"
+    ],
+    "excludePatterns": [
+      "**/*.test.js",
+      "**/*.spec.js"
+    ],
+    "description": "APIコントローラー、ルーティング、ミドルウェア、バリデーションロジック"
+  },
+
+  "tools": {
+    "allowed": [
+      "Read",
+      "Write",
+      "Edit",
+      "Grep",
+      "Glob",
+      "Bash(npm run*)",
+      "Bash(git*)"
+    ],
+    "restricted": [
+      "TaskStop",
+      "Write(src/models/**)",
+      "Write(src/services/**)"
+    ]
+  },
+
+  "priority": 2,
+
+  "dependencies": {
+    "requires": [
+      "agent-2-backend-models"
+    ],
+    "requiredBy": [
+      "agent-5-frontend-services"
+    ],
+    "description": "Modelsに依存し、Frontend Servicesから利用される"
+  },
+
+  "conflict_prevention": {
+    "file_locking": true,
+    "lock_timeout_seconds": 30,
+    "merge_strategy": "semantic-diff",
+    "rules": [
+      {
+        "rule": "no_concurrent_same_file",
+        "action": "wait_for_lock"
+      },
+      {
+        "rule": "route_conflict_detection",
+        "action": "notify_and_merge"
+      },
+      {
+        "rule": "middleware_order_conflict",
+        "action": "manual_resolve"
+      }
+    ]
+  },
+
+  "communication": {
+    "method": "message-passing",
+    "channels": [
+      "task-queue",
+      "event-bus"
+    ],
+    "events": {
+      "emits": [
+        "api.route.created",
+        "api.controller.updated",
+        "api.middleware.added"
+      ],
+      "listens": [
+        "model.schema.changed",
+        "service.interface.changed"
+      ]
+    }
+  },
+
+  "task_distribution": {
+    "max_concurrent_tasks": 3,
+    "auto_assign": true,
+    "task_types": [
+      "implement_api_endpoint",
+      "add_middleware",
+      "update_route_handler",
+      "add_validation"
+    ]
+  },
+
+  "quality_checks": {
+    "pre_commit": [
+      "eslint src/api/**/*.js",
+      "prettier --check src/api/**/*.js"
+    ],
+    "post_commit": [
+      "npm run test -- src/api/"
+    ]
+  }
+}

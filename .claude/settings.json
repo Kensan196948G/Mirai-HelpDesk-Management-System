@@ -1,0 +1,21 @@
+{
+  "env": {
+    "ENABLE_TOOL_SEARCH": "true",
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
+    "MCP_TIMEOUT": "30000"
+  },
+  "model": "sonnet[1m]",
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "memory",
+    "playwright",
+    "github",
+    "brave-search",
+    "context7",
+    "sequential-thinking",
+    "chrome-devtools"
+  ],
+  "enabledPlugins": {
+    "claude-mem@thedotmack": true
+  }
+}
