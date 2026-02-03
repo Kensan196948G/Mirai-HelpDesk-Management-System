@@ -32,7 +32,31 @@ class Settings(BaseSettings):
     
     # Database
     DATABASE_URL: str = "sqlite+aiosqlite:///./data/helpdesk.db"
-    
+
+    # PostgreSQL Configuration (optional for development, required for production)
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 5432
+    DB_NAME: str = "mirai_helpdesk"
+    DB_USER: str = "mirai_user"
+    DB_PASSWORD: str = ""
+
+    # Database Connection Pool (PostgreSQL only, ignored for SQLite)
+    DB_POOL_SIZE: int = 20
+    DB_MAX_OVERFLOW: int = 10
+    DB_POOL_TIMEOUT: int = 30
+    DB_POOL_RECYCLE: int = 3600
+    DB_ECHO: bool = False
+
+    @property
+    def is_postgres(self) -> bool:
+        """Check if using PostgreSQL database."""
+        return "postgresql" in self.DATABASE_URL.lower()
+
+    @property
+    def is_sqlite(self) -> bool:
+        """Check if using SQLite database."""
+        return "sqlite" in self.DATABASE_URL.lower()
+
     # Authentication
     SECRET_KEY: str = "your-secret-key-change-in-production"
     ALGORITHM: str = "HS256"

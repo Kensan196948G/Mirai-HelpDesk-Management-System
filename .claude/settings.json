@@ -14,7 +14,7 @@
   ],
   "statusLine": {
     "type": "command",
-    "command": "npx --yes ccstatusline@latest"
+    "command": "/home/kensan/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
     "claude-mem@thedotmack": true
