@@ -96,17 +96,17 @@ export class ApprovalService {
     );
 
     // 監査ログ記録
-    logAudit({
-      action: 'approval_request_created',
-      actor_id: requesterId,
-      resource_type: 'approval',
-      resource_id: approval.approval_id,
-      details: {
+    logAudit(
+      'approval_request_created',
+      requesterId,
+      {
+        resource_type: 'approval',
+        resource_id: approval.approval_id,
         ticket_id: ticketId,
         approver_id: approverId,
         reason: reason,
-      },
-    });
+      }
+    );
 
     logger.info('承認依頼を作成しました', {
       approval_id: approval.approval_id,
@@ -219,16 +219,16 @@ export class ApprovalService {
     );
 
     // 監査ログ記録
-    logAudit({
-      action: 'approval_approved',
-      actor_id: approverId,
-      resource_type: 'approval',
-      resource_id: approvalId,
-      details: {
+    logAudit(
+      'approval_approved',
+      approverId,
+      {
+        resource_type: 'approval',
+        resource_id: approvalId,
         ticket_id: approval.ticket_id,
         comment: comment,
-      },
-    });
+      }
+    );
 
     logger.info('承認依頼を承認しました', {
       approval_id: approvalId,
@@ -307,16 +307,16 @@ export class ApprovalService {
     );
 
     // 監査ログ記録
-    logAudit({
-      action: 'approval_rejected',
-      actor_id: approverId,
-      resource_type: 'approval',
-      resource_id: approvalId,
-      details: {
+    logAudit(
+      'approval_rejected',
+      approverId,
+      {
+        resource_type: 'approval',
+        resource_id: approvalId,
         ticket_id: approval.ticket_id,
         reason: reason,
-      },
-    });
+      }
+    );
 
     logger.info('承認依頼を却下しました', {
       approval_id: approvalId,

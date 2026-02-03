@@ -70,7 +70,7 @@ export async function exampleApprovalRequest(ticketId: string, approverId: strin
 
   if (ticket) {
     // 承認者に通知を送信
-    await NotificationService.sendApprovalRequest(approval, ticket);
+    await NotificationService.sendApprovalRequest(approval as any, ticket);
     console.log('承認依頼通知を送信しました:', approval.approval_id);
   }
 }
@@ -113,7 +113,7 @@ export async function exampleCommentNotification(ticketId: string, commentId: st
 
   if (ticket) {
     // コメント通知を送信（依頼者、担当者、メンション先）
-    await NotificationService.sendCommentAdded(ticket, comment, true);
+    await NotificationService.sendCommentAdded(ticket, comment as any, true);
     console.log('コメント通知を送信しました:', comment.comment_id);
   }
 }
