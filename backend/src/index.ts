@@ -16,19 +16,26 @@ import categoryRoutes from './routes/category.routes';
 import knowledgeRoutes from './routes/knowledge.routes';
 import approvalRoutes from './routes/approval.routes';
 import m365Routes from './routes/m365.routes';
+import aiRoutes from './routes/ai.routes';
 
 // 環境変数の読み込み
 dotenv.config();
 
 const app: Application = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 const API_PREFIX = process.env.API_PREFIX || '/api';
 
 // ミドルウェアの設定
 app.use(helmet()); // セキュリティヘッダー
+
+// CORS設定（カンマ区切りの文字列を配列に変換）
+const corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3001')
+  .split(',')
+  .map((origin) => origin.trim());
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3001',
+    origin: corsOrigins,
     credentials: true,
   })
 );
@@ -62,7 +69,7 @@ app.use(
 );
 
 // ヘルスチェックエンドポイント
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
@@ -78,6 +85,7 @@ app.use(`${API_PREFIX}/categories`, categoryRoutes);
 app.use(`${API_PREFIX}/knowledge`, knowledgeRoutes);
 app.use(`${API_PREFIX}/approvals`, approvalRoutes);
 app.use(`${API_PREFIX}/m365`, m365Routes);
+app.use(`${API_PREFIX}/ai`, aiRoutes);
 
 // 404ハンドラー
 app.use(notFoundHandler);
@@ -95,8 +103,9 @@ const startServer = async () => {
       // データベースがない場合でも起動を続行（開発用）
     }
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       logger.info(`Server is running on port ${PORT}`);
+      logger.info(`Listening on: 0.0.0.0:${PORT} (all interfaces)`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
       logger.info(`API endpoint: http://localhost:${PORT}${API_PREFIX}`);
       logger.info(`Microsoft 365 integration: ${process.env.AZURE_TENANT_ID ? 'Configured' : 'Not configured'}`);

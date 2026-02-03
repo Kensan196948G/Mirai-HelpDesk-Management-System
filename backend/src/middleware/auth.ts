@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import { AppError } from './errorHandler';
 import { UserRole } from '../types';
 import { logger } from '../utils/logger';
@@ -94,14 +94,15 @@ export const generateToken = (user: {
     throw new AppError('JWT secret not configured', 500, 'CONFIG_ERROR');
   }
 
+  const options: SignOptions = { expiresIn: jwtExpiresIn as any };
   return jwt.sign(
     {
       user_id: user.user_id,
       email: user.email,
       role: user.role,
     },
-    jwtSecret,
-    { expiresIn: jwtExpiresIn }
+    jwtSecret as Secret,
+    options
   );
 };
 
@@ -114,7 +115,6 @@ export const generateRefreshToken = (userId: string): string => {
     throw new AppError('JWT secret not configured', 500, 'CONFIG_ERROR');
   }
 
-  return jwt.sign({ user_id: userId, type: 'refresh' }, jwtSecret, {
-    expiresIn: refreshExpiresIn,
-  });
+  const options: SignOptions = { expiresIn: refreshExpiresIn as any };
+  return jwt.sign({ user_id: userId, type: 'refresh' }, jwtSecret as Secret, options);
 };
