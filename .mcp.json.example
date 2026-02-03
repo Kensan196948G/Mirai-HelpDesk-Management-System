@@ -1,36 +1,19 @@
 {
   "mcpServers": {
-    "memory": {
-      "type": "stdio",
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-memory@latest"],
-      "env": {},
-      "description": "メモリサーバー - セッション間の情報保持"
-    },
-    "github": {
-      "type": "stdio",
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-github@latest"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
-      },
-      "description": "GitHub統合 - リポジトリ管理、Issue追跡、PR作成"
-    },
     "brave-search": {
-      "type": "stdio",
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-brave-search@latest"],
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
       "env": {
         "BRAVE_API_KEY": "YOUR_BRAVE_API_KEY_HERE"
-      },
-      "description": "Brave検索 - Web検索、最新情報取得"
+      }
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
     },
     "sequential-thinking": {
-      "type": "stdio",
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-sequential-thinking@latest"],
-      "env": {},
-      "description": "Sequential Thinking - 順序立った思考、複雑な問題解決"
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     }
   }
 }
