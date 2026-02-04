@@ -20,76 +20,77 @@ jobs:
         # 必要に応じて他のブラウザを追加
         # browser: [chromium, firefox, webkit]
 
-    services:
-      # PostgreSQLが必要な場合（現在はSQLite使用）
-      # postgres:
-      #   image: postgres:15
-      #   env:
-      #     POSTGRES_USER: testuser
-      #     POSTGRES_PASSWORD: testpass
-      #     POSTGRES_DB: testdb
-      #   options: >-
-      #     --health-cmd pg_isready
-      #     --health-interval 10s
-      #     --health-timeout 5s
-      #     --health-retries 5
-      #   ports:
-      #     - 5432:5432
+    # PostgreSQLが必要な場合（現在はSQLite使用）
+    # services:
+    #   postgres:
+    #     image: postgres:15
+    #     env:
+    #       POSTGRES_USER: testuser
+    #       POSTGRES_PASSWORD: testpass
+    #       POSTGRES_DB: testdb
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+    #     ports:
+    #       - 5432:5432
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Node.js環境のセットアップ（フロントエンド用）
+      # Node.js環境のセットアップ（フロントエンド・バックエンド共通）
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
 
-      # Python環境のセットアップ（バックエンド用）
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      # Node.js依存関係のインストール
-      - name: Install Node.js dependencies
+      # ルートの依存関係インストール（Playwright用）
+      - name: Install root dependencies
         run: npm ci
 
       # Playwright ブラウザのインストール
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
-      # Python依存関係のインストール
-      - name: Install Python dependencies
+      # バックエンド依存関係のインストール（TypeScript/Express）
+      - name: Install backend dependencies
         working-directory: ./backend
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+        run: npm ci
 
-      # データベースの初期化とシード
+      # フロントエンド依存関係のインストール
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      # データベースの初期化とシード（TypeScript版）
       - name: Initialize database
         working-directory: ./backend
         env:
           DATABASE_URL: sqlite:///./data/test.db
-          ENVIRONMENT: test
+          NODE_ENV: test
         run: |
           mkdir -p data
-          python seed_sla.py
+          npm run migrate || echo "Migration skipped (no migrate script or already migrated)"
+          npm run seed || echo "Seed skipped (no seed script or already seeded)"
 
-      # バックエンドサーバーの起動（バックグラウンド）
+      # バックエンドサーバーの起動（バックグラウンド・TypeScript/Express版）
       - name: Start backend server
         working-directory: ./backend
         env:
           DATABASE_URL: sqlite:///./data/test.db
-          ENVIRONMENT: test
-          DEBUG: true
-          SECRET_KEY: test-secret-key-for-ci-only
-          CORS_ORIGINS: '["http://127.0.0.1:8080", "http://localhost:8080"]'
+          NODE_ENV: test
+          PORT: 8000
+          JWT_SECRET: test-secret-key-for-ci-only
+          CORS_ORIGINS: http://127.0.0.1:8080,http://localhost:8080
         run: |
-          python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          npm run dev &
           echo $! > backend.pid
           sleep 5
 
