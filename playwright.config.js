@@ -8,6 +8,9 @@ export default defineConfig({
   // テストディレクトリ
   testDir: './tests/e2e',
 
+  // テストファイルのマッチングパターン
+  testMatch: '**/*.spec.js',
+
   // 並列実行の設定
   fullyParallel: true,
 
@@ -29,8 +32,8 @@ export default defineConfig({
 
   // グローバル設定
   use: {
-    // フロントエンドのベースURL
-    baseURL: 'http://127.0.0.1:8080',
+    // フロントエンドのベースURL（環境変数で上書き可能）
+    baseURL: process.env.FRONTEND_URL || 'http://127.0.0.1:3001',
 
     // API エンドポイント（環境変数で上書き可能）
     extraHTTPHeaders: {
@@ -71,11 +74,27 @@ export default defineConfig({
     // },
   ],
 
-  // ローカル開発サーバーの起動設定（オプション）
-  // webServer: {
-  //   command: 'npm run dev',
-  //   url: 'http://127.0.0.1:8000/health',
-  //   reuseExistingServer: !process.env.CI,
-  //   timeout: 120 * 1000,
-  // },
+  // ローカル開発サーバーの起動設定
+  // ⚠️ webServer設定をコメントアウト: 手動で起動したサーバーを使用
+  // CI環境では別途サーバー起動が必要
+  // webServer: [
+  //   // TypeScript Express Backend
+  //   {
+  //     command: 'cd backend && npm run dev',
+  //     url: 'http://127.0.0.1:3000/health',
+  //     reuseExistingServer: true,  // 既存サーバーを常に再利用
+  //     timeout: 120 * 1000,
+  //     stdout: 'pipe',
+  //     stderr: 'pipe',
+  //   },
+  //   // React Frontend (Vite Dev Server)
+  //   {
+  //     command: 'cd frontend && VITE_API_TARGET=http://127.0.0.1:3000 npm run dev',
+  //     url: 'http://127.0.0.1:3001',
+  //     reuseExistingServer: true,  // 既存サーバーを常に再利用
+  //     timeout: 120 * 1000,
+  //     stdout: 'pipe',
+  //     stderr: 'pipe',
+  //   },
+  // ],
 });

@@ -18,10 +18,12 @@ export default defineConfig({
   },
   server: {
     port: 3001,
+    host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: process.env.VITE_API_TARGET || 'http://127.0.0.1:3000',
         changeOrigin: true,
+        secure: false,
       },
     },
   },

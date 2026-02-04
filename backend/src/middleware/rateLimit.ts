@@ -16,6 +16,10 @@ export const rateLimit = (options: {
   maxRequests: number;
 }) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    // 開発環境・テスト環境ではレート制限を大幅に緩和
+    const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
+    const effectiveMaxRequests = isDevelopment ? options.maxRequests * 100 : options.maxRequests;
+
     const key = req.ip || 'unknown';
     const now = Date.now();
 
@@ -29,7 +33,7 @@ export const rateLimit = (options: {
 
     store[key].count++;
 
-    if (store[key].count > options.maxRequests) {
+    if (store[key].count > effectiveMaxRequests) {
       const retryAfter = Math.ceil((store[key].resetTime - now) / 1000);
       res.setHeader('Retry-After', retryAfter);
       throw new AppError(
