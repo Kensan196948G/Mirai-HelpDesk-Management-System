@@ -97,3 +97,16 @@ __pycache__/
 *$py.class
 *.so
 .Python
+
+# プロセスIDファイル
+*.pid
+
+# バックアップファイル
+*.old
+
+# サンプル・一時ディレクトリ
+Mirai-HelpDesk-WebUI-Sample-Final/
+
+# 他プロジェクト設定
+*.fastapi
+
