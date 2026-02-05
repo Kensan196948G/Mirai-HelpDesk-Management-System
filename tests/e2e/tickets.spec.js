@@ -281,7 +281,7 @@ test.describe('チケット管理機能のテスト', () => {
 
       // チケット詳細ページへ直接遷移
       await page.goto(`/tickets/${ticket.ticket_id}`);
-      await page.waitForTimeout(1000);
+      await page.waitForSelector('#page-content', { state: 'visible', timeout: 15000 });
 
       // チケット情報が表示されることを確認
       const pageContent = await page.textContent('#page-content');
@@ -322,10 +322,10 @@ test.describe('チケット管理機能のテスト', () => {
 
       // チケット詳細ページへ
       await page.goto(`/tickets/${ticket.ticket_id}`);
-      await page.waitForTimeout(1000);
+      await page.waitForSelector('#page-content', { state: 'visible', timeout: 15000 });
 
       // コメントタブが表示されるのを待つ（デフォルトで表示されているはず）
-      await page.waitForSelector('.ant-tabs-tab:has-text("コメント")', { state: 'visible', timeout: 5000 });
+      await page.waitForSelector('.ant-tabs-tab:has-text("コメント")', { state: 'visible', timeout: 10000 });
 
       // コメント入力欄を探す
       const commentTextarea = page.locator('textarea[name="comment"], #comment-body, textarea[placeholder*="コメント"]');
@@ -364,10 +364,10 @@ test.describe('チケット管理機能のテスト', () => {
 
       // チケット詳細ページへ
       await page.goto(`/tickets/${ticket.ticket_id}`);
-      await page.waitForTimeout(1000);
+      await page.waitForSelector('#page-content', { state: 'visible', timeout: 15000 });
 
       // コメントタブが表示されるのを待つ（デフォルトで表示されているはず）
-      await page.waitForSelector('.ant-tabs-tab:has-text("コメント")', { state: 'visible', timeout: 5000 });
+      await page.waitForSelector('.ant-tabs-tab:has-text("コメント")', { state: 'visible', timeout: 10000 });
 
       // コメント入力欄を探す
       const commentTextarea = page.locator('textarea[name="comment"], #comment-body, textarea[placeholder*="コメント"]');

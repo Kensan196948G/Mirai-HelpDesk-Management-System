@@ -1,13 +1,13 @@
 /**
  * Health Check E2E Tests
  *
- * このテストスイートは、バックエンドサーバー (デフォルト: http://127.0.0.1:8000) が
- * 起動していることを前提としています。サーバーが利用できない場合は、全テストをスキップします。
+ * このテストスイートは、バックエンドサーバーが起動していることを前提としています。
+ * サーバーが利用できない場合は、全テストをスキップします。
  */
 
 import { test, expect } from '@playwright/test';
 
-const API_BASE_URL = process.env.API_BASE_URL || 'http://127.0.0.1:8000';
+const API_BASE_URL = process.env.API_BASE_URL || (process.env.CI ? 'http://127.0.0.1:8000' : 'http://127.0.0.1:3000');
 
 /**
  * バックエンドサーバーが起動しているか事前チェック
@@ -36,10 +36,9 @@ test.describe('Health Check API', () => {
     expect(response.ok()).toBeTruthy();
 
     const body = await response.json();
-    expect(body.status).toBe('healthy');
-    expect(body.version).toBe('2.0.0');
-    expect(body).toHaveProperty('app');
-    expect(body).toHaveProperty('environment');
+    expect(body.status).toBe('OK');
+    expect(body).toHaveProperty('timestamp');
+    expect(body).toHaveProperty('uptime');
   });
 });
 

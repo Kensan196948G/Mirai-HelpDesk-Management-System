@@ -121,7 +121,7 @@ export const getTicketDetail = async (
       method: 'GET',
       url: `/tickets/${id}/attachments`,
     }).catch(() => ({ success: false, data: undefined })),
-    apiRequest<{ items: TicketHistoryEntry[]; total: number; page: number; page_size: number; total_pages: number }>({
+    apiRequest<{ history: TicketHistoryEntry[] }>({
       method: 'GET',
       url: `/tickets/${id}/history`,
     }).catch(() => ({ success: false, data: undefined })),
@@ -135,10 +135,10 @@ export const getTicketDetail = async (
         ticket: response.data.ticket,
         comments: response.data.comments || [],
         attachments: attachmentsRes.success && attachmentsRes.data
-          ? attachmentsRes.data.attachments
+          ? attachmentsRes.data.attachments || []
           : [],
         history: historyRes.success && historyRes.data
-          ? historyRes.data.items
+          ? historyRes.data.history || []
           : [],
       },
     };
