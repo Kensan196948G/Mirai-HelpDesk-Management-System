@@ -2,9 +2,12 @@ import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
 import { TicketController } from '../controllers/ticket.controller';
 import { ApprovalController } from '../controllers/approval.controller';
+import { SLAController } from '../controllers/sla.controller';
+import { AttachmentController } from '../controllers/attachment.controller';
 import { body, param } from 'express-validator';
 import { validate, runValidations } from '../middleware/validation';
 import { UserRole } from '../types';
+import { uploadMultiple } from '../middleware/upload';
 
 const router = Router();
 
@@ -100,6 +103,73 @@ router.get(
   runValidations([param('id').isUUID().withMessage('Invalid ticket ID')]),
   validate,
   ApprovalController.getApprovalHistory
+);
+
+// チケットSLAステータス取得
+router.get(
+  '/:id/sla-status',
+  runValidations([param('id').isUUID().withMessage('Invalid ticket ID')]),
+  validate,
+  SLAController.getTicketSLAStatus
+);
+
+// チケット優先度変更 + SLA再計算（Agent以上）
+router.patch(
+  '/:id/priority',
+  authorize(UserRole.AGENT, UserRole.M365_OPERATOR, UserRole.MANAGER),
+  runValidations([
+    param('id').isUUID().withMessage('Invalid ticket ID'),
+    body('priority').notEmpty().withMessage('Priority is required'),
+  ]),
+  validate,
+  SLAController.updateTicketPriority
+);
+
+// チケット添付ファイル一覧取得
+router.get(
+  '/:id/attachments',
+  runValidations([param('id').isUUID().withMessage('Invalid ticket ID')]),
+  validate,
+  AttachmentController.getByTicketId
+);
+
+// チケット添付ファイルアップロード
+router.post(
+  '/:id/attachments',
+  runValidations([param('id').isUUID().withMessage('Invalid ticket ID')]),
+  validate,
+  uploadMultiple,
+  AttachmentController.upload
+);
+
+// 添付ファイルダウンロード
+router.get(
+  '/:id/attachments/:fileId',
+  runValidations([
+    param('id').isUUID().withMessage('Invalid ticket ID'),
+    param('fileId').isUUID().withMessage('Invalid attachment ID'),
+  ]),
+  validate,
+  AttachmentController.downloadByFileId
+);
+
+// 添付ファイル削除
+router.delete(
+  '/:id/attachments/:fileId',
+  runValidations([
+    param('id').isUUID().withMessage('Invalid ticket ID'),
+    param('fileId').isUUID().withMessage('Invalid attachment ID'),
+  ]),
+  validate,
+  AttachmentController.deleteByFileId
+);
+
+// チケット履歴取得
+router.get(
+  '/:id/history',
+  runValidations([param('id').isUUID().withMessage('Invalid ticket ID')]),
+  validate,
+  TicketController.getHistory
 );
 
 export default router;

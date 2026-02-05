@@ -19,6 +19,7 @@ import AIChat from '@pages/ai/AIChat';
 import AISearchPage from '@pages/ai/AISearchPage';
 import AIAnalyze from '@pages/ai/AIAnalyze';
 import AIRecommend from '@pages/ai/AIRecommend';
+import SLAPage from '@pages/SLAPage';
 import './App.css';
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
         <Route path="/knowledge/:id" element={<KnowledgeDetail />} />
         <Route path="/approvals" element={<ApprovalList />} />
         <Route path="/m365/tasks" element={<M365TaskList />} />
+        <Route path="/sla" element={<SLAPage />} />
         <Route path="/audit-logs" element={<AuditLogs />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Navigate to="/" replace />} />

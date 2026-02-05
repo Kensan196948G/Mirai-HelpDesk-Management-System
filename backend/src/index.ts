@@ -17,6 +17,7 @@ import knowledgeRoutes from './routes/knowledge.routes';
 import approvalRoutes from './routes/approval.routes';
 import m365Routes from './routes/m365.routes';
 import aiRoutes from './routes/ai.routes';
+import slaRoutes from './routes/sla.routes';
 
 // 環境変数の読み込み
 dotenv.config();
@@ -86,6 +87,7 @@ app.use(`${API_PREFIX}/knowledge`, knowledgeRoutes);
 app.use(`${API_PREFIX}/approvals`, approvalRoutes);
 app.use(`${API_PREFIX}/m365`, m365Routes);
 app.use(`${API_PREFIX}/ai`, aiRoutes);
+app.use(`${API_PREFIX}/sla`, slaRoutes);
 
 // 404ハンドラー
 app.use(notFoundHandler);

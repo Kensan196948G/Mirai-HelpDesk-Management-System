@@ -389,4 +389,67 @@ test.describe('認証機能のテスト', () => {
       expect(navItems).toBeGreaterThan(0);
     });
   });
+
+  test.describe('トークンリフレッシュ', () => {
+    test('POST /api/auth/refresh - 有効なリフレッシュトークンで更新', async ({ request }) => {
+      const { email, password } = TEST_CONFIG.TEST_ACCOUNTS.admin;
+
+      // まずログインしてトークンを取得
+      const loginResponse = await request.post(`${TEST_CONFIG.API_BASE_URL}/api/auth/login`, {
+        data: { email, password }
+      });
+
+      expect(loginResponse.ok()).toBeTruthy();
+      const loginBody = await loginResponse.json();
+      expect(loginBody.success).toBeTruthy();
+
+      const { token, refreshToken } = loginBody.data;
+      expect(token).toBeDefined();
+
+      // リフレッシュトークンが返されている場合のみテスト実行
+      if (refreshToken) {
+        // リフレッシュトークンで新しいトークンを取得
+        const refreshResponse = await request.post(`${TEST_CONFIG.API_BASE_URL}/api/auth/refresh`, {
+          data: { refreshToken }
+        });
+
+        expect(refreshResponse.ok()).toBeTruthy();
+        const refreshBody = await refreshResponse.json();
+        expect(refreshBody.success).toBeTruthy();
+        expect(refreshBody.data.token).toBeDefined();
+
+        // 新しいトークンが元のトークンと異なることを確認
+        expect(refreshBody.data.token).not.toBe(token);
+
+        // 新しいトークンでAPIアクセスが可能であることを確認
+        const meResponse = await request.get(`${TEST_CONFIG.API_BASE_URL}/api/auth/me`, {
+          headers: { 'Authorization': `Bearer ${refreshBody.data.token}` }
+        });
+        expect(meResponse.ok()).toBeTruthy();
+      }
+    });
+
+    test('POST /api/auth/refresh - 無効なリフレッシュトークンでエラー', async ({ request }) => {
+      const refreshResponse = await request.post(`${TEST_CONFIG.API_BASE_URL}/api/auth/refresh`, {
+        data: { refreshToken: 'invalid-refresh-token-12345' }
+      });
+
+      // 401または400エラーが返されること
+      expect(refreshResponse.status()).toBeGreaterThanOrEqual(400);
+      expect(refreshResponse.status()).toBeLessThan(500);
+
+      const body = await refreshResponse.json();
+      expect(body.success).toBeFalsy();
+    });
+
+    test('POST /api/auth/refresh - リフレッシュトークンなしでエラー', async ({ request }) => {
+      const refreshResponse = await request.post(`${TEST_CONFIG.API_BASE_URL}/api/auth/refresh`, {
+        data: {}
+      });
+
+      // 400または401エラーが返されること
+      expect(refreshResponse.status()).toBeGreaterThanOrEqual(400);
+      expect(refreshResponse.status()).toBeLessThan(500);
+    });
+  });
 });

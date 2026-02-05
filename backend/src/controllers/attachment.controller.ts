@@ -176,6 +176,22 @@ export class AttachmentController {
     }
   );
 
+  // ファイルダウンロード（チケットスコープ: /:id/attachments/:fileId）
+  static downloadByFileId = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      req.params.id = req.params.fileId;
+      return AttachmentController.download(req, res, next);
+    }
+  );
+
+  // ファイル削除（チケットスコープ: /:id/attachments/:fileId）
+  static deleteByFileId = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      req.params.id = req.params.fileId;
+      return AttachmentController.delete(req, res, next);
+    }
+  );
+
   // ファイルダウンロード
   static download = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {

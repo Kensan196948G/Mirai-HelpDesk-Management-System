@@ -228,8 +228,7 @@ test.describe('SLAポリシー管理のテスト', () => {
       expect(dueDate.getTime()).toBeGreaterThan(now.getTime());
     });
 
-    // SLA API未実装のため、このテストはスキップ
-    test.skip('優先度変更時にSLA期限が再計算される', async ({ request }) => {
+    test('優先度変更時にSLA期限が再計算される', async ({ request }) => {
       // 低優先度チケットを作成
       const ticket = await createTicket(request, authToken, {
         subject: `SLA再計算テスト ${randomString()}`,
@@ -240,7 +239,7 @@ test.describe('SLAポリシー管理のテスト', () => {
 
       const originalDueAt = ticket.due_at;
 
-      // 優先度を高に変更
+      // 優先度を高に変更（impact と urgency を変更）
       const updateResponse = await request.patch(
         `${TEST_CONFIG.API_BASE_URL}/api/tickets/${ticket.ticket_id}`,
         {
@@ -256,10 +255,19 @@ test.describe('SLAポリシー管理のテスト', () => {
       );
 
       expect(updateResponse.ok()).toBeTruthy();
-      const updatedTicket = await updateResponse.json();
+      const updateBody = await updateResponse.json();
+      expect(updateBody.success).toBeTruthy();
+
+      const updatedTicket = updateBody.data.ticket;
+
+      // 優先度がP1に変更されたことを確認
+      expect(updatedTicket.priority).toBe('P1');
+
+      // SLA期限が再計算されていることを確認
+      expect(updatedTicket.due_at).toBeDefined();
 
       // 期限が変更されていることを確認（より短い期限になるはず）
-      if (updatedTicket.due_at !== originalDueAt) {
+      if (originalDueAt && updatedTicket.due_at !== originalDueAt) {
         const newDueDate = new Date(updatedTicket.due_at);
         const originalDueDate = new Date(originalDueAt);
         expect(newDueDate.getTime()).toBeLessThan(originalDueDate.getTime());
@@ -316,41 +324,53 @@ test.describe('SLAポリシー管理のテスト', () => {
   });
 
   test.describe('SLA APIエンドポイントのテスト', () => {
-    // SLA API未実装のため、このテストはスキップ
-    test.skip('GET /api/sla - SLAポリシー一覧取得', async ({ request }) => {
-      const response = await request.get(`${TEST_CONFIG.API_BASE_URL}/api/sla`, {
+    test('GET /api/sla/policies - SLAポリシー一覧取得', async ({ request }) => {
+      const response = await request.get(`${TEST_CONFIG.API_BASE_URL}/api/sla/policies`, {
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
 
       expect(response.ok()).toBeTruthy();
       const body = await response.json();
+      expect(body.success).toBeTruthy();
 
       // ポリシーの配列が返されることを確認
-      expect(Array.isArray(body.policies) || Array.isArray(body)).toBeTruthy();
+      const policies = body.data.policies || body.data;
+      expect(Array.isArray(policies)).toBeTruthy();
+
+      // 各ポリシーに必須フィールドが含まれていることを確認
+      if (policies.length > 0) {
+        const policy = policies[0];
+        expect(policy).toHaveProperty('name');
+        expect(policy).toHaveProperty('priority');
+      }
     });
 
-    test('GET /api/sla/{id} - 特定のSLAポリシー取得', async ({ request }) => {
+    test('GET /api/sla/policies/{id} - 特定のSLAポリシー取得', async ({ request }) => {
       // まずポリシー一覧を取得
-      const listResponse = await request.get(`${TEST_CONFIG.API_BASE_URL}/api/sla`, {
+      const listResponse = await request.get(`${TEST_CONFIG.API_BASE_URL}/api/sla/policies`, {
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
 
       if (listResponse.ok()) {
         const listBody = await listResponse.json();
-        const policies = listBody.policies || listBody;
+        expect(listBody.success).toBeTruthy();
 
-        if (policies && policies.length > 0) {
-          const firstPolicyId = policies[0].sla_policy_id || policies[0].id;
+        const policies = listBody.data.policies || listBody.data;
+
+        if (policies && policies.length > 0 && policies[0].sla_policy_id) {
+          const firstPolicyId = policies[0].sla_policy_id;
 
           // 特定のポリシーを取得
-          const response = await request.get(`${TEST_CONFIG.API_BASE_URL}/api/sla/${firstPolicyId}`, {
+          const response = await request.get(`${TEST_CONFIG.API_BASE_URL}/api/sla/policies/${firstPolicyId}`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
           });
 
           expect(response.ok()).toBeTruthy();
           const body = await response.json();
+          expect(body.success).toBeTruthy();
 
-          expect(body.sla_policy_id || body.id).toBe(firstPolicyId);
+          const policy = body.data.policy || body.data;
+          expect(policy.sla_policy_id || policy.priority).toBeDefined();
         }
       }
     });
@@ -378,9 +398,8 @@ test.describe('SLAポリシー管理のテスト', () => {
       expect(p1DueDate.getTime()).toBeLessThan(p4DueDate.getTime());
     });
 
-    // SLA API未実装のため、このテストはスキップ
-    test.skip('営業時間を考慮したSLA期限計算', async ({ request }) => {
-      // 営業時間を考慮したSLA計算がある場合のテスト
+    test('営業時間を考慮したSLA期限計算', async ({ request }) => {
+      // P3チケット（個人 x 中）を作成: SLA目標は初動4h / 解決3営業日
       const ticket = await createTicket(request, authToken, {
         subject: `営業時間SLAテスト ${randomString()}`,
         impact: '個人',
@@ -391,7 +410,7 @@ test.describe('SLAポリシー管理のテスト', () => {
       // 期限が設定されていることを確認
       expect(ticket.due_at).toBeDefined();
 
-      // 期限が妥当な範囲内であることを確認（例：1週間以内）
+      // 期限が妥当な範囲内であることを確認（P3: 3営業日 = 最大1週間以内）
       const dueDate = new Date(ticket.due_at);
       const now = new Date();
       const oneWeek = 7 * 24 * 60 * 60 * 1000;

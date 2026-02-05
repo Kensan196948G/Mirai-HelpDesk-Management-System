@@ -111,21 +111,35 @@ export const getTicket = async (
 export const getTicketDetail = async (
   id: string
 ): Promise<ApiResponse<TicketDetailWithRelations>> => {
-  // 基本情報とコメントを取得
-  const response = await apiRequest<{ ticket: TicketDetail; comments: TicketComment[] }>({
-    method: 'GET',
-    url: `/tickets/${id}`,
-  });
+  // 基本情報・コメント、添付ファイル、履歴を並列取得
+  const [response, attachmentsRes, historyRes] = await Promise.all([
+    apiRequest<{ ticket: TicketDetail; comments: TicketComment[] }>({
+      method: 'GET',
+      url: `/tickets/${id}`,
+    }),
+    apiRequest<{ attachments: TicketAttachment[] }>({
+      method: 'GET',
+      url: `/tickets/${id}/attachments`,
+    }).catch(() => ({ success: false, data: undefined })),
+    apiRequest<{ items: TicketHistoryEntry[]; total: number; page: number; page_size: number; total_pages: number }>({
+      method: 'GET',
+      url: `/tickets/${id}/history`,
+    }).catch(() => ({ success: false, data: undefined })),
+  ]);
 
-  // 成功した場合、空の添付ファイルと履歴を追加
+  // 成功した場合、添付ファイルと履歴を結合
   if (response.success && response.data) {
     return {
       ...response,
       data: {
         ticket: response.data.ticket,
         comments: response.data.comments || [],
-        attachments: [], // TODO: 添付ファイル取得APIを実装
-        history: [], // TODO: 履歴取得APIを実装
+        attachments: attachmentsRes.success && attachmentsRes.data
+          ? attachmentsRes.data.attachments
+          : [],
+        history: historyRes.success && historyRes.data
+          ? historyRes.data.items
+          : [],
       },
     };
   }

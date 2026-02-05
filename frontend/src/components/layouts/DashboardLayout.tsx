@@ -28,6 +28,7 @@ import {
   HistoryOutlined,
   FolderOutlined,
   FireOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '@store/authStore';
 import { logout } from '@services/authService';
@@ -174,6 +175,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       ],
     },
   ];
+
+  // SLA管理
+  menuItems.push({
+    key: 'sla',
+    icon: <ClockCircleOutlined />,
+    label: 'SLA管理',
+    children: [
+      {
+        key: '/sla',
+        label: 'SLAポリシー',
+      },
+    ],
+  });
 
   // M365タスク（M365 Operatorと管理者のみ）
   if (user?.role === 'm365_operator' || user?.role === 'manager') {

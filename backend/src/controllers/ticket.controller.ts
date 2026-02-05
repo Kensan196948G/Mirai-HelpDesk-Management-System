@@ -3,6 +3,7 @@ import { TicketModel } from '../models/ticket.model';
 import { TicketCommentModel } from '../models/ticket-comment.model';
 import { AppError, asyncHandler } from '../middleware/errorHandler';
 import { logger, logAudit } from '../utils/logger';
+import { query } from '../config/database';
 import {
   TicketType,
   TicketStatus,
@@ -343,6 +344,62 @@ export class TicketController {
         success: true,
         data: {
           statistics,
+        },
+      });
+    }
+  );
+
+  // チケット履歴取得（追記専用監査証跡）
+  static getHistory = asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { id } = req.params;
+      const user = req.user!;
+
+      // チケットの存在確認
+      const ticket = await TicketModel.findById(id);
+
+      if (!ticket) {
+        throw new AppError('Ticket not found', 404, 'TICKET_NOT_FOUND');
+      }
+
+      // 一般ユーザーは自分のチケットのみ閲覧可能
+      if (
+        user.role === UserRole.REQUESTER &&
+        ticket.requester_id !== user.user_id
+      ) {
+        throw new AppError(
+          'You do not have permission to view this ticket history',
+          403,
+          'FORBIDDEN'
+        );
+      }
+
+      // 履歴をactor情報付きで取得
+      const result = await query(
+        `SELECT
+          h.history_id,
+          h.ticket_id,
+          h.actor_id,
+          h.actor_name,
+          h.action,
+          h.before_value,
+          h.after_value,
+          h.description,
+          h.created_at,
+          h.ip_address,
+          u.email as actor_email,
+          u.role as actor_role
+        FROM ticket_history h
+        LEFT JOIN users u ON h.actor_id = u.user_id
+        WHERE h.ticket_id = $1
+        ORDER BY h.created_at DESC`,
+        [id]
+      );
+
+      res.json({
+        success: true,
+        data: {
+          history: result.rows,
         },
       });
     }

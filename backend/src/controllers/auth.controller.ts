@@ -167,8 +167,69 @@ export class AuthController {
   // トークンリフレッシュ
   static refreshToken = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      // 実装は後で追加（リフレッシュトークンの検証が必要）
-      throw new AppError('Not implemented yet', 501, 'NOT_IMPLEMENTED');
+      const { refreshToken } = req.body;
+
+      if (!refreshToken) {
+        throw new AppError('Refresh token is required', 400, 'MISSING_REFRESH_TOKEN');
+      }
+
+      const jwtSecret = process.env.JWT_SECRET;
+      if (!jwtSecret) {
+        throw new AppError('JWT secret not configured', 500, 'CONFIG_ERROR');
+      }
+
+      // リフレッシュトークンを検証
+      let decoded: { user_id: string; type: string };
+      try {
+        const jwt = require('jsonwebtoken');
+        decoded = jwt.verify(refreshToken, jwtSecret) as { user_id: string; type: string };
+      } catch (error: any) {
+        if (error.name === 'TokenExpiredError') {
+          throw new AppError('Refresh token expired', 401, 'REFRESH_TOKEN_EXPIRED');
+        }
+        throw new AppError('Invalid refresh token', 401, 'INVALID_REFRESH_TOKEN');
+      }
+
+      // リフレッシュトークンであることを確認
+      if (decoded.type !== 'refresh') {
+        throw new AppError('Invalid token type', 401, 'INVALID_TOKEN_TYPE');
+      }
+
+      // ユーザーの存在と有効性を確認
+      const user = await UserModel.findById(decoded.user_id);
+
+      if (!user) {
+        throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+      }
+
+      // 新しいアクセストークンとリフレッシュトークンを生成
+      const newToken = generateToken({
+        user_id: user.user_id,
+        email: user.email,
+        role: user.role,
+      });
+
+      const newRefreshToken = generateRefreshToken(user.user_id);
+
+      logger.info('Token refreshed', {
+        user_id: user.user_id,
+        email: user.email,
+      });
+
+      res.json({
+        success: true,
+        data: {
+          token: newToken,
+          refreshToken: newRefreshToken,
+          user: {
+            user_id: user.user_id,
+            email: user.email,
+            display_name: user.display_name,
+            department: user.department,
+            role: user.role,
+          },
+        },
+      });
     }
   );
 }
