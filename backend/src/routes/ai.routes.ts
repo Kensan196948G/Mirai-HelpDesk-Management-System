@@ -7,6 +7,7 @@
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth';
 import { AIController } from '../controllers/ai.controller';
+import { AIChatController } from '../controllers/ai-chat.controller';
 import { body } from 'express-validator';
 import { validate, runValidations } from '../middleware/validation';
 import { UserRole } from '../types';
@@ -186,6 +187,80 @@ router.post(
   ]),
   validate,
   AIController.translateText
+);
+
+/**
+ * POST /api/ai/chat/diagnose
+ * AI対話による問題診断
+ *
+ * 認可: 全ロール（Requester以上）
+ */
+router.post(
+  '/chat/diagnose',
+  runValidations([
+    body('initial_problem')
+      .notEmpty()
+      .withMessage('初期問題内容は必須です')
+      .isString()
+      .withMessage('初期問題内容は文字列である必要があります')
+      .isLength({ min: 10, max: 5000 })
+      .withMessage('初期問題内容は10文字以上5000文字以内で入力してください'),
+    body('conversation_history')
+      .optional()
+      .isArray()
+      .withMessage('会話履歴は配列である必要があります'),
+  ]),
+  validate,
+  AIChatController.diagnoseRequest
+);
+
+/**
+ * POST /api/ai/chat/suggest-solution
+ * AI診断結果からの解決策提案
+ *
+ * 認可: 全ロール
+ */
+router.post(
+  '/chat/suggest-solution',
+  runValidations([
+    body('conversation_history')
+      .isArray()
+      .withMessage('会話履歴は配列である必要があります')
+      .custom((value) => {
+        if (value.length > 50) {
+          throw new Error('会話履歴は最大50件までです');
+        }
+        return true;
+      }),
+    body('diagnostic_answers')
+      .isObject()
+      .withMessage('診断回答はオブジェクトである必要があります'),
+  ]),
+  validate,
+  AIChatController.suggestSolution
+);
+
+/**
+ * POST /api/ai/chat/create-ticket
+ * AI対話内容からチケット自動作成
+ *
+ * 認可: Requester以上（チケット作成権限）
+ */
+router.post(
+  '/chat/create-ticket',
+  runValidations([
+    body('conversation_history')
+      .isArray()
+      .withMessage('会話履歴は配列である必要があります')
+      .notEmpty()
+      .withMessage('会話履歴は必須です'),
+    body('user_confirmed_values')
+      .optional()
+      .isObject()
+      .withMessage('ユーザー確認値はオブジェクトである必要があります'),
+  ]),
+  validate,
+  AIChatController.createTicketFromChat
 );
 
 export default router;

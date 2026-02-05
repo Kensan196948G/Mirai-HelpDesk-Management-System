@@ -5,6 +5,12 @@
  */
 
 import { apiClient } from './api';
+import type {
+  Message,
+  DiagnosticResult,
+  SolutionResult,
+  TicketCreationResult,
+} from '../types/ai-chat.types';
 
 // 型定義
 export interface AIClassificationInput {
@@ -207,5 +213,53 @@ export const aiService = {
   }): Promise<any> {
     const response = await apiClient.post('/ai/translate', data);
     return response.data.data;
+  },
+
+  /**
+   * AI対話診断 - フェーズ1: 診断質問を生成
+   */
+  async chatDiagnose(data: {
+    initial_problem: string;
+    conversation_history?: Message[];
+  }): Promise<DiagnosticResult> {
+    try {
+      const response = await apiClient.post('/ai/chat/diagnose', data);
+      return response.data.data;
+    } catch (error: any) {
+      console.error('AI診断エラー:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * AI対話解決提案 - フェーズ2: 解決策を提案
+   */
+  async chatSuggestSolution(data: {
+    conversation_history: Message[];
+    diagnostic_answers: Record<string, string>;
+  }): Promise<SolutionResult> {
+    try {
+      const response = await apiClient.post('/ai/chat/suggest-solution', data);
+      return response.data.data;
+    } catch (error: any) {
+      console.error('AI解決提案エラー:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * AI対話チケット作成 - フェーズ3: 会話からチケットを作成
+   */
+  async chatCreateTicket(data: {
+    conversation_history: Message[];
+    user_confirmed_values?: any;
+  }): Promise<TicketCreationResult> {
+    try {
+      const response = await apiClient.post('/ai/chat/create-ticket', data);
+      return response.data.data;
+    } catch (error: any) {
+      console.error('AIチケット作成エラー:', error);
+      throw error;
+    }
   },
 };

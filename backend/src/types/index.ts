@@ -256,6 +256,15 @@ export interface KnowledgeArticle {
   updated_at: Date;
 }
 
+export interface KnowledgeArticlePreview {
+  article_id: string;
+  title: string;
+  summary: string;
+  category: string;
+  view_count: number;
+  relevance_score?: number;
+}
+
 // カテゴリ関連
 export interface Category {
   category_id: string;

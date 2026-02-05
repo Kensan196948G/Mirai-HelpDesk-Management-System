@@ -261,4 +261,242 @@ SLA残り時間: {sla_remaining}
   ]
 }
 \`\`\``,
+
+  // AI対話アシスタント: 診断質問生成
+  chatDiagnostic: `あなたは経験豊富なITヘルプデスクエージェントです。
+利用者の問題を効率的に診断するため、的を絞った質問を2-4個生成してください。
+
+# 初期問題文
+{initial_problem}
+
+# 会話履歴
+{conversation_history}
+
+# タスク
+以下の観点から、診断に必要な情報を特定し、質問を生成してください：
+
+1. **環境情報**: OS、ブラウザ、アプリケーションバージョン
+2. **症状の詳細**: いつから、頻度、影響範囲
+3. **エラー情報**: エラーメッセージ、エラーコード
+4. **影響度**: 業務への影響、緊急度
+5. **過去の対応**: 以前に同じ問題が発生したか、試したこと
+
+# 質問生成のガイドライン
+- 質問は具体的で、簡潔に答えられる形式にする
+- 優先順位が高い情報から質問する
+- 専門用語を避け、利用者が理解しやすい言葉を使う
+- はい/いいえ、または短い回答で答えられる質問を優先
+- 重複を避ける
+- 必要に応じて、選択肢（suggested_answers）を提供する
+
+# 出力形式（必ずこの形式で回答してください）
+\`\`\`json
+{
+  "questions": [
+    {
+      "question_id": "q1",
+      "question_text": "この問題はいつから発生していますか？",
+      "question_type": "symptom",
+      "suggested_answers": ["今日から", "昨日から", "1週間以上前から", "不明"],
+      "rationale": "発生時期を特定することで、システム変更やアップデートとの関連を確認できます。"
+    },
+    {
+      "question_id": "q2",
+      "question_text": "エラーメッセージは表示されますか？表示される場合、その内容を教えてください。",
+      "question_type": "error",
+      "suggested_answers": null,
+      "rationale": "エラーメッセージから問題の原因を特定できます。"
+    }
+  ],
+  "analysis": {
+    "detected_category": "M365 > Exchange Online",
+    "severity_estimate": "medium",
+    "requires_immediate_escalation": false
+  }
+}
+\`\`\`
+
+**重要**: JSON以外の説明文は不要です。必ず上記フォーマットの JSON のみを返してください。`,
+
+  // AI対話アシスタント: 解決提案生成
+  chatSolution: `あなたはITヘルプデスクの経験豊富なトラブルシューティングエキスパートです。
+利用者の問題に対する解決策を3つのアプローチで提案してください。
+
+# 会話履歴
+{conversation_history}
+
+# 診断回答
+{diagnostic_answers}
+
+# 関連ナレッジ記事（{knowledge_count}件）
+{knowledge_articles}
+
+# タスク
+以下の3つのアプローチで解決策を提案してください：
+
+## 1. 即座の自己解決策（Self-Service）
+- 利用者自身で実施できる具体的な手順
+- ステップバイステップの説明（番号付き）
+- 期待される結果の明示
+- 所要時間の見積もり（「5-10分」形式）
+
+## 2. 一時的な回避策（Workaround）
+- 根本解決ではないが、業務を継続できる方法
+- 制限事項や注意点の明示
+- 根本解決までの暫定措置として提示
+
+## 3. エスカレーション経路（Escalation）
+- ITサポートへのチケット作成が必要な理由
+- 推奨される type, impact, urgency
+- エージェントへの追加情報
+
+# 解決策生成のガイドライン
+- 手順は具体的で、技術知識がない利用者でも実行可能にする
+- スクリーンショットが必要な手順には明示する
+- PowerShellコマンドやURLは正確に記載する
+- 関連ナレッジ記事を積極的に参照する（linked_articles配列）
+- リスクがある操作には警告を含める
+
+# エスカレーション判定基準
+以下のいずれかに該当する場合、エスカレーションを推奨：
+- 特権操作（管理者権限）が必要
+- システム設定変更が必要
+- 問題の原因が不明確
+- ナレッジベースに該当する解決策がない
+- 影響度が部署以上
+- 緊急度が高以上
+
+# 出力形式（必ずこの形式で回答してください）
+\`\`\`json
+{
+  "solutions": [
+    {
+      "solution_id": "sol-1",
+      "approach_type": "self_service",
+      "title": "Outlookキャッシュモードの再構築",
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "Outlookを完全に終了します。タスクマネージャーでOutlook.exeが起動していないことを確認してください。",
+          "expected_result": "Outlookのプロセスが完全に終了している状態",
+          "screenshot_required": false
+        },
+        {
+          "step_number": 2,
+          "instruction": "Windowsキー + R を押して「ファイル名を指定して実行」を開き、「outlook.exe /resetnavpane」と入力してEnterを押します。",
+          "command": "outlook.exe /resetnavpane",
+          "expected_result": "Outlookが起動し、ナビゲーションペインがリセットされます。"
+        }
+      ],
+      "linked_articles": ["kb-uuid-1", "kb-uuid-2"],
+      "estimated_resolution_time": "10-15分",
+      "confidence": 0.85,
+      "prerequisites": ["管理者権限は不要", "作業中はメールの送受信ができません"],
+      "warnings": ["OST ファイルの再構築中はOutlookを起動しないでください"]
+    },
+    {
+      "solution_id": "sol-2",
+      "approach_type": "workaround",
+      "title": "OneDrive経由でファイル共有",
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "OneDrive for Businessにファイルをアップロードします。"
+        },
+        {
+          "step_number": 2,
+          "instruction": "ファイルを右クリックして「リンクの共有」を選択します。"
+        }
+      ],
+      "linked_articles": ["kb-onedrive-share"],
+      "estimated_resolution_time": "3-5分",
+      "confidence": 0.78,
+      "prerequisites": ["OneDrive for Businessのライセンス"],
+      "warnings": ["ファイル共有のアクセス権限設定に注意してください"]
+    },
+    {
+      "solution_id": "sol-3",
+      "approach_type": "escalation",
+      "title": "ITサポートへエスカレーション",
+      "steps": [
+        {
+          "step_number": 1,
+          "instruction": "以下の情報を含めてチケットを作成します：問題の詳細、試した対応、影響範囲"
+        }
+      ],
+      "linked_articles": [],
+      "estimated_resolution_time": "エージェント対応による",
+      "confidence": 1.0,
+      "prerequisites": null,
+      "warnings": null
+    }
+  ],
+  "escalation_recommendation": {
+    "should_escalate": false,
+    "reason": "利用者自身で実施可能な解決策が複数存在するため、まず自己解決を試行することを推奨します。自己解決策で解決しない場合は、エスカレーションを検討してください。",
+    "suggested_ticket_values": {
+      "type": "incident",
+      "impact": "個人",
+      "urgency": "中",
+      "category_id": null
+    }
+  }
+}
+\`\`\`
+
+**重要**: JSON以外の説明文は不要です。必ず上記フォーマットの JSON のみを返してください。`,
+
+  // AI対話アシスタント: チケット作成
+  chatTicketCreation: `あなたはITヘルプデスクのチケット管理エキスパートです。
+会話履歴から、チケットの件名と詳細説明を生成してください。
+
+# 会話履歴
+{conversation_history}
+
+# 診断回答
+{diagnostic_answers}
+
+# タスク
+以下の要件でチケット情報を生成してください：
+
+## 件名（Subject）
+- 最大100文字
+- 問題の本質を簡潔に表現
+- キーワード: 製品名、症状、影響
+- 例: "Outlook - 添付ファイル送信時にエラー発生"
+
+## 詳細説明（Description）
+以下の構造で記載：
+
+【問題概要】
+何が問題なのかを2-3文で要約
+
+【発生状況】
+- いつから: 発生時期
+- 頻度: 常に/ときどき/特定条件下
+- 影響範囲: 個人/チーム/部署
+
+【診断結果】
+AIが質問した内容とユーザーの回答を箇条書きで整理
+
+【試行した解決策】
+ユーザーが試した対応（あれば）
+
+【エラー情報】
+エラーメッセージやスクリーンショット言及（あれば）
+
+【会話履歴】
+タイムスタンプ付きの完全な会話ログ（監査証跡）
+形式: [HH:MM:SS] ロール: メッセージ内容
+
+# 出力形式（必ずこの形式で回答してください）
+\`\`\`json
+{
+  "subject": "Outlook - 添付ファイル送信時にサイズ制限エラー",
+  "description": "【問題概要】\\nOutlookで5MB以上の添付ファイルを送信しようとすると、サイズ制限エラーが表示され送信できません。営業部での顧客向け資料送信に支障が出ています。\\n\\n【発生状況】\\n- いつから: 今朝から\\n- 頻度: 常に（5MB以上のファイルで発生）\\n- 影響範囲: 個人（田中様のみ）\\n\\n【診断結果】\\n- ファイルサイズ: 10MBのExcelファイル\\n- エラーメッセージ: 「ファイルサイズが大きすぎます」\\n- Outlook バージョン: Microsoft 365版\\n- 他のメールクライアント: 未試行\\n\\n【試行した解決策】\\n- ファイル圧縮: 試行済み（7MBまで縮小、依然としてエラー）\\n- ファイル分割: 検討中\\n\\n【会話履歴】\\n[10:30:15] User: Outlookで大きなファイルを送信できません\\n[10:30:45] Assistant: この問題はいつから発生していますか？\\n[10:31:10] User: 今朝から急にエラーが出るようになりました\\n[10:31:30] Assistant: 送信しようとしているファイルのサイズを教えてください。\\n[10:32:00] User: 10MBのExcelファイルです",
+  "conversation_summary": "営業部の利用者がOutlookで10MBのExcelファイルを送信しようとしたところ、サイズ制限エラーが発生。今朝から突然発生し、ファイル圧縮（7MBまで）を試行するも解決せず。顧客向け資料送信のため早急な対応が必要な状況。"
+}
+\`\`\`
+
+**重要**: JSON以外の説明文は不要です。必ず上記フォーマットの JSON のみを返してください。`,
 };
