@@ -3,8 +3,8 @@
  */
 
 import React, { useState } from 'react';
-import { Card, Input, Button, List, Avatar, Typography, Space, Spin } from 'antd';
-import { CommentOutlined, SendOutlined, RobotOutlined, UserOutlined } from '@ant-design/icons';
+import { Card, Input, Button, List, Avatar, Typography, Space, Spin, message } from 'antd';
+import { CommentOutlined, SendOutlined, RobotOutlined, UserOutlined, ReloadOutlined } from '@ant-design/icons';
 
 const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
@@ -17,16 +17,26 @@ interface Message {
 }
 
 const AIChat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'こんにちは！ITヘルプデスクのAIアシスタントです。どのようなお困りごとでしょうか？',
-      timestamp: new Date()
-    }
-  ]);
+  const initialMessage: Message = {
+    id: '1',
+    role: 'assistant',
+    content: 'こんにちは！ITヘルプデスクのAIアシスタントです。どのようなお困りごとでしょうか？',
+    timestamp: new Date()
+  };
+
+  const [messages, setMessages] = useState<Message[]>([initialMessage]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleReload = () => {
+    setMessages([{
+      ...initialMessage,
+      id: Date.now().toString(),
+      timestamp: new Date()
+    }]);
+    setInputValue('');
+    message.success('会話をリロードしました');
+  };
 
   const handleSend = async () => {
     if (!inputValue.trim()) return;
@@ -59,12 +69,23 @@ const AIChat: React.FC = () => {
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
       <Card>
-        <Title level={2}>
-          <CommentOutlined /> AI対話アシスタント
-        </Title>
-        <Paragraph>
-          チケット対応やトラブルシューティングをAIがサポートします。
-        </Paragraph>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <Title level={2} style={{ margin: 0 }}>
+              <CommentOutlined /> AI対話アシスタント
+            </Title>
+            <Paragraph style={{ marginTop: '8px', marginBottom: 0 }}>
+              チケット対応やトラブルシューティングをAIがサポートします。
+            </Paragraph>
+          </div>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={handleReload}
+            type="default"
+          >
+            会話をリロード
+          </Button>
+        </div>
       </Card>
 
       <Card style={{ marginTop: '16px', height: '600px', display: 'flex', flexDirection: 'column' }}>
