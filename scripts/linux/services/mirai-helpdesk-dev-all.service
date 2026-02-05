@@ -1,0 +1,63 @@
+[Unit]
+Description=Mirai HelpDesk Management System - Development Environment (All Services)
+Documentation=https://github.com/Kensan196948G/Mirai-HelpDesk-Management-System
+After=network-online.target postgresql.service redis.service
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=forking
+User=kensan
+Group=kensan
+WorkingDirectory=/mnt/LinuxHDD/Mirai-HelpDesk-Management-System
+
+# 環境変数
+Environment="NODE_ENV=development"
+Environment="PATH=/usr/bin:/usr/local/bin"
+
+# 環境変数ファイル読み込み
+EnvironmentFile=-/mnt/LinuxHDD/Mirai-HelpDesk-Management-System/backend/.env
+
+# 起動前の準備
+ExecStartPre=+/bin/mkdir -p /mnt/LinuxHDD/Mirai-HelpDesk-Management-System/logs
+ExecStartPre=+/bin/chown -R kensan:kensan /mnt/LinuxHDD/Mirai-HelpDesk-Management-System/logs
+
+# 起動コマンド
+ExecStart=/mnt/LinuxHDD/Mirai-HelpDesk-Management-System/start-dev.sh
+
+# 停止コマンド
+ExecStop=/mnt/LinuxHDD/Mirai-HelpDesk-Management-System/stop-dev.sh
+
+# タイムアウト設定
+TimeoutStartSec=120
+TimeoutStopSec=30
+KillMode=mixed
+KillSignal=SIGTERM
+
+# 再起動設定
+Restart=on-failure
+RestartSec=10
+
+# ログ設定
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mirai-helpdesk-dev
+
+# リソース制限（開発環境）
+MemoryMax=2G
+MemoryHigh=1536M
+CPUQuota=200%
+TasksMax=128
+
+# セキュリティ設定
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=read-only
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# ファイルディスクリプタ制限
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

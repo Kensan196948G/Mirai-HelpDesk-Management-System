@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Favicon Generator</title>
+</head>
+<body>
+  <canvas id="canvas" width="32" height="32"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // 背景グラデーション
+    const gradient = ctx.createLinearGradient(0, 0, 32, 32);
+    gradient.addColorStop(0, '#1890ff');
+    gradient.addColorStop(1, '#096dd9');
+
+    // 背景円
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(16, 16, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ヘッドセット（白）
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+
+    // 左側
+    ctx.beginPath();
+    ctx.arc(10, 14, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 右側
+    ctx.beginPath();
+    ctx.arc(22, 14, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // アーチ
+    ctx.beginPath();
+    ctx.arc(16, 14, 8, Math.PI, 0, true);
+    ctx.stroke();
+
+    // チケット記号
+    ctx.fillStyle = 'white';
+    ctx.fillRect(13, 20, 6, 8);
+    ctx.fillStyle = '#1890ff';
+    ctx.fillRect(14, 22, 4, 1);
+    ctx.fillRect(14, 24, 3, 1);
+
+    // PNG として出力
+    const dataUrl = canvas.toDataURL('image/png');
+    console.log('PNG Data URL:');
+    console.log(dataUrl);
+
+    // ダウンロードリンクを作成
+    const link = document.createElement('a');
+    link.download = 'favicon-32x32.png';
+    link.href = dataUrl;
+    link.textContent = 'Download favicon-32x32.png';
+    document.body.appendChild(link);
+  </script>
+</body>
+</html>
