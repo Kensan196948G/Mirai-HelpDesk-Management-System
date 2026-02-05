@@ -7,6 +7,8 @@
 import { getClaudeAPIClient } from './claude-api.client';
 import { claudeConfig } from '../config/claude.config';
 import { query } from '../config/database';
+import { VectorSearchService, SimilarTicketResult, KnowledgeSearchResult } from './vector-search.service';
+import { logger } from '../utils/logger';
 
 export interface SmartSearchInput {
   natural_language_query: string;
@@ -27,6 +29,8 @@ export interface SmartSearchResult {
   };
   total_results: number;
   processing_time_ms: number;
+  similar_tickets?: SimilarTicketResult[];
+  related_knowledge?: KnowledgeSearchResult[];
 }
 
 export class AISmartSearchService {
@@ -103,9 +107,24 @@ ${schemaInfo}
       // 6. クエリ実行
       const ticketsResult = await query(searchData.sql_query, searchData.parameters);
 
+      // ベクトル検索で類似チケット・関連ナレッジも取得
+      let similar_tickets: SimilarTicketResult[] = [];
+      let related_knowledge: KnowledgeSearchResult[] = [];
+
+      try {
+        const vectorResults = await VectorSearchService.unifiedSearch(
+          natural_language_query,
+          { ticketLimit: 5, articleLimit: 3, threshold: 0.3 }
+        );
+        similar_tickets = vectorResults.tickets;
+        related_knowledge = vectorResults.knowledge_articles;
+      } catch (vectorError: any) {
+        logger.warn('Vector search augmentation failed:', vectorError.message);
+      }
+
       const processingTime = Date.now() - startTime;
 
-      console.log(`✅ スマート検索完了: ${ticketsResult.rows.length}件 (${processingTime}ms)`);
+      logger.info(`Smart search completed: ${ticketsResult.rows.length} SQL results, ${similar_tickets.length} similar tickets, ${related_knowledge.length} knowledge articles (${processingTime}ms)`);
 
       return {
         tickets: ticketsResult.rows,
@@ -114,9 +133,11 @@ ${schemaInfo}
         filters_applied: searchData.filters_applied,
         total_results: ticketsResult.rows.length,
         processing_time_ms: processingTime,
+        similar_tickets,
+        related_knowledge,
       };
     } catch (error: any) {
-      console.error('❌ スマート検索エラー:', error);
+      console.error('Smart search error:', error);
       throw new Error(`スマート検索に失敗しました: ${error.message}`);
     }
   }

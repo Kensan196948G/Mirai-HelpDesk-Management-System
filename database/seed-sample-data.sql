@@ -234,22 +234,19 @@ Exchange Onlineでは、メールの添付ファイルサイズに**10MB**の上
 -- ナレッジ2: Teams画面共有トラブルシューティング
 INSERT INTO knowledge_articles (
   article_id,
-  article_number,
   title,
-  content,
-  category,
+  body,
+  type,
   tags,
   visibility,
-  status,
+  is_published,
   view_count,
-  created_by,
-  updated_by,
+  owner_id,
   created_at,
   updated_at,
   published_at
 ) VALUES (
   gen_random_uuid(),
-  'KB-002',
   'Teamsで画面共有ができない場合のトラブルシューティング',
   '# Teamsで画面共有ができない場合のトラブルシューティング
 
@@ -295,11 +292,12 @@ IT部門にチケットを起票してください。その際、以下の情報
 - エラーメッセージのスクリーンショット
 - Teamsのバージョン（「ヘルプ」→「バージョン情報」で確認）
 - OSのバージョン',
+  'how_to',
   ARRAY['Teams', '画面共有', 'トラブルシューティング']::text[],
   'public',
   true,
   68,
-  'a3f182d0-d492-4bd0-bc1b-b6bb37bb43ae',
+  'a3f182d0-d492-4bd0-bc1b-b6bb37bb43ae', -- admin@example.com
   NOW() - INTERVAL '20 days',
   NOW() - INTERVAL '5 days',
   NOW() - INTERVAL '18 days'
@@ -308,22 +306,19 @@ IT部門にチケットを起票してください。その際、以下の情報
 -- ナレッジ3: OneDrive同期エラー解決方法
 INSERT INTO knowledge_articles (
   article_id,
-  article_number,
   title,
-  content,
-  category,
+  body,
+  type,
   tags,
   visibility,
-  status,
+  is_published,
   view_count,
-  created_by,
-  updated_by,
+  owner_id,
   created_at,
   updated_at,
   published_at
 ) VALUES (
   gen_random_uuid(),
-  'KB-003',
   'OneDrive同期エラーの解決方法',
   '# OneDrive同期エラーの解決方法
 
@@ -384,11 +379,12 @@ INSERT INTO knowledge_articles (
 
 ## それでも解決しない場合
 IT部門にチケットを起票してください。',
+  'known_error',
   ARRAY['OneDrive', '同期エラー', 'トラブルシューティング']::text[],
   'public',
   true,
   91,
-  'a3f182d0-d492-4bd0-bc1b-b6bb37bb43ae',
+  'a3f182d0-d492-4bd0-bc1b-b6bb37bb43ae', -- admin@example.com
   NOW() - INTERVAL '25 days',
   NOW() - INTERVAL '10 days',
   NOW() - INTERVAL '23 days'

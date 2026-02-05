@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -7,6 +8,8 @@ import { testConnection } from './config/database';
 import { logger } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { rateLimit } from './middleware/rateLimit';
+import { initializeSocketServer } from './websocket/socketServer';
+import { startSLAChecker, stopSLAChecker } from './jobs/sla-checker';
 
 // ルートのインポート
 import authRoutes from './routes/auth.routes';
@@ -18,6 +21,7 @@ import approvalRoutes from './routes/approval.routes';
 import m365Routes from './routes/m365.routes';
 import aiRoutes from './routes/ai.routes';
 import slaRoutes from './routes/sla.routes';
+import reportRoutes from './routes/report.routes';
 
 // 環境変数の読み込み
 dotenv.config();
@@ -88,12 +92,19 @@ app.use(`${API_PREFIX}/approvals`, approvalRoutes);
 app.use(`${API_PREFIX}/m365`, m365Routes);
 app.use(`${API_PREFIX}/ai`, aiRoutes);
 app.use(`${API_PREFIX}/sla`, slaRoutes);
+app.use(`${API_PREFIX}/reports`, reportRoutes);
 
 // 404ハンドラー
 app.use(notFoundHandler);
 
 // エラーハンドラー
 app.use(errorHandler);
+
+// HTTPサーバー作成（socket.io統合用）
+const httpServer = createServer(app);
+
+// WebSocket (socket.io) の初期化
+initializeSocketServer(httpServer);
 
 // サーバー起動
 const startServer = async () => {
@@ -105,12 +116,18 @@ const startServer = async () => {
       // データベースがない場合でも起動を続行（開発用）
     }
 
-    app.listen(PORT, '0.0.0.0', () => {
+    httpServer.listen(PORT, '0.0.0.0', () => {
       logger.info(`Server is running on port ${PORT}`);
       logger.info(`Listening on: 0.0.0.0:${PORT} (all interfaces)`);
+      logger.info(`WebSocket: enabled`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
       logger.info(`API endpoint: http://localhost:${PORT}${API_PREFIX}`);
       logger.info(`Microsoft 365 integration: ${process.env.AZURE_TENANT_ID ? 'Configured' : 'Not configured'}`);
+
+      // SLA通知cronジョブの開始（テスト環境では無効化）
+      if (process.env.NODE_ENV !== 'test') {
+        startSLAChecker();
+      }
     });
   } catch (error) {
     logger.error('Failed to start server:', error);
@@ -121,11 +138,13 @@ const startServer = async () => {
 // グレースフルシャットダウン
 process.on('SIGTERM', () => {
   logger.info('SIGTERM signal received: closing HTTP server');
+  stopSLAChecker();
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
   logger.info('SIGINT signal received: closing HTTP server');
+  stopSLAChecker();
   process.exit(0);
 });
 

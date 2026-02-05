@@ -9,6 +9,8 @@ import { AIPredictionModel, CreateAIPredictionData, PredictionType } from '../mo
 import { PIIMasking } from '../utils/pii-masking';
 import { claudeConfig, promptTemplates } from '../config/claude.config';
 import { query } from '../config/database';
+import { VectorSearchService } from './vector-search.service';
+import { logger } from '../utils/logger';
 
 export interface TicketClassificationInput {
   subject: string;
@@ -75,30 +77,51 @@ export class AIService {
       )
       .join('\n\n');
 
-    // 3. 類似チケット検索（簡易版：キーワードマッチ）
-    // TODO: 将来的にベクトル検索に置き換え
-    const similarTicketsResult = await query(
-      `SELECT ticket_id, ticket_number, subject, category_id, priority, status
-       FROM tickets
-       WHERE (
-         subject ILIKE $1 OR
-         description ILIKE $1
-       )
-       AND status IN ('resolved', 'closed')
-       ORDER BY created_at DESC
-       LIMIT 5`,
-      [`%${input.subject.split(' ')[0]}%`] // 最初のキーワードで検索
-    );
+    // 3. 類似チケット検索（ベクトル検索: pgvector コサイン類似度）
+    let similarTicketsText = 'なし';
+    try {
+      const similarTickets = await VectorSearchService.findSimilarTickets(
+        `${input.subject} ${input.description.substring(0, 500)}`,
+        {
+          limit: 5,
+          threshold: 0.3,
+          statusFilter: ['resolved', 'closed'],
+        }
+      );
 
-    const similarTicketsText =
-      similarTicketsResult.rows.length > 0
-        ? similarTicketsResult.rows
-            .map(
-              (ticket) =>
-                `- ${ticket.ticket_number}: ${ticket.subject} (カテゴリ: ${ticket.category_id}, 優先度: ${ticket.priority})`
-            )
-            .join('\n')
-        : 'なし';
+      if (similarTickets.length > 0) {
+        similarTicketsText = similarTickets
+          .map(
+            (ticket) =>
+              `- ${ticket.ticket_number}: ${ticket.subject} (カテゴリ: ${ticket.category_name}, 優先度: ${ticket.priority}, 類似度: ${(ticket.similarity_score * 100).toFixed(1)}%)`
+          )
+          .join('\n');
+      }
+    } catch (vectorError: any) {
+      // ベクトル検索失敗時はキーワードマッチにフォールバック
+      logger.warn('Vector search failed, falling back to keyword match:', vectorError.message);
+      const similarTicketsResult = await query(
+        `SELECT ticket_id, ticket_number, subject, category_id, priority, status
+         FROM tickets
+         WHERE (
+           subject ILIKE $1 OR
+           description ILIKE $1
+         )
+         AND status IN ('resolved', 'closed')
+         ORDER BY created_at DESC
+         LIMIT 5`,
+        [`%${input.subject.split(' ')[0]}%`]
+      );
+
+      if (similarTicketsResult.rows.length > 0) {
+        similarTicketsText = similarTicketsResult.rows
+          .map(
+            (ticket: any) =>
+              `- ${ticket.ticket_number}: ${ticket.subject} (カテゴリ: ${ticket.category_id}, 優先度: ${ticket.priority})`
+          )
+          .join('\n');
+      }
+    }
 
     // 4. プロンプト生成
     const prompt = promptTemplates.ticketClassification

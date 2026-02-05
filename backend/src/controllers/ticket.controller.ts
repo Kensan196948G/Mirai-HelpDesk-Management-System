@@ -11,6 +11,8 @@ import {
   UrgencyLevel,
   UserRole,
 } from '../types';
+import { emitTicketCreated, emitTicketUpdated, emitTicketComment } from '../websocket/socketServer';
+import { VectorSearchService } from '../services/vector-search.service';
 
 export class TicketController {
   // チケット一覧取得
@@ -139,6 +141,16 @@ export class TicketController {
         requester_id: user.user_id,
       });
 
+      // WebSocket: チケット作成通知
+      emitTicketCreated(ticket);
+
+      // 非同期でベクトル埋め込みを生成（レスポンスをブロックしない）
+      VectorSearchService.generateTicketEmbedding(
+        ticket.ticket_id,
+        ticket.subject,
+        ticket.description || ''
+      ).catch(err => logger.warn('Ticket embedding generation failed:', err.message));
+
       res.status(201).json({
         success: true,
         data: {
@@ -186,6 +198,18 @@ export class TicketController {
         req.ip
       );
 
+      // WebSocket: チケット更新通知
+      emitTicketUpdated(updatedTicket, user.user_id);
+
+      // 件名・説明が変更された場合、埋め込みを再生成
+      if (updates.subject || updates.description) {
+        VectorSearchService.generateTicketEmbedding(
+          id,
+          updatedTicket.subject,
+          updatedTicket.description || ''
+        ).catch(err => logger.warn('Ticket embedding regeneration failed:', err.message));
+      }
+
       res.json({
         success: true,
         data: {
@@ -231,6 +255,9 @@ export class TicketController {
         actor: user.user_id,
       });
 
+      // WebSocket: ステータス更新通知
+      emitTicketUpdated(ticket, user.user_id);
+
       res.json({
         success: true,
         data: {
@@ -270,6 +297,9 @@ export class TicketController {
         actor: user.user_id,
       });
 
+      // WebSocket: 割り当て更新通知
+      emitTicketUpdated(ticket, user.user_id);
+
       res.json({
         success: true,
         data: {
@@ -308,6 +338,19 @@ export class TicketController {
         },
         req.ip
       );
+
+      // WebSocket: コメント追加通知（チケット関係者に送信）
+      try {
+        const ticketData = await TicketModel.findById(id);
+        emitTicketComment(
+          id,
+          comment,
+          ticketData?.requester_id,
+          ticketData?.assignee_id
+        );
+      } catch {
+        // WebSocket通知の失敗はAPIレスポンスに影響させない
+      }
 
       res.status(201).json({
         success: true,
