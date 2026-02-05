@@ -7,7 +7,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Card,
-  Progress,
   Statistic,
   Row,
   Col,
@@ -29,7 +28,7 @@ import {
 import { aiService } from '../../services/aiService';
 import { useAIStore } from '../../store/aiStore';
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 
 interface AISentimentDashboardProps {
   ticketId: string;

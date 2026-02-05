@@ -26,8 +26,6 @@ import {
   Tag,
   Divider,
   Steps,
-  Modal,
-  Form,
 } from 'antd';
 import {
   CommentOutlined,
@@ -45,19 +43,17 @@ import {
   DiagnosticQuestion,
   SolutionProposal,
   KnowledgeArticlePreview,
-  TicketDraft,
   ConversationPhase,
   TicketCreationResult,
 } from '../../types/ai-chat.types';
 import * as aiService from '../../services/aiService';
-import { useAuthStore } from '../../store/authStore';
+
 
 const { Title, Paragraph, Text } = Typography;
 const { TextArea } = Input;
 
 const AIChat: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 初期メッセージ
@@ -72,7 +68,7 @@ const AIChat: React.FC = () => {
   // 基本State
   const [messages, setMessages] = useState<Message[]>([initialMessage]);
   const [inputValue, setInputValue] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   // フェーズ管理State
   const [currentPhase, setCurrentPhase] = useState<ConversationPhase | 'initial'>('initial');
@@ -91,8 +87,6 @@ const AIChat: React.FC = () => {
   // フェーズ3: チケット作成
   const [ticketDraft, setTicketDraft] = useState<TicketCreationResult | null>(null);
   const [isCreatingTicket, setIsCreatingTicket] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-
   // エラーState
   const [error, setError] = useState<string | null>(null);
 

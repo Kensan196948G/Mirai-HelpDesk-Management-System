@@ -14,7 +14,6 @@ import {
   Space,
   Typography,
   Tag,
-  Descriptions,
   Spin,
 } from 'antd';
 import {
@@ -204,7 +203,7 @@ export const AIEscalationAlert: React.FC<AIEscalationAlertProps> = ({
               size="small"
               current={-1}
               style={{ marginTop: 12 }}
-              items={riskData.recommended_actions.map((action: string, index: number) => ({
+              items={riskData.recommended_actions.map((action: string) => ({
                 title: action,
                 icon: <RocketOutlined />,
               }))}

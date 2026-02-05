@@ -51,7 +51,7 @@ test.describe('添付ファイルAPIのテスト', () => {
             'Authorization': `Bearer ${authToken}`
           },
           multipart: {
-            file: {
+            files: {
               name: testFileName,
               mimeType: 'text/plain',
               buffer: Buffer.from(testContent, 'utf-8')
@@ -85,7 +85,7 @@ test.describe('添付ファイルAPIのテスト', () => {
         `${TEST_CONFIG.API_BASE_URL}/api/tickets/${ticket.ticket_id}/attachments`,
         {
           multipart: {
-            file: {
+            files: {
               name: 'test.txt',
               mimeType: 'text/plain',
               buffer: Buffer.from('test', 'utf-8')
@@ -112,7 +112,7 @@ test.describe('添付ファイルAPIのテスト', () => {
         {
           headers: { 'Authorization': `Bearer ${authToken}` },
           multipart: {
-            file: {
+            files: {
               name: 'test-list.txt',
               mimeType: 'text/plain',
               buffer: Buffer.from('テストファイル内容', 'utf-8')
@@ -183,7 +183,7 @@ test.describe('添付ファイルAPIのテスト', () => {
         {
           headers: { 'Authorization': `Bearer ${authToken}` },
           multipart: {
-            file: {
+            files: {
               name: 'download-test.txt',
               mimeType: 'text/plain',
               buffer: Buffer.from(testContent, 'utf-8')
@@ -246,7 +246,7 @@ test.describe('添付ファイルAPIのテスト', () => {
         {
           headers: { 'Authorization': `Bearer ${authToken}` },
           multipart: {
-            file: {
+            files: {
               name: 'delete-test.txt',
               mimeType: 'text/plain',
               buffer: Buffer.from('削除テスト', 'utf-8')
@@ -302,7 +302,7 @@ test.describe('添付ファイルAPIのテスト', () => {
         {
           headers: { 'Authorization': `Bearer ${authToken}` },
           multipart: {
-            file: {
+            files: {
               name: 'lifecycle-test.txt',
               mimeType: 'text/plain',
               buffer: Buffer.from(testContent, 'utf-8')

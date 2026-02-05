@@ -15,21 +15,18 @@ import {
   Alert,
   Spin,
   Modal,
-  Input,
   Tag,
   Divider,
 } from 'antd';
 import {
   RobotOutlined,
   FileAddOutlined,
-  EyeOutlined,
 } from '@ant-design/icons';
 import { aiService } from '../../services/aiService';
 import { useAIStore } from '../../store/aiStore';
 import ReactMarkdown from 'react-markdown';
 
-const { Text, Title, Paragraph } = Typography;
-const { TextArea } = Input;
+const { Text, Title } = Typography;
 
 interface AIKnowledgeGeneratorProps {
   similarTickets: Array<{

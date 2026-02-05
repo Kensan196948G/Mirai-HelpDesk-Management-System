@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, Button, message, Progress, Space } from 'antd';
+import { Upload, Button, message, Space } from 'antd';
 import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
 import type { UploadProps, UploadFile } from 'antd';
 import { RcFile } from 'antd/es/upload';
@@ -60,7 +60,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 }) => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [, setUploadProgress] = useState<Record<string, number>>({});
 
   // ファイルバリデーション
   const beforeUpload = (file: RcFile): boolean => {

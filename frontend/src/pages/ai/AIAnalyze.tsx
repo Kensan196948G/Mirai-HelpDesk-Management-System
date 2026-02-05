@@ -2,7 +2,7 @@
  * AI分析ページ
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Row,
@@ -14,7 +14,6 @@ import {
   Select,
   Space,
   Button,
-  Spin
 } from 'antd';
 import {
   RobotOutlined,
@@ -36,7 +35,7 @@ interface AnalysisData {
 const AIAnalyze: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [period, setPeriod] = useState<string>('7');
-  const [data, setData] = useState<AnalysisData>({
+  const [data] = useState<AnalysisData>({
     totalPredictions: 127,
     averageConfidence: 0.89,
     accuracyRate: 0.92,

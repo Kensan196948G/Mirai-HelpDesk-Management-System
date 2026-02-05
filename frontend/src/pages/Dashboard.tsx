@@ -25,10 +25,7 @@ import {
   ArrowDownOutlined,
   UserAddOutlined,
   EditOutlined,
-  MailOutlined,
-  TeamOutlined,
   CloudOutlined,
-  DatabaseOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getTickets, getTicketStatistics } from '@services/ticketService';
@@ -105,8 +102,6 @@ const Dashboard = () => {
   // SLA期限超過チケット取得
   const {
     data: overdueTicketsData,
-    isLoading: isLoadingOverdue,
-    error: overdueError,
   } = useQuery({
     queryKey: ['overdueTickets'],
     queryFn: async () => {

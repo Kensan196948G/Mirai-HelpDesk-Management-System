@@ -1,4 +1,4 @@
-import { Card, Space, Typography, Progress } from 'antd';
+import { Card, Space, Typography } from 'antd';
 import { BarChartOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;

@@ -17,17 +17,14 @@ import {
   SearchOutlined,
   BulbOutlined,
   CommentOutlined,
-  BarChartOutlined,
-  TeamOutlined,
   SettingOutlined,
+  TeamOutlined,
   SafetyOutlined,
   ApiOutlined,
   NotificationOutlined,
   LinkOutlined,
   DatabaseOutlined,
-  HistoryOutlined,
   FolderOutlined,
-  FireOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '@store/authStore';

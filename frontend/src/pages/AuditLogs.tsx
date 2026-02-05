@@ -42,15 +42,11 @@ import {
   ACTION_LABELS,
   RESOURCE_TYPE_LABELS,
   ACTION_COLORS,
-  AUDIT_ACTIONS,
-  RESOURCE_TYPES,
 } from '@services/auditService';
 import './AuditLogs.css';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
-const { Option } = Select;
-
 dayjs.locale('ja');
 
 const AuditLogs = () => {
