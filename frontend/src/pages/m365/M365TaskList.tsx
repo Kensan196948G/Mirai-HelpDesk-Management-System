@@ -5,7 +5,6 @@ import {
   Table,
   Tag,
   Button,
-  Space,
   Typography,
   Modal,
   Form,
@@ -17,7 +16,6 @@ import {
 import {
   CloudOutlined,
   PlayCircleOutlined,
-  FileTextOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';

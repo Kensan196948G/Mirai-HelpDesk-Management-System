@@ -18,7 +18,6 @@ import {
   BulbOutlined,
   CheckCircleOutlined,
   StarOutlined,
-  ThunderboltOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
 

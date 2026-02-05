@@ -31,7 +31,7 @@ import {
   PRIORITY_DESCRIPTIONS,
   formatBusinessTime,
 } from '@services/slaService';
-import { PRIORITY_COLORS } from '@types/index';
+import { PRIORITY_COLORS } from '@appTypes/index';
 
 const { Title, Text } = Typography;
 

@@ -27,7 +27,7 @@ import {
 import { aiService } from '../../services/aiService';
 import { useAIStore } from '../../store/aiStore';
 import { useNavigate } from 'react-router-dom';
-import { STATUS_LABELS, STATUS_COLORS, PRIORITY_COLORS } from '@types/index';
+import { STATUS_LABELS, STATUS_COLORS, PRIORITY_COLORS } from '@appTypes/index';
 import dayjs from 'dayjs';
 
 const { Search } = Input;

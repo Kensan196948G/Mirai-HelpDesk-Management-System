@@ -36,7 +36,7 @@ import {
   KNOWLEDGE_TYPE_LABELS,
   KNOWLEDGE_VISIBILITY_LABELS,
   KNOWLEDGE_TYPE_COLORS,
-} from '@types';
+} from '@appTypes/index';
 import { useAuthStore } from '@store/authStore';
 import './KnowledgeEditor.css';
 
@@ -353,7 +353,7 @@ const KnowledgeEditor: React.FC = () => {
               rules={[{ required: true, message: '記事種別を選択してください' }]}
             >
               <Select size="large">
-                {Object.entries(KNOWLEDGE_TYPE_LABELS).map(([value, label]) => (
+                {Object.entries(KNOWLEDGE_TYPE_LABELS).map(([value, label]: [string, string]) => (
                   <Select.Option key={value} value={value}>
                     <Tag color={KNOWLEDGE_TYPE_COLORS[value]}>{label}</Tag>
                   </Select.Option>
@@ -420,7 +420,7 @@ const KnowledgeEditor: React.FC = () => {
             >
               <Select size="large">
                 {Object.entries(KNOWLEDGE_VISIBILITY_LABELS).map(
-                  ([value, label]) => (
+                  ([value, label]: [string, string]) => (
                     <Select.Option key={value} value={value}>
                       {label}
                     </Select.Option>

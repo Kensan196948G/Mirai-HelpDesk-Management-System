@@ -38,7 +38,7 @@ import {
   PRIORITY_COLORS,
   TICKET_TYPE_LABELS,
   TicketStatistics,
-} from '@types/index';
+} from '@appTypes/index';
 import type { ColumnsType } from 'antd/es/table';
 import type { Ticket } from '@services/ticketService';
 import TicketTrendChart from '@components/Charts/TicketTrendChart';

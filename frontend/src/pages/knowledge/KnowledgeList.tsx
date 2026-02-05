@@ -11,7 +11,6 @@ import {
   Empty,
   Spin,
   Select,
-  Modal,
   message,
   Popconfirm,
 } from 'antd';
@@ -31,7 +30,7 @@ import {
   EyeInvisibleOutlined,
 } from '@ant-design/icons';
 import { getKnowledgeArticles, deleteKnowledgeArticle } from '@services/knowledgeService';
-import { KnowledgeArticle } from '@types';
+import { KnowledgeArticle } from '@appTypes/index';
 import { useAuthStore } from '@store/authStore';
 
 const { Title, Text } = Typography;
@@ -303,7 +302,7 @@ const KnowledgeList = () => {
                   <Space direction="vertical" style={{ width: '100%' }}>
                     {item.summary && <Text ellipsis>{item.summary}</Text>}
                     <Space wrap>
-                      {item.tags && item.tags.map((tag, index) => (
+                      {item.tags && item.tags.map((tag: string, index: number) => (
                         <Tag key={index}>{tag}</Tag>
                       ))}
                     </Space>

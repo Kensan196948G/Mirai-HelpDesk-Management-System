@@ -3,7 +3,6 @@
  */
 
 import React from 'react';
-import { Card } from 'antd';
 import { AISmartSearch } from '../../components/ai/AISmartSearch';
 
 const AISearchPage: React.FC = () => {

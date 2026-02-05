@@ -25,11 +25,11 @@ import {
   submitKnowledgeFeedback,
   incrementKnowledgeViewCount,
 } from '@services/knowledgeService';
-import { KnowledgeArticle, KNOWLEDGE_TYPE_COLORS, KNOWLEDGE_TYPE_LABELS } from '@types';
+import { KnowledgeArticle, KNOWLEDGE_TYPE_COLORS, KNOWLEDGE_TYPE_LABELS } from '@appTypes/index';
 import { useAuthStore } from '@store/authStore';
 import '@components/MarkdownEditor.css';
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Text } = Typography;
 
 const KnowledgeDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -148,7 +148,7 @@ const KnowledgeDetail = () => {
                 {KNOWLEDGE_TYPE_LABELS[article.type]}
               </Tag>
               {article.category && <Tag>{article.category}</Tag>}
-              {article.tags && article.tags.map((tag, index) => (
+              {article.tags && article.tags.map((tag: string, index: number) => (
                 <Tag key={index}>{tag}</Tag>
               ))}
             </Space>
