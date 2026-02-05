@@ -13,7 +13,7 @@ import { expect } from '@playwright/test';
 export const TEST_CONFIG = {
   // API エンドポイント
   API_BASE_URL: process.env.API_BASE_URL || 'http://127.0.0.1:3000',
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://192.168.0.185:3005',
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://127.0.0.1:3001',
 
   // テストアカウント
   TEST_ACCOUNTS: {
@@ -165,14 +165,32 @@ export async function loginViaAPI(request, email, password) {
  * @param {import('@playwright/test').Page} page - Playwrightページオブジェクト
  */
 export async function logout(page) {
+  // ユーザープロフィールをクリックしてドロップダウンを開く
+  await page.click('.user-profile');
+  await page.waitForTimeout(500); // ドロップダウンのアニメーション待ち
+
   // ログアウトボタンをクリック
   await page.click('#logout-btn');
+
+  // ログインページにリダイレクトされるまで待機
+  await page.waitForURL('/login', { timeout: TEST_CONFIG.TIMEOUTS.medium });
 
   // ログインモーダルが表示されるまで待機
   await page.waitForSelector('#login-modal', { state: 'visible', timeout: TEST_CONFIG.TIMEOUTS.medium });
 
-  // トークンがlocalStorageから削除されていることを確認
-  const token = await page.evaluate(() => localStorage.getItem('auth_token'));
+  // トークンがlocalStorageから削除されていることを確認（auth-storageキーを確認）
+  const token = await page.evaluate(() => {
+    const authStorage = localStorage.getItem('auth-storage');
+    if (authStorage) {
+      try {
+        const parsed = JSON.parse(authStorage);
+        return parsed.state?.token || null;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
   expect(token).toBeFalsy();
 }
 
@@ -180,12 +198,27 @@ export async function logout(page) {
  * 認証トークンをページのlocalStorageに設定
  * @param {import('@playwright/test').Page} page - Playwrightページオブジェクト
  * @param {string} token - JWTトークン
+ * @param {Object} user - ユーザー情報（オプション）
  */
-export async function setAuthToken(page, token) {
+export async function setAuthToken(page, token, user = null) {
   await page.goto('/');
-  await page.evaluate((token) => {
-    localStorage.setItem('auth_token', token);
-  }, token);
+  await page.evaluate(({ token, user }) => {
+    // zustand persistのauth-storageに保存
+    const authStorage = {
+      state: {
+        token,
+        refreshToken: null,
+        user: user || {
+          user_id: 1,
+          email: 'test@example.com',
+          display_name: 'Test User',
+          role: 'admin'
+        }
+      },
+      version: 0
+    };
+    localStorage.setItem('auth-storage', JSON.stringify(authStorage));
+  }, { token, user });
 }
 
 /**
@@ -200,10 +233,10 @@ export async function createTicket(request, token, ticketData = {}) {
     type: 'incident',
     subject: `テストチケット ${Date.now()}`,
     description: 'これはE2Eテスト用のチケットです',
-    priority: 'medium',
-    impact: 'individual',
-    urgency: 'medium',
-    category_id: 1,
+    impact: '個人', // PostgreSQL enum: '個人', '部署', '全社', '対外影響'
+    urgency: '中', // PostgreSQL enum: '低', '中', '高', '即時'
+    // priority は impact × urgency から自動計算
+    // category_id は UUID 型なので省略
     ...ticketData
   };
 
@@ -215,11 +248,25 @@ export async function createTicket(request, token, ticketData = {}) {
     data: defaultData
   });
 
+  // デバッグ: エラー時にレスポンス内容を表示
+  if (!response.ok()) {
+    const errorBody = await response.json().catch(() => response.text());
+    console.error('チケット作成API失敗:', {
+      status: response.status(),
+      statusText: response.statusText(),
+      body: errorBody,
+      requestData: defaultData
+    });
+  }
+
   expect(response.ok()).toBeTruthy();
   const body = await response.json();
-  expect(body.ticket_id).toBeTruthy();
+  expect(body.success).toBeTruthy();
+  expect(body.data).toBeDefined();
+  expect(body.data.ticket).toBeDefined();
+  expect(body.data.ticket.ticket_id).toBeTruthy();
 
-  return body;
+  return body.data.ticket;
 }
 
 /**
@@ -365,4 +412,67 @@ export async function expectApiResponse(response, expectedStatus = 200) {
 export async function waitForPageLoad(page) {
   await page.waitForLoadState('networkidle');
   await page.waitForSelector('.loading-spinner', { state: 'hidden', timeout: TEST_CONFIG.TIMEOUTS.long });
+}
+
+/**
+ * サイドバーのアコーディオンメニューを展開
+ * @param {import('@playwright/test').Page} page - Playwrightページオブジェクト
+ * @param {string} menuKey - メニューのキー（例: 'incidents', 'knowledge', 'ai'）
+ */
+export async function expandSidebarMenu(page, menuKey) {
+  // メニューが既に展開されているか確認
+  const menuItem = page.locator(`[class*="ant-menu-submenu"][class*="ant-menu-submenu-${menuKey}"]`).first();
+
+  // メニューが存在するか確認
+  const menuExists = await menuItem.count() > 0;
+  if (!menuExists) {
+    // キーで見つからない場合は、テキストで探す
+    const menuByText = {
+      'incidents': 'インシデント管理',
+      'knowledge': 'ナレッジ管理',
+      'ai': 'AI機能',
+      'm365': 'Microsoft 365',
+      'approvals': '承認管理'
+    };
+
+    const menuText = menuByText[menuKey];
+    if (menuText) {
+      const menuByTextLocator = page.locator(`span:has-text("${menuText}")`).first();
+      const isExpanded = await menuByTextLocator.evaluate((el) => {
+        const submenu = el.closest('.ant-menu-submenu');
+        return submenu?.classList.contains('ant-menu-submenu-open');
+      }).catch(() => false);
+
+      if (!isExpanded) {
+        await menuByTextLocator.click();
+        await page.waitForTimeout(300); // アニメーション待ち
+      }
+    }
+    return;
+  }
+
+  // メニューが既に展開されているか確認
+  const isExpanded = await menuItem.evaluate((el) => {
+    return el.classList.contains('ant-menu-submenu-open');
+  }).catch(() => false);
+
+  // 展開されていない場合はクリック
+  if (!isExpanded) {
+    await menuItem.click();
+    await page.waitForTimeout(300); // アニメーション待ち
+  }
+}
+
+/**
+ * チケットページに移動（直接URL遷移）
+ * @param {import('@playwright/test').Page} page - Playwrightページオブジェクト
+ * @param {string} path - パス（例: '/tickets', '/tickets/new'）
+ */
+export async function navigateToTickets(page, path = '/tickets') {
+  // 直接URLに遷移（メニュークリックの代わり）
+  await page.goto(path);
+  await page.waitForLoadState('networkidle');
+
+  // ページが読み込まれるまで少し待機
+  await page.waitForTimeout(500);
 }

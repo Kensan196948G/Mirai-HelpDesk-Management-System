@@ -1,8 +1,10 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@store/authStore';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-const API_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '30000');
+// Viteプロキシ経由でバックエンドにアクセス（開発環境）
+// 本番環境では VITE_API_BASE_URL 環境変数で上書き
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_TIMEOUT = 30000;
 
 // Axiosインスタンスの作成
 export const apiClient = axios.create({
@@ -32,9 +34,13 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // 認証エラーの場合、ログアウト
-      useAuthStore.getState().clearAuth();
-      window.location.href = '/login';
+      // ログインエンドポイントの場合は、リダイレクトしない（認証失敗は正常なレスポンス）
+      const isLoginEndpoint = error.config?.url?.includes('/auth/login');
+      if (!isLoginEndpoint) {
+        // 認証エラーの場合、ログアウト
+        useAuthStore.getState().clearAuth();
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

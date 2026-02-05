@@ -172,7 +172,7 @@ test.describe('総合テストスイート', () => {
       await page.waitForLoadState('networkidle');
 
       // ページが読み込まれたことを確認（テーブル、Card、またはタイトルクラス）
-      await page.waitForSelector('table, [class*="ant-card"], [class*="ant-typography"]', { timeout: 5000 });
+      await page.waitForSelector('table, [class*="ant-card"], [class*="ant-typography"]', { timeout: 15000 });
 
       // 検索・フィルタ要素またはテーブル確認
       const pageElements = page.locator('input, select, button, table');

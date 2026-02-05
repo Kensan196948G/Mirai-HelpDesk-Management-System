@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect as useEffectReact } from 'react';
+import { m365Service, M365Task as M365TaskType } from '@services/m365Service';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -219,7 +220,7 @@ const TicketDetail = () => {
 
   if (error || !data?.success || !data.data) {
     return (
-      <div style={{ padding: '20px' }}>
+      <div id="page-content" style={{ padding: '20px' }}>
         <Alert
           message="エラー"
           description="チケット情報の取得に失敗しました"
@@ -298,6 +299,8 @@ const TicketDetail = () => {
               rules={[{ required: true, message: 'コメントを入力してください' }]}
             >
               <TextArea
+                id="comment-body"
+                name="comment"
                 rows={4}
                 placeholder="コメントを入力してください"
               />
@@ -459,7 +462,7 @@ const TicketDetail = () => {
   ];
 
   return (
-    <div style={{ padding: '24px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <div id="page-content" style={{ padding: '24px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       <Space style={{ marginBottom: 24 }}>
         <Button
           icon={<ArrowLeftOutlined />}

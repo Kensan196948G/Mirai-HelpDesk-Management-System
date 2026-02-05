@@ -111,10 +111,27 @@ export const getTicket = async (
 export const getTicketDetail = async (
   id: string
 ): Promise<ApiResponse<TicketDetailWithRelations>> => {
-  return apiRequest<TicketDetailWithRelations>({
+  // 基本情報とコメントを取得
+  const response = await apiRequest<{ ticket: TicketDetail; comments: TicketComment[] }>({
     method: 'GET',
-    url: `/tickets/${id}/detail`,
+    url: `/tickets/${id}`,
   });
+
+  // 成功した場合、空の添付ファイルと履歴を追加
+  if (response.success && response.data) {
+    return {
+      ...response,
+      data: {
+        ticket: response.data.ticket,
+        comments: response.data.comments || [],
+        attachments: [], // TODO: 添付ファイル取得APIを実装
+        history: [], // TODO: 履歴取得APIを実装
+      },
+    };
+  }
+
+  // エラーの場合はそのまま返す
+  return response as ApiResponse<TicketDetailWithRelations>;
 };
 
 // 添付ファイル一覧取得

@@ -18,9 +18,17 @@ export class TicketController {
       const { status, priority, type, page, pageSize, assignee_id } = req.query;
       const user = req.user!;
 
+      // status パラメータをカンマ区切りから配列に変換
+      let statusArray: string[] | undefined;
+      if (status) {
+        statusArray = typeof status === 'string' && status.includes(',')
+          ? status.split(',').map(s => s.trim())
+          : [status as string];
+      }
+
       // 一般ユーザーは自分のチケットのみ閲覧可能
       let filters: any = {
-        status: status as any,
+        status: statusArray,
         priority: priority as any,
         type: type as any,
         page: page ? parseInt(page as string) : 1,

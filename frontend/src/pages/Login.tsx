@@ -15,11 +15,13 @@ interface LoginForm {
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
 
   const onFinish = async (values: LoginForm) => {
     setLoading(true);
+    setErrorMessage('');
     try {
       const response = await login(values);
 
@@ -29,10 +31,14 @@ const Login = () => {
         message.success('ログインしました');
         navigate('/');
       } else {
-        message.error(response.error?.message || 'ログインに失敗しました');
+        const errorMsg = response.error?.message || 'ログインに失敗しました';
+        setErrorMessage(errorMsg);
+        message.error(errorMsg);
       }
     } catch (error: any) {
-      message.error('ログインに失敗しました');
+      const errorMsg = 'ログインに失敗しました';
+      setErrorMessage(errorMsg);
+      message.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -40,18 +46,24 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <Card className="login-card" bordered={false}>
+      <Card id="login-modal" className="login-card" variant="borderless">
         <div className="login-header">
           <Title level={2}>Mirai ヘルプデスク</Title>
           <Text type="secondary">管理システムにログイン</Text>
         </div>
 
         <Form
+          id="login-form"
           name="login"
           onFinish={onFinish}
           autoComplete="off"
           size="large"
         >
+          {errorMessage && (
+            <div id="login-error" style={{ color: '#ff4d4f', marginBottom: '16px', padding: '8px', backgroundColor: '#fff2f0', border: '1px solid #ffccc7', borderRadius: '4px' }}>
+              {errorMessage}
+            </div>
+          )}
           <Form.Item
             name="email"
             rules={[
@@ -60,6 +72,7 @@ const Login = () => {
             ]}
           >
             <Input
+              id="login-email"
               prefix={<UserOutlined />}
               placeholder="メールアドレス"
               autoComplete="username"
@@ -71,6 +84,7 @@ const Login = () => {
             rules={[{ required: true, message: 'パスワードを入力してください' }]}
           >
             <Input.Password
+              id="login-password"
               prefix={<LockOutlined />}
               placeholder="パスワード"
               autoComplete="current-password"

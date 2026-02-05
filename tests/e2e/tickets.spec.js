@@ -17,6 +17,7 @@ import {
   waitForElement,
   getTableRowCount,
   randomString,
+  navigateToTickets,
   TEST_CONFIG
 } from './helpers.js';
 
@@ -45,7 +46,7 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // チケット一覧ページに遷移
-      await page.click('a[href="#tickets"]');
+      await navigateToTickets(page);
 
       // ページタイトルの確認
       await expectPageTitle(page, 'チケット一覧');
@@ -67,14 +68,15 @@ test.describe('チケット管理機能のテスト', () => {
       const ticket = await createTicket(request, authToken, {
         type: 'incident',
         subject: `フィルタテスト ${randomString()}`,
-        status: 'new',
-        priority: 'high'
+        impact: '部署', // P2を生成するため
+        urgency: '高',
+        status: 'new'
       });
       createdTicketIds.push(ticket.ticket_id);
 
       // ログインしてチケット一覧へ
       await login(page, email, password);
-      await page.click('a[href="#tickets"]');
+      await navigateToTickets(page);
       await waitForElement(page, 'table');
 
       // ステータスフィルタが存在する場合（実装に依存）
@@ -97,7 +99,7 @@ test.describe('チケット管理機能のテスト', () => {
 
       // ログイン
       await login(page, email, password);
-      await page.click('a[href="#tickets"]');
+      await navigateToTickets(page);
       await waitForElement(page, 'table');
 
       // ページネーションが存在する場合（実装に依存）
@@ -121,7 +123,7 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // チケット作成ページへ
-      await page.click('a[href="#tickets/new"], button:has-text("新規チケット")');
+      await navigateToTickets(page, "/tickets/new");
       await page.waitForTimeout(1000);
 
       // フォーム入力
@@ -137,8 +139,11 @@ test.describe('チケット管理機能のテスト', () => {
       // 説明
       await page.fill('textarea[name="description"], #ticket-description', description);
 
-      // 優先度
-      await page.selectOption('select[name="priority"], #ticket-priority', 'medium');
+      // 優先度（存在する場合 - 実際はimpact×urgencyから自動計算される）
+      const prioritySelect = page.locator('select[name="priority"], #ticket-priority');
+      if (await prioritySelect.isVisible()) {
+        await prioritySelect.selectOption('medium');
+      }
 
       // 影響度
       await page.selectOption('select[name="impact"], #ticket-impact', 'individual');
@@ -149,7 +154,7 @@ test.describe('チケット管理機能のテスト', () => {
       // カテゴリ（存在する場合）
       const categorySelect = page.locator('select[name="category_id"]');
       if (await categorySelect.isVisible()) {
-        const options = await categorySelect.$$eval('option', (opts) =>
+        const options = await page.$$eval('select[name="category_id"] option', (opts) =>
           opts.map(opt => opt.value).filter(val => val !== '')
         );
         if (options.length > 0) {
@@ -195,7 +200,7 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // チケット作成ページへ
-      await page.click('a[href="#tickets/new"], button:has-text("新規チケット")');
+      await navigateToTickets(page, "/tickets/new");
       await page.waitForTimeout(1000);
 
       // フォーム入力
@@ -211,8 +216,11 @@ test.describe('チケット管理機能のテスト', () => {
       // 説明
       await page.fill('textarea[name="description"], #ticket-description', description);
 
-      // 優先度
-      await page.selectOption('select[name="priority"], #ticket-priority', 'low');
+      // 優先度（存在する場合 - 実際はimpact×urgencyから自動計算される）
+      const prioritySelect = page.locator('select[name="priority"], #ticket-priority');
+      if (await prioritySelect.isVisible()) {
+        await prioritySelect.selectOption('low');
+      }
 
       // 影響度
       await page.selectOption('select[name="impact"], #ticket-impact', 'individual');
@@ -245,7 +253,7 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // チケット作成ページへ
-      await page.click('a[href="#tickets/new"], button:has-text("新規チケット")');
+      await navigateToTickets(page, "/tickets/new");
       await page.waitForTimeout(1000);
 
       // 件名を空のまま送信
@@ -272,15 +280,15 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // チケット詳細ページへ直接遷移
-      await page.goto(`/#tickets/${ticket.ticket_id}`);
+      await page.goto(`/tickets/${ticket.ticket_id}`);
       await page.waitForTimeout(1000);
 
       // チケット情報が表示されることを確認
       const pageContent = await page.textContent('#page-content');
       expect(pageContent).toContain(ticket.subject);
 
-      // チケットIDが表示されることを確認
-      expect(pageContent).toContain(`#${ticket.ticket_id}`);
+      // チケット番号が表示されることを確認（ticket_numberはHD-YYYY-XXXXX形式）
+      expect(pageContent).toMatch(/HD-\d{4}-\d{5}/);
     });
 
     test('存在しないチケットIDでアクセス', async ({ page }) => {
@@ -290,12 +298,12 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // 存在しないチケットIDで詳細ページへ
-      await page.goto('/#tickets/999999');
+      await page.goto('/tickets/999999');
       await page.waitForTimeout(2000);
 
       // エラーメッセージまたは404ページが表示されることを確認
       const pageContent = await page.textContent('#page-content');
-      expect(pageContent).toMatch(/(見つかりません|存在しません|not found|404)/i);
+      expect(pageContent).toMatch(/(見つかりません|存在しません|取得に失敗|not found|404)/i);
     });
   });
 
@@ -313,8 +321,11 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // チケット詳細ページへ
-      await page.goto(`/#tickets/${ticket.ticket_id}`);
+      await page.goto(`/tickets/${ticket.ticket_id}`);
       await page.waitForTimeout(1000);
+
+      // コメントタブが表示されるのを待つ（デフォルトで表示されているはず）
+      await page.waitForSelector('.ant-tabs-tab:has-text("コメント")', { state: 'visible', timeout: 5000 });
 
       // コメント入力欄を探す
       const commentTextarea = page.locator('textarea[name="comment"], #comment-body, textarea[placeholder*="コメント"]');
@@ -352,8 +363,11 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // チケット詳細ページへ
-      await page.goto(`/#tickets/${ticket.ticket_id}`);
+      await page.goto(`/tickets/${ticket.ticket_id}`);
       await page.waitForTimeout(1000);
+
+      // コメントタブが表示されるのを待つ（デフォルトで表示されているはず）
+      await page.waitForSelector('.ant-tabs-tab:has-text("コメント")', { state: 'visible', timeout: 5000 });
 
       // コメント入力欄を探す
       const commentTextarea = page.locator('textarea[name="comment"], #comment-body, textarea[placeholder*="コメント"]');
@@ -393,10 +407,10 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // チケット詳細ページへ
-      await page.goto(`/#tickets/${ticket.ticket_id}`);
+      await page.goto(`/tickets/${ticket.ticket_id}`);
       await page.waitForTimeout(1000);
 
-      // ステータス変更のUIを探す
+      // ステータス変更のUIを探す（ボタン形式）
       const statusSelect = page.locator('select[name="status"], #ticket-status');
       if (await statusSelect.isVisible()) {
         await statusSelect.selectOption('assigned');
@@ -427,10 +441,10 @@ test.describe('チケット管理機能のテスト', () => {
       await login(page, email, password);
 
       // チケット詳細ページへ
-      await page.goto(`/#tickets/${ticket.ticket_id}`);
+      await page.goto(`/tickets/${ticket.ticket_id}`);
       await page.waitForTimeout(1000);
 
-      // ステータスを進行中に変更
+      // ステータスを進行中に変更（ボタン形式）
       const statusSelect = page.locator('select[name="status"], #ticket-status');
       if (await statusSelect.isVisible()) {
         await statusSelect.selectOption('in_progress');
@@ -453,8 +467,9 @@ test.describe('チケット管理機能のテスト', () => {
       expect(response.ok()).toBeTruthy();
       const body = await response.json();
 
-      expect(body).toHaveProperty('tickets');
-      expect(Array.isArray(body.tickets)).toBeTruthy();
+      expect(body).toHaveProperty('data');
+      expect(body.data).toHaveProperty('tickets');
+      expect(Array.isArray(body.data.tickets)).toBeTruthy();
     });
 
     test('POST /api/tickets - チケット作成', async ({ request }) => {
@@ -462,10 +477,10 @@ test.describe('チケット管理機能のテスト', () => {
         type: 'incident',
         subject: `API作成テスト ${randomString()}`,
         description: 'APIから作成されたテストチケットです。',
-        priority: 'medium',
-        impact: 'individual',
-        urgency: 'medium',
-        category_id: 1
+        impact: '個人',
+        urgency: '中'
+        // priority は自動計算
+        // category_id は省略（UUID型）
       };
 
       const response = await request.post(`${TEST_CONFIG.API_BASE_URL}/api/tickets`, {
@@ -479,11 +494,14 @@ test.describe('チケット管理機能のテスト', () => {
       expect(response.ok()).toBeTruthy();
       const body = await response.json();
 
-      expect(body.ticket_id).toBeDefined();
-      expect(body.subject).toBe(ticketData.subject);
-      expect(body.type).toBe(ticketData.type);
+      expect(body.success).toBeTruthy();
+      expect(body.data).toBeDefined();
+      expect(body.data.ticket).toBeDefined();
+      expect(body.data.ticket.ticket_id).toBeDefined();
+      expect(body.data.ticket.subject).toBe(ticketData.subject);
+      expect(body.data.ticket.type).toBe(ticketData.type);
 
-      createdTicketIds.push(body.ticket_id);
+      createdTicketIds.push(body.data.ticket.ticket_id);
     });
 
     test('GET /api/tickets/{id} - チケット詳細取得', async ({ request }) => {
@@ -499,8 +517,11 @@ test.describe('チケット管理機能のテスト', () => {
       expect(response.ok()).toBeTruthy();
       const body = await response.json();
 
-      expect(body.ticket_id).toBe(ticket.ticket_id);
-      expect(body.subject).toBe(ticket.subject);
+      expect(body.success).toBeTruthy();
+      expect(body.data).toBeDefined();
+      expect(body.data.ticket).toBeDefined();
+      expect(body.data.ticket.ticket_id).toBe(ticket.ticket_id);
+      expect(body.data.ticket.subject).toBe(ticket.subject);
     });
 
     test('PATCH /api/tickets/{id} - チケット更新', async ({ request }) => {
@@ -510,8 +531,8 @@ test.describe('チケット管理機能のテスト', () => {
 
       // チケット更新
       const updateData = {
-        status: 'in_progress',
-        priority: 'high'
+        status: 'in_progress'
+        // priority は impact × urgency から自動計算されるため更新不可
       };
 
       const response = await request.patch(`${TEST_CONFIG.API_BASE_URL}/api/tickets/${ticket.ticket_id}`, {
@@ -525,8 +546,10 @@ test.describe('チケット管理機能のテスト', () => {
       expect(response.ok()).toBeTruthy();
       const body = await response.json();
 
-      expect(body.status).toBe(updateData.status);
-      expect(body.priority).toBe(updateData.priority);
+      expect(body.success).toBeTruthy();
+      expect(body.data).toBeDefined();
+      expect(body.data.ticket).toBeDefined();
+      expect(body.data.ticket.status).toBe(updateData.status);
     });
 
     test('POST /api/tickets/{id}/comments - コメント追加', async ({ request }) => {
@@ -554,8 +577,11 @@ test.describe('チケット管理機能のテスト', () => {
       expect(response.ok()).toBeTruthy();
       const body = await response.json();
 
-      expect(body.body).toBe(commentData.body);
-      expect(body.visibility).toBe(commentData.visibility);
+      expect(body.success).toBeTruthy();
+      expect(body.data).toBeDefined();
+      expect(body.data.comment).toBeDefined();
+      expect(body.data.comment.body).toBe(commentData.body);
+      expect(body.data.comment.visibility).toBe(commentData.visibility);
     });
   });
 });

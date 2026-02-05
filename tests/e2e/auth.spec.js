@@ -44,7 +44,7 @@ test.describe('認証機能のテスト', () => {
       await page.goto('/');
 
       // ログインモーダルが表示されるまで待機
-      await page.waitForSelector('#login-modal', { state: 'visible' });
+      await page.waitForSelector('#login-modal', { state: 'visible', timeout: 10000 });
 
       // 無効なメールアドレスで入力
       await page.fill('#login-email', 'invalid@example.com');
@@ -53,16 +53,27 @@ test.describe('認証機能のテスト', () => {
       // ログインボタンをクリック
       await page.click('#login-form button[type="submit"]');
 
-      // エラーメッセージが表示されることを確認
-      await page.waitForSelector('#login-error', { state: 'visible' });
+      // エラーメッセージが表示されることを確認（タイムアウトを長めに）
+      await page.waitForSelector('#login-error', { state: 'visible', timeout: 10000 });
       const errorText = await page.textContent('#login-error');
       expect(errorText.length).toBeGreaterThan(0);
 
       // ログインモーダルが表示されたままであることを確認
       await expect(page.locator('#login-modal')).toBeVisible();
 
-      // トークンがlocalStorageに保存されていないことを確認
-      const token = await page.evaluate(() => localStorage.getItem('auth_token'));
+      // トークンがlocalStorageに保存されていないことを確認（auth-storageキーを確認）
+      const token = await page.evaluate(() => {
+        const authStorage = localStorage.getItem('auth-storage');
+        if (authStorage) {
+          try {
+            const parsed = JSON.parse(authStorage);
+            return parsed.state?.token || null;
+          } catch (e) {
+            return null;
+          }
+        }
+        return null;
+      });
       expect(token).toBeFalsy();
     });
 
@@ -72,7 +83,7 @@ test.describe('認証機能のテスト', () => {
       await page.goto('/');
 
       // ログインモーダルが表示されるまで待機
-      await page.waitForSelector('#login-modal', { state: 'visible' });
+      await page.waitForSelector('#login-modal', { state: 'visible', timeout: 10000 });
 
       // 正しいメールアドレスと間違ったパスワードで入力
       await page.fill('#login-email', email);
@@ -81,13 +92,24 @@ test.describe('認証機能のテスト', () => {
       // ログインボタンをクリック
       await page.click('#login-form button[type="submit"]');
 
-      // エラーメッセージが表示されることを確認
-      await page.waitForSelector('#login-error', { state: 'visible' });
+      // エラーメッセージが表示されることを確認（タイムアウトを長めに）
+      await page.waitForSelector('#login-error', { state: 'visible', timeout: 10000 });
       const errorText = await page.textContent('#login-error');
       expect(errorText.length).toBeGreaterThan(0);
 
-      // トークンがlocalStorageに保存されていないことを確認
-      const token = await page.evaluate(() => localStorage.getItem('auth_token'));
+      // トークンがlocalStorageに保存されていないことを確認（auth-storageキーを確認）
+      const token = await page.evaluate(() => {
+        const authStorage = localStorage.getItem('auth-storage');
+        if (authStorage) {
+          try {
+            const parsed = JSON.parse(authStorage);
+            return parsed.state?.token || null;
+          } catch (e) {
+            return null;
+          }
+        }
+        return null;
+      });
       expect(token).toBeFalsy();
     });
 
@@ -95,15 +117,18 @@ test.describe('認証機能のテスト', () => {
       await page.goto('/');
 
       // ログインモーダルが表示されるまで待機
-      await page.waitForSelector('#login-modal', { state: 'visible' });
+      await page.waitForSelector('#login-modal', { state: 'visible', timeout: 10000 });
 
       // 空のまま送信
       await page.click('#login-form button[type="submit"]');
 
-      // HTML5バリデーションが働くことを確認
-      const emailInput = page.locator('#login-email');
-      const isEmailInvalid = await emailInput.evaluate((el) => !el.validity.valid);
-      expect(isEmailInvalid).toBeTruthy();
+      // Ant Design のバリデーションエラーが表示されることを確認
+      // emailフィールドのバリデーションエラーメッセージを待機
+      await page.waitForSelector('.ant-form-item-explain-error', { state: 'visible', timeout: 5000 });
+
+      // エラーメッセージが存在することを確認
+      const errorMessages = await page.locator('.ant-form-item-explain-error').count();
+      expect(errorMessages).toBeGreaterThan(0);
     });
   });
 
@@ -114,17 +139,35 @@ test.describe('認証機能のテスト', () => {
       // ログイン
       await login(page, email, password);
 
+      // ユーザープロフィールをクリックしてドロップダウンを開く
+      await page.click('.user-profile');
+      await page.waitForTimeout(500); // ドロップダウンのアニメーション待ち
+
       // ログアウトボタンが表示されていることを確認
       await expect(page.locator('#logout-btn')).toBeVisible();
 
-      // ログアウト処理
-      await logout(page);
+      // ログアウトボタンをクリック
+      await page.click('#logout-btn');
 
-      // ログインモーダルが再表示されることを確認
+      // ログインページにリダイレクトされることを確認
+      await page.waitForURL('/login', { timeout: 10000 });
+
+      // ログインモーダルが表示されることを確認
       await expect(page.locator('#login-modal')).toBeVisible();
 
-      // トークンがlocalStorageから削除されていることを確認
-      const token = await page.evaluate(() => localStorage.getItem('auth_token'));
+      // トークンがlocalStorageから削除されていることを確認（auth-storageキーを確認）
+      const token = await page.evaluate(() => {
+        const authStorage = localStorage.getItem('auth-storage');
+        if (authStorage) {
+          try {
+            const parsed = JSON.parse(authStorage);
+            return parsed.state?.token || null;
+          } catch (e) {
+            return null;
+          }
+        }
+        return null;
+      });
       expect(token).toBeFalsy();
     });
   });
@@ -133,21 +176,36 @@ test.describe('認証機能のテスト', () => {
     test('有効なトークンでページアクセス', async ({ page, request }) => {
       const { email, password } = TEST_CONFIG.TEST_ACCOUNTS.admin;
 
-      // API経由でトークンを取得
-      const token = await loginViaAPI(request, email, password);
+      // API経由でログイン情報を取得
+      const response = await request.post(`${TEST_CONFIG.API_BASE_URL}/api/auth/login`, {
+        data: { email, password }
+      });
+      const body = await response.json();
+      const { token, user } = body.data;
 
-      // トークンをlocalStorageに設定
-      await setAuthToken(page, token);
+      // zustand persistのauth-storageにトークンを設定
+      await page.goto('/');
+      await page.evaluate(({ token, user }) => {
+        const authStorage = {
+          state: {
+            token,
+            refreshToken: null,
+            user
+          },
+          version: 0
+        };
+        localStorage.setItem('auth-storage', JSON.stringify(authStorage));
+      }, { token, user });
 
       // ページをリロード
       await page.reload();
 
       // ログインモーダルが表示されないことを確認
-      await page.waitForTimeout(1000); // モーダル表示のチェックのため少し待機
+      await page.waitForTimeout(2000); // モーダル表示のチェックのため少し待機
       await expect(page.locator('#login-modal')).not.toBeVisible();
 
       // メインコンテンツが表示されることを確認
-      await expect(page.locator('#page-content')).toBeVisible();
+      await expect(page.locator('#page-content')).toBeVisible({ timeout: 10000 });
     });
 
     test('無効なトークンでページアクセス', async ({ page }) => {
@@ -242,9 +300,10 @@ test.describe('認証機能のテスト', () => {
       expect(response.status()).toBe(200);
 
       const body = await response.json();
-      expect(body.token).toBeDefined();
-      expect(body.user).toBeDefined();
-      expect(body.user.email).toBe(email);
+      expect(body.success).toBeTruthy();
+      expect(body.data.token).toBeDefined();
+      expect(body.data.user).toBeDefined();
+      expect(body.data.user.email).toBe(email);
     });
 
     test('POST /api/auth/login - 失敗（無効な認証情報）', async ({ request }) => {
@@ -258,7 +317,9 @@ test.describe('認証機能のテスト', () => {
       expect(response.status()).toBe(401);
 
       const body = await response.json();
-      expect(body.detail || body.message).toBeDefined();
+      expect(body.success).toBeFalsy();
+      expect(body.error).toBeDefined();
+      expect(body.error.message).toBeDefined();
     });
 
     test('GET /api/auth/me - 認証済みユーザー情報取得', async ({ request }) => {
@@ -277,8 +338,9 @@ test.describe('認証機能のテスト', () => {
       expect(response.ok()).toBeTruthy();
 
       const body = await response.json();
-      expect(body.email).toBe(email);
-      expect(body.user_id).toBeDefined();
+      expect(body.success).toBeTruthy();
+      expect(body.data.user.email).toBe(email);
+      expect(body.data.user.user_id).toBeDefined();
     });
 
     test('GET /api/auth/me - 認証なし（401エラー）', async ({ request }) => {
@@ -296,15 +358,16 @@ test.describe('認証機能のテスト', () => {
       await login(page, email, password);
 
       // ナビゲーションメニューが表示されることを確認
+      await page.waitForSelector('#nav-menu', { state: 'visible', timeout: 10000 });
       await expect(page.locator('#nav-menu')).toBeVisible();
 
       // Requester用のメニュー項目が表示されることを確認（例：チケット一覧）
-      const navLinks = await page.$$eval('#nav-menu a', (links) =>
-        links.map(link => link.textContent.trim())
-      );
+      // メニューアイテムを取得（Ant Design Menu コンポーネントの構造に合わせる）
+      await page.waitForTimeout(1000); // メニューのレンダリング待ち
+      const navItems = await page.locator('#nav-menu .ant-menu-item, #nav-menu .ant-menu-submenu-title').count();
 
       // 最低限のメニューが存在することを確認
-      expect(navLinks.length).toBeGreaterThan(0);
+      expect(navItems).toBeGreaterThan(0);
     });
 
     test('Agentアカウントでログイン', async ({ page }) => {
@@ -314,15 +377,16 @@ test.describe('認証機能のテスト', () => {
       await login(page, email, password);
 
       // ナビゲーションメニューが表示されることを確認
+      await page.waitForSelector('#nav-menu', { state: 'visible', timeout: 10000 });
       await expect(page.locator('#nav-menu')).toBeVisible();
 
       // Agent用のメニュー項目が表示されることを確認
-      const navLinks = await page.$$eval('#nav-menu a', (links) =>
-        links.map(link => link.textContent.trim())
-      );
+      // メニューアイテムを取得（Ant Design Menu コンポーネントの構造に合わせる）
+      await page.waitForTimeout(1000); // メニューのレンダリング待ち
+      const navItems = await page.locator('#nav-menu .ant-menu-item, #nav-menu .ant-menu-submenu-title').count();
 
       // Agentは管理機能にアクセスできるため、メニューが多いはず
-      expect(navLinks.length).toBeGreaterThan(0);
+      expect(navItems).toBeGreaterThan(0);
     });
   });
 });

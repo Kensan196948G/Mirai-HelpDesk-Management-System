@@ -226,7 +226,7 @@ const TicketList: React.FC = () => {
         {/* ヘッダー */}
         <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
           <Col>
-            <Title level={3} style={{ margin: 0 }}>
+            <Title level={3} style={{ margin: 0 }} id="page-title">
               チケット一覧
             </Title>
           </Col>
@@ -255,6 +255,8 @@ const TicketList: React.FC = () => {
               style={{ width: '100%' }}
               value={filters.status}
               onChange={(value) => handleFilterChange('status', value)}
+              id="status-filter"
+              data-testid="status-filter"
             >
               {Object.values(TicketStatus).map((status) => (
                 <Option key={status} value={status}>
@@ -272,6 +274,8 @@ const TicketList: React.FC = () => {
               style={{ width: '100%' }}
               value={filters.priority}
               onChange={(value) => handleFilterChange('priority', value)}
+              id="priority-filter"
+              data-testid="priority-filter"
             >
               {Object.values(PriorityLevel).map((priority) => (
                 <Option key={priority} value={priority}>
@@ -334,6 +338,7 @@ const TicketList: React.FC = () => {
             showQuickJumper: true,
             showTotal: (total) => `全 ${total} 件`,
             pageSizeOptions: ['10', '20', '50', '100'],
+            className: 'pagination',
           }}
           onChange={handleTableChange}
           scroll={{ x: 1400 }}
