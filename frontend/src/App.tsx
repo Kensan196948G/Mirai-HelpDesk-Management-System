@@ -15,6 +15,10 @@ import M365TaskList from '@pages/m365/M365TaskList';
 import AuditLogs from '@pages/AuditLogs';
 import Profile from '@pages/Profile';
 import NotFound from '@pages/NotFound';
+import AIChat from '@pages/ai/AIChat';
+import AISearchPage from '@pages/ai/AISearchPage';
+import AIAnalyze from '@pages/ai/AIAnalyze';
+import AIRecommend from '@pages/ai/AIRecommend';
 import './App.css';
 
 function App() {
@@ -37,9 +41,14 @@ function App() {
     <DashboardLayout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tickets" element={<TicketList />} />
         <Route path="/tickets/new" element={<TicketCreate />} />
         <Route path="/tickets/:id" element={<TicketDetail />} />
+        <Route path="/ai/chat" element={<AIChat />} />
+        <Route path="/ai/search" element={<AISearchPage />} />
+        <Route path="/ai/analyze" element={<AIAnalyze />} />
+        <Route path="/ai/recommend" element={<AIRecommend />} />
         <Route path="/knowledge" element={<KnowledgeList />} />
         <Route path="/knowledge/new" element={<KnowledgeEditor />} />
         <Route path="/knowledge/edit/:id" element={<KnowledgeEditor />} />

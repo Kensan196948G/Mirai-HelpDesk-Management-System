@@ -36,7 +36,7 @@ const PriorityBarChart: React.FC<PriorityBarChartProps> = ({ data }) => {
           <span>優先度別チケット数</span>
         </Space>
       }
-      bordered={false}
+      variant="borderless"
     >
       <Space direction="vertical" style={{ width: '100%' }} size="large">
         {priorities.map((priority) => {

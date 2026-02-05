@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { approvalService, Approval } from '@services/approvalService';
 import {
   Card,
   Table,
@@ -24,46 +25,42 @@ const { TextArea } = Input;
 
 dayjs.locale('ja');
 
-// ダミーデータ
-const approvalsData = [
-  {
-    approval_id: '1',
-    ticket_id: 'uuid-1',
-    ticket_number: 'HD-2024-00015',
-    ticket_subject: 'Microsoft 365 E5 ライセンス追加依頼',
-    requester_name: '山田太郎',
-    state: 'requested',
-    created_at: '2024-01-20T10:00:00Z',
-  },
-  {
-    approval_id: '2',
-    ticket_id: 'uuid-2',
-    ticket_number: 'HD-2024-00012',
-    ticket_subject: 'Teamsチーム作成依頼',
-    requester_name: '佐藤花子',
-    state: 'requested',
-    created_at: '2024-01-19T14:30:00Z',
-  },
-  {
-    approval_id: '3',
-    ticket_id: 'uuid-3',
-    ticket_number: 'HD-2024-00008',
-    ticket_subject: '退職者アカウント処理',
-    requester_name: '鈴木一郎',
-    state: 'approved',
-    created_at: '2024-01-18T09:15:00Z',
-    responded_at: '2024-01-18T10:00:00Z',
-  },
-];
-
 const ApprovalList = () => {
+  const [approvals, setApprovals] = useState<Approval[]>([]);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState<'approve' | 'reject'>('approve');
-  const [selectedApproval, setSelectedApproval] = useState<any>(null);
+  const [selectedApproval, setSelectedApproval] = useState<Approval | null>(null);
   const [reason, setReason] = useState('');
   const [comment, setComment] = useState('');
   const navigate = useNavigate();
+
+  // データ取得
+  useEffect(() => {
+    fetchApprovals();
+  }, []);
+
+  const fetchApprovals = async () => {
+    try {
+      setLoading(true);
+      const response = await approvalService.getApprovals({
+        state: 'requested,approved,rejected',
+        pageSize: 50,
+      });
+
+      if (response.success && response.data) {
+        setApprovals(response.data.approvals || []);
+      } else {
+        message.error(response.error?.message || '承認依頼の取得に失敗しました');
+      }
+    } catch (error: any) {
+      console.error('承認依頼取得エラー:', error);
+      message.error('承認依頼の取得に失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const stateColors: Record<string, string> = {
     requested: 'orange',
@@ -93,21 +90,46 @@ const ApprovalList = () => {
     setModalVisible(true);
   };
 
-  const handleSubmit = () => {
-    if (modalType === 'reject' && !reason) {
+  const handleSubmit = async () => {
+    if (modalType === 'reject' && !reason.trim()) {
       message.error('却下理由を入力してください');
       return;
     }
 
-    setLoading(true);
-    // 実際はAPIを呼び出す
-    setTimeout(() => {
-      message.success(
-        modalType === 'approve' ? '承認しました' : '却下しました'
-      );
-      setModalVisible(false);
-      setLoading(false);
-    }, 1000);
+    try {
+      setSubmitting(true);
+
+      let response;
+      if (modalType === 'approve') {
+        response = await approvalService.approve(
+          selectedApproval!.approval_id,
+          comment
+        );
+      } else {
+        response = await approvalService.reject(
+          selectedApproval!.approval_id,
+          reason,
+          comment
+        );
+      }
+
+      if (response.success) {
+        message.success(
+          modalType === 'approve' ? '承認しました' : '却下しました'
+        );
+        setModalVisible(false);
+        setReason('');
+        setComment('');
+        fetchApprovals(); // 再読み込み
+      } else {
+        message.error(response.error?.message || '処理に失敗しました');
+      }
+    } catch (error: any) {
+      console.error('承認処理エラー:', error);
+      message.error('処理中にエラーが発生しました');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const columns = [
@@ -191,7 +213,8 @@ const ApprovalList = () => {
       <Card>
         <Table
           columns={columns}
-          dataSource={approvalsData}
+          dataSource={approvals}
+          loading={loading}
           rowKey="approval_id"
           pagination={{
             pageSize: 20,
@@ -206,7 +229,7 @@ const ApprovalList = () => {
         open={modalVisible}
         onOk={handleSubmit}
         onCancel={() => setModalVisible(false)}
-        confirmLoading={loading}
+        confirmLoading={submitting}
         okText={modalType === 'approve' ? '承認する' : '却下する'}
         cancelText="キャンセル"
         okButtonProps={{

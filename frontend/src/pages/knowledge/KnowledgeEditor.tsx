@@ -36,7 +36,7 @@ import {
   KNOWLEDGE_TYPE_LABELS,
   KNOWLEDGE_VISIBILITY_LABELS,
   KNOWLEDGE_TYPE_COLORS,
-} from '@/types';
+} from '@types';
 import { useAuthStore } from '@store/authStore';
 import './KnowledgeEditor.css';
 

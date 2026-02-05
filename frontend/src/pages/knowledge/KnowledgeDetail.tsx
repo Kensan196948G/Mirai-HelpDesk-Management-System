@@ -25,7 +25,7 @@ import {
   submitKnowledgeFeedback,
   incrementKnowledgeViewCount,
 } from '@services/knowledgeService';
-import { KnowledgeArticle, KNOWLEDGE_TYPE_COLORS, KNOWLEDGE_TYPE_LABELS } from '@/types';
+import { KnowledgeArticle, KNOWLEDGE_TYPE_COLORS, KNOWLEDGE_TYPE_LABELS } from '@types';
 import { useAuthStore } from '@store/authStore';
 import '@components/MarkdownEditor.css';
 

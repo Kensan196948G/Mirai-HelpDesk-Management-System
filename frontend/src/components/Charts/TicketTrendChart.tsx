@@ -42,7 +42,7 @@ const TicketTrendChart: React.FC<TicketTrendChartProps> = ({ data = [] }) => {
           <span>週次トレンド</span>
         </Space>
       }
-      bordered={false}
+      variant="borderless"
     >
       <div style={{ padding: '16px 0' }}>
         {/* 凡例 */}

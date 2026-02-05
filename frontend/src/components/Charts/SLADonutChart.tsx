@@ -28,7 +28,7 @@ const SLADonutChart: React.FC<SLADonutChartProps> = ({
           <span>SLA達成率</span>
         </Space>
       }
-      bordered={false}
+      variant="borderless"
     >
       <div style={{ textAlign: 'center', padding: '24px 0' }}>
         {/* メイン円グラフ */}

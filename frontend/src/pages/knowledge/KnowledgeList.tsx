@@ -31,7 +31,7 @@ import {
   EyeInvisibleOutlined,
 } from '@ant-design/icons';
 import { getKnowledgeArticles, deleteKnowledgeArticle } from '@services/knowledgeService';
-import { KnowledgeArticle } from '@/types';
+import { KnowledgeArticle } from '@types';
 import { useAuthStore } from '@store/authStore';
 
 const { Title, Text } = Typography;

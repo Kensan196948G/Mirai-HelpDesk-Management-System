@@ -41,9 +41,9 @@ import {
 } from '@types/index';
 import type { ColumnsType } from 'antd/es/table';
 import type { Ticket } from '@services/ticketService';
-import TicketTrendChart from '@/components/Charts/TicketTrendChart';
-import SLADonutChart from '@/components/Charts/SLADonutChart';
-import PriorityBarChart from '@/components/Charts/PriorityBarChart';
+import TicketTrendChart from '@components/Charts/TicketTrendChart';
+import SLADonutChart from '@components/Charts/SLADonutChart';
+import PriorityBarChart from '@components/Charts/PriorityBarChart';
 import './Dashboard.css';
 
 const { Title, Text } = Typography;
@@ -61,7 +61,24 @@ const Dashboard = () => {
     queryFn: async () => {
       const response = await getTicketStatistics();
       if (response.success && response.data) {
-        return response.data.statistics as TicketStatistics;
+        const stats = response.data.statistics;
+
+        // API レスポンスを Dashboard の期待する形式に変換
+        return {
+          total: parseInt(stats.total || '0'),
+          new: parseInt(stats.new_count || '0'),
+          in_progress: parseInt(stats.in_progress_count || '0'),
+          resolved: parseInt(stats.resolved_count || '0'),
+          closed: parseInt(stats.closed_count || '0'),
+          by_priority: {
+            P1: parseInt(stats.p1_count || '0'),
+            P2: parseInt(stats.p2_count || '0'),
+            P3: parseInt(stats.p3_count || '0'),
+            P4: parseInt(stats.p4_count || '0'),
+          },
+          by_status: {},
+          sla_overdue: 0,
+        } as TicketStatistics;
       }
       throw new Error(response.error?.message || '統計データの取得に失敗しました');
     },
@@ -419,7 +436,7 @@ const Dashboard = () => {
                 <span>SLA状況 - 優先度別</span>
               </Space>
             }
-            bordered={false}
+            variant="borderless"
           >
             <Row gutter={[16, 16]}>
               {/* P1 - 緊急 */}
@@ -529,7 +546,7 @@ const Dashboard = () => {
       {/* 優先度別チケット数 */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title="優先度別チケット数" bordered={false}>
+          <Card title="優先度別チケット数" variant="borderless">
             <Row gutter={[16, 16]}>
               <Col span={12}>
                 <Badge
@@ -577,7 +594,7 @@ const Dashboard = () => {
 
         {/* SLA統計 */}
         <Col xs={24} lg={12}>
-          <Card title="SLA統計" bordered={false}>
+          <Card title="SLA統計" variant="borderless">
             <Row gutter={[16, 16]}>
               <Col span={24}>
                 <Statistic
@@ -633,7 +650,7 @@ const Dashboard = () => {
                 <Badge status="success" text="全システム正常" />
               </Space>
             }
-            bordered={false}
+            variant="borderless"
           >
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
               {m365Services.map((service) => (
@@ -703,7 +720,7 @@ const Dashboard = () => {
                 <span>最近のアクティビティ</span>
               </Space>
             }
-            bordered={false}
+            variant="borderless"
           >
             <Timeline
               items={recentActivities.map((activity) => ({
@@ -766,7 +783,7 @@ const Dashboard = () => {
         <Col xs={24} lg={12}>
           <Card
             title="最近のチケット"
-            bordered={false}
+            variant="borderless"
             extra={
               <Text
                 style={{ color: '#1890ff', cursor: 'pointer' }}

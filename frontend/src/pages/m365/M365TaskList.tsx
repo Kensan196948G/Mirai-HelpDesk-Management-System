@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { m365Service, M365Task } from '@services/m365Service';
 import {
   Card,
   Table,
@@ -27,54 +28,37 @@ const { TextArea } = Input;
 
 dayjs.locale('ja');
 
-// ダミーデータ
-const tasksData = [
-  {
-    task_id: '1',
-    ticket_id: 'uuid-1',
-    ticket_number: 'HD-2024-00015',
-    task_type: 'license_assign',
-    state: 'approved',
-    target_upn: 'yamada@example.com',
-    task_details: {
-      skuId: 'SPE_E5',
-      licenseName: 'Microsoft 365 E5',
-    },
-    scheduled_at: '2024-01-20T15:00:00Z',
-    created_at: '2024-01-20T10:00:00Z',
-  },
-  {
-    task_id: '2',
-    ticket_id: 'uuid-2',
-    ticket_number: 'HD-2024-00012',
-    task_type: 'teams_create',
-    state: 'approved',
-    target_resource_name: '営業部 プロジェクトチーム',
-    task_details: {
-      teamName: '営業部 プロジェクトチーム',
-      description: '2024年度 営業プロジェクト用',
-    },
-    scheduled_at: null,
-    created_at: '2024-01-19T14:30:00Z',
-  },
-  {
-    task_id: '3',
-    ticket_id: 'uuid-3',
-    ticket_number: 'HD-2024-00008',
-    task_type: 'password_reset',
-    state: 'completed',
-    target_upn: 'tanaka@example.com',
-    task_details: {},
-    completed_at: '2024-01-18T10:30:00Z',
-    created_at: '2024-01-18T09:15:00Z',
-  },
-];
-
 const M365TaskList = () => {
+  const [tasks, setTasks] = useState<M365Task[]>([]);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [selectedTask, setSelectedTask] = useState<M365Task | null>(null);
+  const [fileList, setFileList] = useState<any[]>([]);
   const [form] = Form.useForm();
+
+  // データ取得
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    try {
+      setLoading(true);
+      const response = await m365Service.getTasks({ state: 'approved,in_progress,completed' });
+
+      if (response.success && response.data) {
+        setTasks(response.data.tasks || []);
+      } else {
+        message.error(response.error?.message || 'M365タスクの取得に失敗しました');
+      }
+    } catch (error: any) {
+      console.error('M365タスク取得エラー:', error);
+      message.error('M365タスクの取得に失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const taskTypeLabels: Record<string, string> = {
     license_assign: 'ライセンス付与',
@@ -117,16 +101,39 @@ const M365TaskList = () => {
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      setLoading(true);
 
-      // 実際はAPIを呼び出す
-      setTimeout(() => {
+      if (fileList.length === 0) {
+        message.error('エビデンスファイルは必須です');
+        return;
+      }
+
+      setSubmitting(true);
+
+      const logData = {
+        method: values.method,
+        command_or_screen: values.command_or_screen,
+        result: values.result,
+        result_message: values.result_message,
+        evidence: fileList[0].originFileObj || fileList[0],
+        rollback_procedure: values.rollback_procedure,
+      };
+
+      const response = await m365Service.executeTask(selectedTask!.task_id, logData);
+
+      if (response.success) {
         message.success('実施ログを記録しました');
         setModalVisible(false);
-        setLoading(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Validation failed:', error);
+        setFileList([]);
+        form.resetFields();
+        fetchTasks(); // 再読み込み
+      } else {
+        message.error(response.error?.message || '実施ログの記録に失敗しました');
+      }
+    } catch (error: any) {
+      console.error('実施ログ記録エラー:', error);
+      message.error('入力内容を確認してください');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -199,8 +206,9 @@ const M365TaskList = () => {
       <Card>
         <Table
           columns={columns}
-          dataSource={tasksData}
+          dataSource={tasks}
           rowKey="task_id"
+          loading={loading}
           pagination={{
             pageSize: 20,
             showSizeChanger: true,
@@ -213,8 +221,12 @@ const M365TaskList = () => {
         title="M365タスク実施ログ"
         open={modalVisible}
         onOk={handleSubmit}
-        onCancel={() => setModalVisible(false)}
-        confirmLoading={loading}
+        onCancel={() => {
+          setModalVisible(false);
+          setFileList([]);
+          form.resetFields();
+        }}
+        confirmLoading={submitting}
         okText="記録する"
         cancelText="キャンセル"
         width={700}
@@ -279,7 +291,14 @@ const M365TaskList = () => {
             >
               <Upload
                 maxCount={1}
-                beforeUpload={() => false}
+                beforeUpload={(file) => {
+                  setFileList([file]);
+                  return false; // 自動アップロードを無効化
+                }}
+                onRemove={() => {
+                  setFileList([]);
+                }}
+                fileList={fileList}
                 listType="picture"
               >
                 <Button icon={<UploadOutlined />}>ファイルを選択</Button>

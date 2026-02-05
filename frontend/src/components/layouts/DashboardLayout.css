@@ -2,6 +2,43 @@
   min-height: 100vh;
 }
 
+/* サイドバーをスクロール可能にする */
+.dashboard-layout .ant-layout-sider {
+  overflow-y: auto;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+/* スクロールバーのスタイル */
+.dashboard-layout .ant-layout-sider::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-layout .ant-layout-sider::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.dashboard-layout .ant-layout-sider::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.dashboard-layout .ant-layout-sider::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+/* メインコンテンツエリアの左マージン調整（固定サイドバーのため） */
+.dashboard-layout > .ant-layout {
+  margin-left: 250px;
+}
+
+.dashboard-layout .ant-layout-sider-collapsed + .ant-layout {
+  margin-left: 80px;
+}
+
 .logo {
   height: 64px;
   display: flex;

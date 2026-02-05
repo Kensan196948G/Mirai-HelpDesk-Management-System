@@ -1,22 +1,7 @@
 {
-  "env": {
-    "ENABLE_TOOL_SEARCH": "true",
-    "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
-    "MCP_TIMEOUT": "30000"
-  },
-  "model": "sonnet[1m]",
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "memory",
-    "github",
-    "brave-search",
-    "sequential-thinking"
-  ],
   "statusLine": {
-    "type": "command",
-    "command": "/home/kensan/.claude/statusline-command.sh"
-  },
-  "enabledPlugins": {
-    "claude-mem@thedotmack": true
+    "padding": 0,
+    "command": "/mnt/LinuxHDD/Mirai-HelpDesk-Management-System/.claude/statusline.sh",
+    "type": "command"
   }
 }
