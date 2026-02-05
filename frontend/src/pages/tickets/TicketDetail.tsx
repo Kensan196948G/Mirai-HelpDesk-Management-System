@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useWebSocket } from '@hooks/useWebSocket';
 import {
   Card,
   Descriptions,
@@ -95,6 +96,27 @@ const TicketDetail = () => {
     queryKey: ['ticket-detail', id],
     queryFn: () => getTicketDetail(id!),
     enabled: !!id,
+  });
+
+  // WebSocket でチケット変更をリアルタイム反映
+  const handleTicketEvent = useCallback(
+    (eventData: any) => {
+      // 表示中のチケットの変更のみ反映
+      if (eventData?.ticketId === id || eventData?.ticket_id === id) {
+        refetch();
+      }
+    },
+    [id, refetch]
+  );
+
+  useWebSocket({
+    joinTicket: id,
+    enabled: !!id,
+    events: {
+      'ticket:updated': handleTicketEvent,
+      'ticket:comment': handleTicketEvent,
+      'ticket:status_changed': handleTicketEvent,
+    },
   });
 
   // コメント追加

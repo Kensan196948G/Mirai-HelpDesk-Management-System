@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Avatar, Dropdown, Typography, Badge } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Typography } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DashboardOutlined,
@@ -9,7 +9,7 @@ import {
   CloudOutlined,
   UserOutlined,
   LogoutOutlined,
-  BellOutlined,
+
   PlusOutlined,
   AuditOutlined,
   CustomerServiceOutlined,
@@ -26,9 +26,11 @@ import {
   DatabaseOutlined,
   FolderOutlined,
   ClockCircleOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '@store/authStore';
 import { logout } from '@services/authService';
+import NotificationBell from '@components/NotificationBell';
 import './DashboardLayout.css';
 
 const { Header, Sider, Content } = Layout;
@@ -186,6 +188,21 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     ],
   });
 
+  // レポート（Managerと監査担当者のみ）
+  if (user?.role === 'manager' || user?.role === 'auditor') {
+    menuItems.push({
+      key: 'reports',
+      icon: <BarChartOutlined />,
+      label: 'レポート',
+      children: [
+        {
+          key: '/reports/kpi',
+          label: 'KPIレポート',
+        },
+      ],
+    });
+  }
+
   // M365タスク（M365 Operatorと管理者のみ）
   if (user?.role === 'm365_operator' || user?.role === 'manager') {
     menuItems.push({
@@ -316,9 +333,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <Header className="dashboard-header">
           <div className="header-left"></div>
           <div className="header-right">
-            <Badge count={0}>
-              <BellOutlined style={{ fontSize: 20, cursor: 'pointer' }} />
-            </Badge>
+            <NotificationBell />
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <div className="user-profile">
                 <Avatar icon={<UserOutlined />} />

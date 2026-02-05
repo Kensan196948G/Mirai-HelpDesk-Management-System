@@ -22,6 +22,8 @@ import {
   RobotOutlined,
   CodeOutlined,
   FileTextOutlined,
+  BulbOutlined,
+  LinkOutlined,
 } from '@ant-design/icons';
 import { aiService } from '../../services/aiService';
 import { useAIStore } from '../../store/aiStore';
@@ -259,6 +261,105 @@ export const AISmartSearch: React.FC<AISmartSearchProps> = ({
               </List.Item>
             )}
           />
+
+          {/* 類似チケット（ベクトル検索結果） */}
+          {results.similar_tickets && results.similar_tickets.length > 0 && (
+            <Card
+              size="small"
+              title={
+                <Space>
+                  <LinkOutlined style={{ color: '#722ed1' }} />
+                  <Text strong>類似チケット（AI類似度検索）</Text>
+                </Space>
+              }
+              style={{ marginTop: 16 }}
+            >
+              <List
+                size="small"
+                dataSource={results.similar_tickets}
+                renderItem={(ticket: any) => (
+                  <List.Item
+                    key={ticket.ticket_id}
+                    actions={[
+                      <Button
+                        type="link"
+                        size="small"
+                        onClick={() => handleTicketClick(ticket.ticket_id)}
+                      >
+                        詳細
+                      </Button>,
+                    ]}
+                  >
+                    <List.Item.Meta
+                      title={
+                        <Space>
+                          <Text>{ticket.ticket_number}</Text>
+                          <Tag color={PRIORITY_COLORS[ticket.priority]}>
+                            {ticket.priority}
+                          </Tag>
+                          <Tag color="purple">
+                            類似度 {(ticket.similarity_score * 100).toFixed(1)}%
+                          </Tag>
+                        </Space>
+                      }
+                      description={
+                        <Space direction="vertical" size={0}>
+                          <Text>{ticket.subject}</Text>
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            {ticket.category_name} | {dayjs(ticket.created_at).format('YYYY/MM/DD')}
+                          </Text>
+                        </Space>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+          )}
+
+          {/* 関連ナレッジ記事 */}
+          {results.related_knowledge && results.related_knowledge.length > 0 && (
+            <Card
+              size="small"
+              title={
+                <Space>
+                  <BulbOutlined style={{ color: '#faad14' }} />
+                  <Text strong>関連ナレッジ記事</Text>
+                </Space>
+              }
+              style={{ marginTop: 16 }}
+            >
+              <List
+                size="small"
+                dataSource={results.related_knowledge}
+                renderItem={(article: any) => (
+                  <List.Item key={article.article_id}>
+                    <List.Item.Meta
+                      title={
+                        <Space>
+                          <Text>{article.title}</Text>
+                          <Tag color="gold">
+                            類似度 {(article.similarity_score * 100).toFixed(1)}%
+                          </Tag>
+                        </Space>
+                      }
+                      description={
+                        <Space direction="vertical" size={0}>
+                          <Text type="secondary">{article.summary}</Text>
+                          <Space style={{ marginTop: 4 }}>
+                            <Tag>{article.category}</Tag>
+                            {article.tags?.map((tag: string) => (
+                              <Tag key={tag} color="blue">{tag}</Tag>
+                            ))}
+                          </Space>
+                        </Space>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            </Card>
+          )}
         </div>
       )}
     </Card>

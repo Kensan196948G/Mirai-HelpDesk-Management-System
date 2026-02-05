@@ -13,11 +13,12 @@ import {
   message,
 } from 'antd';
 import { SearchOutlined, ReloadOutlined, PlusOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { getTickets, type Ticket } from '@services/ticketService';
+import { useWebSocket } from '@hooks/useWebSocket';
 import {
   TicketStatus,
   PriorityLevel,
@@ -34,6 +35,19 @@ const { Search } = Input;
 
 const TicketList: React.FC = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // WebSocket でチケット変更をリアルタイム反映
+  useWebSocket({
+    events: {
+      'ticket:created': () => {
+        queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      },
+      'ticket:updated': () => {
+        queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      },
+    },
+  });
 
   // フィルタとページネーションの状態管理
   const [filters, setFilters] = useState({
