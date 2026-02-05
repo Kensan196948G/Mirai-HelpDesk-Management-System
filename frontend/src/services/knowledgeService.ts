@@ -3,7 +3,7 @@ import {
   KnowledgeArticle,
   KnowledgeArticleInput,
   KnowledgeListResponse,
-} from '@types';
+} from '@appTypes/index';
 
 /**
  * ナレッジ記事一覧取得

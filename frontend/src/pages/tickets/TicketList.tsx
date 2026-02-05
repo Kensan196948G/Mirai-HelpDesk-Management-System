@@ -26,7 +26,7 @@ import {
   STATUS_COLORS,
   PRIORITY_COLORS,
   TICKET_TYPE_LABELS,
-} from '@types/index';
+} from '@appTypes/index';
 
 const { Title } = Typography;
 const { Option } = Select;

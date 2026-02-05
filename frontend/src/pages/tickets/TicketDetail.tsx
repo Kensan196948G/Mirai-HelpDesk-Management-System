@@ -1,5 +1,4 @@
-import { useState, useEffect as useEffectReact } from 'react';
-import { m365Service, M365Task as M365TaskType } from '@services/m365Service';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -9,7 +8,6 @@ import {
   Button,
   Form,
   Input,
-  Select,
   Space,
   Tag,
   Typography,
@@ -52,7 +50,7 @@ import {
   TICKET_TYPE_LABELS,
   TicketStatus,
   UserRole,
-} from '@types/index';
+} from '@appTypes/index';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ja';

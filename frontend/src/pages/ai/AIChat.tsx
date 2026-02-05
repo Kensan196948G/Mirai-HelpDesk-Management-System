@@ -146,11 +146,7 @@ const AIChat: React.FC = () => {
       // API呼び出し: 診断質問を生成
       const result = await aiService.aiService.chatDiagnose({
         initial_problem: userMessage.content,
-        conversation_history: messages.map((m) => ({
-          timestamp: m.timestamp.toISOString(),
-          role: m.role,
-          content: m.content,
-        })),
+        conversation_history: messages,
       });
 
       // 診断質問を保存
@@ -217,11 +213,7 @@ const AIChat: React.FC = () => {
     try {
       // API呼び出し: 解決策を提案
       const result = await aiService.aiService.chatSuggestSolution({
-        conversation_history: [...messages, userAnswerMessage].map((m) => ({
-          timestamp: m.timestamp.toISOString(),
-          role: m.role,
-          content: m.content,
-        })),
+        conversation_history: [...messages, userAnswerMessage],
         diagnostic_answers: diagnosticAnswers,
       });
 
@@ -300,11 +292,7 @@ const AIChat: React.FC = () => {
     try {
       // API呼び出し: チケット作成
       const result = await aiService.aiService.chatCreateTicket({
-        conversation_history: messages.map((m) => ({
-          timestamp: m.timestamp.toISOString(),
-          role: m.role,
-          content: m.content,
-        })),
+        conversation_history: messages,
         user_confirmed_values: undefined,
       });
 
