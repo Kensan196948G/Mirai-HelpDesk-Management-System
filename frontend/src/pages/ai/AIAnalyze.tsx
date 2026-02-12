@@ -88,7 +88,7 @@ const AIAnalyze: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div style={{ padding: '24px' }} id="ai-analyze-page">
       <Card>
         <Title level={2}>
           <RobotOutlined /> AI分析ダッシュボード

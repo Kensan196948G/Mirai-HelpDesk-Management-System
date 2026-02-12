@@ -188,7 +188,7 @@ const TicketCreate: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div id="page-content" style={{ padding: '24px' }}>
       <Card>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <Title level={2}>新規チケット作成</Title>

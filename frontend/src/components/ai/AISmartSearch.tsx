@@ -100,9 +100,10 @@ export const AISmartSearch: React.FC<AISmartSearchProps> = ({
     >
       {/* 検索バー */}
       <Search
+        id="ai-search-input"
         placeholder='例: "先週のOutlook関連のP1チケットを表示"'
         enterButton={
-          <Button type="primary" icon={<SearchOutlined />}>
+          <Button type="primary" icon={<SearchOutlined />} id="ai-search-button">
             検索
           </Button>
         }

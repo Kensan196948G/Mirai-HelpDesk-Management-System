@@ -94,6 +94,11 @@ BEGIN
     WHERE task_id = NEW.task_id
   );
 
+  -- approval_id が NULL の場合はSODチェックをスキップ（承認不要タスク）
+  IF approval_approver_id IS NULL THEN
+    RETURN NEW;
+  END IF;
+
   -- SOD違反チェック: 承認者 ≠ 実施者
   IF approval_approver_id = NEW.operator_id THEN
     RAISE EXCEPTION 'SOD違反: 承認者と実施者が同一です。承認者(%)と実施者(%)は異なるユーザーである必要があります。',

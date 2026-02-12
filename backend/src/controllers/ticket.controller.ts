@@ -29,10 +29,16 @@ export class TicketController {
           : [status as string];
       }
 
+      // priority パラメータを大文字に変換（p1→P1, p2→P2, etc.）
+      let priorityValue: any = priority;
+      if (priority && typeof priority === 'string') {
+        priorityValue = priority.toUpperCase();
+      }
+
       // 一般ユーザーは自分のチケットのみ閲覧可能
       let filters: any = {
         status: statusArray,
-        priority: priority as any,
+        priority: priorityValue,
         type: type as any,
         page: page ? parseInt(page as string) : 1,
         pageSize: pageSize ? parseInt(pageSize as string) : 20,
@@ -113,12 +119,38 @@ export class TicketController {
         );
       }
 
+      // 英語のenum値を日本語に変換
+      const impactMap: { [key: string]: string } = {
+        'individual': '個人',
+        'INDIVIDUAL': '個人',
+        'department': '部署',
+        'DEPARTMENT': '部署',
+        'company_wide': '全社',
+        'COMPANY_WIDE': '全社',
+        'external': '対外影響',
+        'EXTERNAL': '対外影響',
+      };
+
+      const urgencyMap: { [key: string]: string } = {
+        'low': '低',
+        'LOW': '低',
+        'medium': '中',
+        'MEDIUM': '中',
+        'high': '高',
+        'HIGH': '高',
+        'immediate': '即時',
+        'IMMEDIATE': '即時',
+      };
+
+      const impactValue = impactMap[impact] || impact;
+      const urgencyValue = urgencyMap[urgency] || urgency;
+
       const ticket = await TicketModel.create({
         type,
         subject,
         description,
-        impact,
-        urgency,
+        impact: impactValue,
+        urgency: urgencyValue,
         requester_id: user.user_id,
         category_id,
       });

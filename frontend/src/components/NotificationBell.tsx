@@ -31,59 +31,65 @@ const NotificationBell: React.FC = () => {
   useEffect(() => {
     if (!token) return;
 
-    const socket = connectSocket();
-    if (!socket) return;
+    try {
+      const socket = connectSocket();
+      if (!socket) return;
 
-    socket.on('ticket:created', (data: any) => {
-      addNotification({
-        type: 'ticket:created',
-        title: '新規チケット',
-        message: `${data.ticket?.ticket_number || ''}: ${data.ticket?.subject || '新しいチケットが作成されました'}`,
-        ticketId: data.ticket?.ticket_id,
-        ticketNumber: data.ticket?.ticket_number,
+      socket.on('ticket:created', (data: any) => {
+        addNotification({
+          type: 'ticket:created',
+          title: '新規チケット',
+          message: `${data.ticket?.ticket_number || ''}: ${data.ticket?.subject || '新しいチケットが作成されました'}`,
+          ticketId: data.ticket?.ticket_id,
+          ticketNumber: data.ticket?.ticket_number,
+        });
       });
-    });
 
-    socket.on('ticket:updated', (data: any) => {
-      addNotification({
-        type: 'ticket:updated',
-        title: 'チケット更新',
-        message: `${data.ticket?.ticket_number || ''}: チケットが更新されました`,
-        ticketId: data.ticket?.ticket_id,
-        ticketNumber: data.ticket?.ticket_number,
+      socket.on('ticket:updated', (data: any) => {
+        addNotification({
+          type: 'ticket:updated',
+          title: 'チケット更新',
+          message: `${data.ticket?.ticket_number || ''}: チケットが更新されました`,
+          ticketId: data.ticket?.ticket_id,
+          ticketNumber: data.ticket?.ticket_number,
+        });
       });
-    });
 
-    socket.on('ticket:comment', (data: any) => {
-      addNotification({
-        type: 'ticket:comment',
-        title: '新しいコメント',
-        message: `チケットにコメントが追加されました`,
-        ticketId: data.ticketId,
+      socket.on('ticket:comment', (data: any) => {
+        addNotification({
+          type: 'ticket:comment',
+          title: '新しいコメント',
+          message: `チケットにコメントが追加されました`,
+          ticketId: data.ticketId,
+        });
       });
-    });
 
-    socket.on('sla:warning', (data: any) => {
-      addNotification({
-        type: 'sla:warning',
-        title: 'SLA警告',
-        message: `${data.ticket?.ticket_number || ''}: SLA期限が迫っています`,
-        ticketId: data.ticket?.ticket_id,
-        ticketNumber: data.ticket?.ticket_number,
+      socket.on('sla:warning', (data: any) => {
+        addNotification({
+          type: 'sla:warning',
+          title: 'SLA警告',
+          message: `${data.ticket?.ticket_number || ''}: SLA期限が迫っています`,
+          ticketId: data.ticket?.ticket_id,
+          ticketNumber: data.ticket?.ticket_number,
+        });
       });
-    });
 
-    socket.on('notification:new', (data: any) => {
-      addNotification({
-        type: 'notification:new',
-        title: data.title || '通知',
-        message: data.message || '',
+      socket.on('notification:new', (data: any) => {
+        addNotification({
+          type: 'notification:new',
+          title: data.title || '通知',
+          message: data.message || '',
+        });
       });
-    });
 
-    return () => {
-      disconnectSocket();
-    };
+      return () => {
+        disconnectSocket();
+      };
+    } catch (error) {
+      console.error('[NotificationBell] WebSocket connection error:', error);
+      // エラー時は何もしない（通知機能は無効化されるが、アプリは継続動作）
+      return undefined;
+    }
   }, [token, addNotification]);
 
   const handleNotificationClick = (notification: Notification) => {
@@ -178,7 +184,7 @@ const NotificationBell: React.FC = () => {
 
   return (
     <Dropdown
-      dropdownRender={() => dropdownContent}
+      popupRender={() => dropdownContent}
       trigger={['click']}
       placement="bottomRight"
     >

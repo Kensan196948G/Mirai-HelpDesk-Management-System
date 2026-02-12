@@ -743,6 +743,7 @@ const AIChat: React.FC = () => {
           <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '16px' }}>
             <Space.Compact style={{ width: '100%' }}>
               <TextArea
+                id="ai-chat-input"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onPressEnter={(e) => {
@@ -756,6 +757,7 @@ const AIChat: React.FC = () => {
                 disabled={loading || isGeneratingQuestions}
               />
               <Button
+                id="ai-chat-send-button"
                 type="primary"
                 icon={<SendOutlined />}
                 onClick={handleInitialSubmit}

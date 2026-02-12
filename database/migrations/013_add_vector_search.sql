@@ -20,12 +20,12 @@ CREATE TABLE ticket_embeddings (
   ticket_id UUID NOT NULL REFERENCES tickets(ticket_id) ON DELETE CASCADE,
 
   -- 埋め込みバージョン（モデル変更時に再生成が必要）
-  embedding_version VARCHAR(50) NOT NULL, -- 例: 'claude-sonnet-4-5-20250929'
+  embedding_version VARCHAR(50) NOT NULL, -- 例: 'gemini-text-embedding-004'
 
-  -- ベクトルデータ（1024次元）
-  subject_vector vector(1024),        -- 件名のベクトル表現
-  description_vector vector(1024),    -- 詳細のベクトル表現
-  combined_vector vector(1024),       -- 統合ベクトル（検索用メイン）
+  -- ベクトルデータ（768次元 - Gemini text-embedding-004）
+  subject_vector vector(768),        -- 件名のベクトル表現
+  description_vector vector(768),    -- 詳細のベクトル表現
+  combined_vector vector(768),       -- 統合ベクトル（検索用メイン）
 
   -- タイムスタンプ
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -75,10 +75,10 @@ EXECUTE FUNCTION update_ticket_embeddings_updated_at();
 
 -- コメント（ドキュメント）
 COMMENT ON TABLE ticket_embeddings IS 'チケット埋め込みベクトル（セマンティック検索用）。pgvector により類似チケットを高速検索可能。';
-COMMENT ON COLUMN ticket_embeddings.embedding_version IS 'ベクトル生成に使用したモデルバージョン。例: claude-sonnet-4-5-20250929';
-COMMENT ON COLUMN ticket_embeddings.subject_vector IS '件名のベクトル表現（1024次元）。';
-COMMENT ON COLUMN ticket_embeddings.description_vector IS '詳細のベクトル表現（1024次元）。';
-COMMENT ON COLUMN ticket_embeddings.combined_vector IS '件名+詳細の統合ベクトル（検索用メイン、1024次元）。';
+COMMENT ON COLUMN ticket_embeddings.embedding_version IS 'ベクトル生成に使用したモデルバージョン。例: gemini-text-embedding-004';
+COMMENT ON COLUMN ticket_embeddings.subject_vector IS '件名のベクトル表現（768次元、Gemini text-embedding-004）。';
+COMMENT ON COLUMN ticket_embeddings.description_vector IS '詳細のベクトル表現（768次元、Gemini text-embedding-004）。';
+COMMENT ON COLUMN ticket_embeddings.combined_vector IS '件名+詳細の統合ベクトル（検索用メイン、768次元）。';
 
 COMMENT ON INDEX idx_ticket_embeddings_combined_hnsw IS 'HNSW インデックス（combined_vector）。コサイン類似度による高速近似検索を実現。';
 
@@ -96,12 +96,12 @@ COMMENT ON INDEX idx_ticket_embeddings_combined_hnsw IS 'HNSW インデックス
 --   1 - (te.combined_vector <=> $1::vector) AS similarity_score
 -- FROM ticket_embeddings te
 -- JOIN tickets t ON te.ticket_id = t.ticket_id
--- WHERE te.embedding_version = 'claude-sonnet-4-5-20250929'
+-- WHERE te.embedding_version = 'gemini-text-embedding-004'
 --   AND t.status IN ('resolved', 'closed')
 -- ORDER BY te.combined_vector <=> $1::vector
 -- LIMIT 5;
 --
--- 注: $1 は検索クエリのベクトル（1024次元）
+-- 注: $1 は検索クエリのベクトル（768次元、Gemini text-embedding-004）
 -- 注: <=> は pgvector のコサイン距離演算子（0に近いほど類似）
 -- 注: 1 - distance で類似度スコア（0-1、1に近いほど類似）
 

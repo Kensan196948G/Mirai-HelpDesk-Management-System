@@ -50,55 +50,8 @@ BEFORE DELETE ON ticket_history
 FOR EACH ROW
 EXECUTE FUNCTION prevent_ticket_history_modification();
 
--- 自動履歴記録トリガー（チケット更新時）
-CREATE OR REPLACE FUNCTION log_ticket_changes()
-RETURNS TRIGGER AS $$
-DECLARE
-  change_description TEXT;
-  actor_display_name VARCHAR(255);
-BEGIN
-  -- 操作者の表示名を取得
-  SELECT display_name INTO actor_display_name
-  FROM users
-  WHERE user_id = NEW.updated_by_user_id; -- このカラムは後で追加する必要がある
-
-  -- ステータス変更の記録
-  IF OLD.status IS DISTINCT FROM NEW.status THEN
-    INSERT INTO ticket_history (
-      ticket_id, actor_id, actor_name, action,
-      before_value, after_value, description
-    ) VALUES (
-      NEW.ticket_id,
-      NEW.updated_by_user_id,
-      COALESCE(actor_display_name, 'System'),
-      'status_change',
-      jsonb_build_object('status', OLD.status),
-      jsonb_build_object('status', NEW.status),
-      'ステータスを ' || OLD.status || ' から ' || NEW.status || ' に変更'
-    );
-  END IF;
-
-  -- 担当者変更の記録
-  IF OLD.assignee_id IS DISTINCT FROM NEW.assignee_id THEN
-    INSERT INTO ticket_history (
-      ticket_id, actor_id, actor_name, action,
-      before_value, after_value, description
-    ) VALUES (
-      NEW.ticket_id,
-      NEW.updated_by_user_id,
-      COALESCE(actor_display_name, 'System'),
-      'assignee_change',
-      jsonb_build_object('assignee_id', OLD.assignee_id),
-      jsonb_build_object('assignee_id', NEW.assignee_id),
-      '担当者を変更'
-    );
-  END IF;
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- 注: このトリガーは tickets テーブルに updated_by_user_id カラムを追加した後に有効化する
+-- 注: log_ticket_changes() トリガー関数は 016_fix_trigger_and_seed.sql で定義されます
+-- （updated_by_user_id カラムの追加後に有効化するため）
 
 -- コメント
 COMMENT ON TABLE ticket_history IS '【追記専用】チケット履歴 - 変更不可の監査証跡（UPDATE/DELETE禁止）';

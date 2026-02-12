@@ -30,7 +30,7 @@ import {
 } from '@ant-design/icons';
 import { useAuthStore } from '@store/authStore';
 import { logout } from '@services/authService';
-import NotificationBell from '@components/NotificationBell';
+// import NotificationBell from '@components/NotificationBell'; // 一時的に無効化
 import './DashboardLayout.css';
 
 const { Header, Sider, Content } = Layout;
@@ -333,7 +333,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <Header className="dashboard-header">
           <div className="header-left"></div>
           <div className="header-right">
-            <NotificationBell />
+            {/* NotificationBell 一時的に無効化（WebSocket接続エラーでアプリクラッシュを回避） */}
+            {/* <NotificationBell /> */}
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <div className="user-profile">
                 <Avatar icon={<UserOutlined />} />

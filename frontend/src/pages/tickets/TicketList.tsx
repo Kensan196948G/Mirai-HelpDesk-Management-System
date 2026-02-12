@@ -235,7 +235,7 @@ const TicketList: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div id="page-content" style={{ padding: '24px' }}>
       <Card>
         {/* ヘッダー */}
         <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>

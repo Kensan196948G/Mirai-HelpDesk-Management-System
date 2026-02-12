@@ -232,7 +232,7 @@ const TicketDetail = () => {
 
   if (isLoading) {
     return (
-      <div style={{ textAlign: 'center', padding: '100px 0' }}>
+      <div id="page-content" style={{ textAlign: 'center', padding: '100px 0' }}>
         <Spin size="large" tip="読み込み中..." />
       </div>
     );

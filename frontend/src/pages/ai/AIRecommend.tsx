@@ -117,7 +117,7 @@ const AIRecommend: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div style={{ padding: '24px' }} id="ai-recommend-page">
       <Card>
         <Title level={2}>
           <BulbOutlined /> AI推奨・改善提案

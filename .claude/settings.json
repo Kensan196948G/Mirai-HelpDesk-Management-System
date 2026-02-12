@@ -1,7 +1,1 @@
-{
-  "statusLine": {
-    "padding": 0,
-    "command": "/mnt/LinuxHDD/Mirai-HelpDesk-Management-System/.claude/statusline.sh",
-    "type": "command"
-  }
-}
+{"statusLine":{"padding":0,"type":"command","command":"/mnt/LinuxHDD/Mirai-HelpDesk-Management-System/.claude/statusline.sh"}}

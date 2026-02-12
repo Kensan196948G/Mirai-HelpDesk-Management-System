@@ -5,9 +5,10 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { login, TEST_CONFIG } from './helpers.js';
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://127.0.0.1:3002';
-const API_BASE_URL = process.env.API_BASE_URL || 'http://127.0.0.1:3000';
+const FRONTEND_URL = TEST_CONFIG.FRONTEND_URL;
+const API_BASE_URL = TEST_CONFIG.API_BASE_URL;
 
 /**
  * フロントエンドサーバーが起動しているか事前チェック
@@ -61,9 +62,14 @@ test.describe('AI 分類機能', () => {
 });
 
 test.describe('AI コンポーネントの統合テスト', () => {
+  test.beforeEach(async ({ page }) => {
+    // 各テストの前にログイン
+    await login(page, TEST_CONFIG.TEST_ACCOUNTS.admin.email, TEST_CONFIG.TEST_ACCOUNTS.admin.password);
+  });
+
   test('AIClassificationWidget が表示される', async ({ page }) => {
     // チケット作成ページに移動（AIウィジェットが含まれる想定）
-    await page.goto(`${FRONTEND_URL}/tickets/create`);
+    await page.goto(`${FRONTEND_URL}/tickets/new`);
     await page.waitForLoadState('networkidle');
 
     // ページが読み込まれたことを確認
@@ -80,19 +86,18 @@ test.describe('AI コンポーネントの統合テスト', () => {
     await page.goto(`${FRONTEND_URL}/ai/search`);
     await page.waitForLoadState('networkidle');
 
-    // 検索入力欄を探す
-    const searchInputs = await page.locator('input[type="text"], textarea').all();
+    // AI検索ページが表示されることを確認
+    const searchPage = await page.locator('#ai-search-page');
+    await expect(searchPage).toBeVisible({ timeout: 10000 });
+    console.log('  ✅ AI検索ページ読み込み成功');
 
-    if (searchInputs.length > 0) {
-      console.log(`  ℹ️  検索入力欄が ${searchInputs.length} 個見つかりました`);
+    // 検索入力欄を明示的なIDで探す
+    const searchInput = await page.locator('#ai-search-input');
+    await expect(searchInput).toBeVisible({ timeout: 5000 });
 
-      // 最初の入力欄にテキストを入力
-      await searchInputs[0].fill('Outlookの添付ファイル問題');
-
-      console.log('  ✅ 検索テキスト入力成功');
-    } else {
-      console.log('  ⚠️  検索入力欄が見つかりませんでした（未実装の可能性）');
-    }
+    // テキストを入力
+    await searchInput.fill('Outlookの添付ファイル問題');
+    console.log('  ✅ 検索テキスト入力成功');
 
     await page.screenshot({ path: 'test-results/ai-smart-search-test.png', fullPage: true });
   });
@@ -101,25 +106,27 @@ test.describe('AI コンポーネントの統合テスト', () => {
     await page.goto(`${FRONTEND_URL}/ai/chat`);
     await page.waitForLoadState('networkidle');
 
-    // チャット入力欄を探す
-    const chatInputs = await page.locator('input[type="text"], textarea').all();
+    // チャット入力欄を明示的なIDで探す
+    const chatInput = await page.locator('#ai-chat-input');
 
-    if (chatInputs.length > 0) {
-      console.log(`  ℹ️  チャット入力欄が ${chatInputs.length} 個見つかりました`);
+    // 入力欄が表示されるまで待機（初期フェーズで表示される）
+    await expect(chatInput).toBeVisible({ timeout: 10000 });
+    console.log('  ✅ チャット入力欄が見つかりました');
 
-      // 最初の入力欄にメッセージを入力
-      await chatInputs[0].fill('こんにちは、Outlookで添付ファイルが送信できません。');
-
-      console.log('  ✅ チャットメッセージ入力成功');
-    } else {
-      console.log('  ⚠️  チャット入力欄が見つかりませんでした（未実装の可能性）');
-    }
+    // メッセージを入力
+    await chatInput.fill('こんにちは、Outlookで添付ファイルが送信できません。');
+    console.log('  ✅ チャットメッセージ入力成功');
 
     await page.screenshot({ path: 'test-results/ai-chat-test.png', fullPage: true });
   });
 });
 
 test.describe('AI機能のエラーハンドリング', () => {
+  test.beforeEach(async ({ page }) => {
+    // ログイン
+    await login(page, TEST_CONFIG.TEST_ACCOUNTS.admin.email, TEST_CONFIG.TEST_ACCOUNTS.admin.password);
+  });
+
   test('APIキーなしでもエラーページが表示されない', async ({ page }) => {
     const consoleErrors = [];
     page.on('console', msg => {
@@ -130,6 +137,11 @@ test.describe('AI機能のエラーハンドリング', () => {
 
     await page.goto(`${FRONTEND_URL}/ai/analyze`);
     await page.waitForLoadState('networkidle');
+
+    // AI分析ページが表示されることを確認
+    const analyzePage = await page.locator('#ai-analyze-page');
+    await expect(analyzePage).toBeVisible({ timeout: 10000 });
+    console.log('  ✅ AI分析ページ読み込み成功');
 
     // クリティカルなエラーがないことを確認
     const criticalErrors = consoleErrors.filter(err =>
@@ -149,23 +161,32 @@ test.describe('AI機能のエラーハンドリング', () => {
 });
 
 test.describe('AI機能のパフォーマンス', () => {
+  test.beforeEach(async ({ page }) => {
+    // ログイン
+    await login(page, TEST_CONFIG.TEST_ACCOUNTS.admin.email, TEST_CONFIG.TEST_ACCOUNTS.admin.password);
+  });
+
   test('AIページの読み込みが5秒以内', async ({ page }) => {
     const pages = [
-      '/ai/search',
-      '/ai/chat',
-      '/ai/analyze',
-      '/ai/recommend'
+      { path: '/ai/search', id: '#ai-search-page' },
+      { path: '/ai/chat', id: '#root' },
+      { path: '/ai/analyze', id: '#ai-analyze-page' },
+      { path: '/ai/recommend', id: '#ai-recommend-page' }
     ];
 
-    for (const pagePath of pages) {
+    for (const pageInfo of pages) {
       const startTime = Date.now();
 
-      await page.goto(`${FRONTEND_URL}${pagePath}`);
+      await page.goto(`${FRONTEND_URL}${pageInfo.path}`);
       await page.waitForLoadState('networkidle');
+
+      // ページが正しく表示されることを確認
+      const pageElement = await page.locator(pageInfo.id);
+      await expect(pageElement).toBeVisible({ timeout: 10000 });
 
       const loadTime = Date.now() - startTime;
 
-      console.log(`  ${pagePath}: ${loadTime}ms`);
+      console.log(`  ${pageInfo.path}: ${loadTime}ms`);
 
       expect(loadTime).toBeLessThan(5000);
     }
@@ -173,9 +194,18 @@ test.describe('AI機能のパフォーマンス', () => {
 });
 
 test.describe('AI機能のアクセシビリティ', () => {
+  test.beforeEach(async ({ page }) => {
+    // ログイン
+    await login(page, TEST_CONFIG.TEST_ACCOUNTS.admin.email, TEST_CONFIG.TEST_ACCOUNTS.admin.password);
+  });
+
   test('AIページが基本的なアクセシビリティ要件を満たす', async ({ page }) => {
     await page.goto(`${FRONTEND_URL}/ai/search`);
     await page.waitForLoadState('networkidle');
+
+    // AI検索ページが表示されることを確認
+    const searchPage = await page.locator('#ai-search-page');
+    await expect(searchPage).toBeVisible({ timeout: 10000 });
 
     // タイトルが存在することを確認
     const title = await page.title();
