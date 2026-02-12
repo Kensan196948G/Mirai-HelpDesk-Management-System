@@ -8,6 +8,7 @@ import { testConnection } from './config/database';
 import { logger } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { rateLimit } from './middleware/rateLimit';
+import { apiLimiter, loginLimiter, aiLimiter, uploadLimiter } from './middleware/rate-limit.middleware';
 import { initializeSocketServer } from './websocket/socketServer';
 import { startSLAChecker, stopSLAChecker } from './jobs/sla-checker';
 
@@ -31,7 +32,31 @@ const PORT = parseInt(process.env.PORT || '3000', 10);
 const API_PREFIX = process.env.API_PREFIX || '/api';
 
 // ミドルウェアの設定
-app.use(helmet()); // セキュリティヘッダー
+// セキュリティヘッダー（XSS/CSRF対策）
+// 開発環境ではCSPを緩和（Vite HMRとの互換性）
+const isProduction = process.env.NODE_ENV === 'production';
+
+app.use(
+  helmet({
+    contentSecurityPolicy: isProduction
+      ? {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"], // Ant Design用
+            imgSrc: ["'self'", 'data:', 'https:'],
+            connectSrc: ["'self'", 'ws:', 'wss:'], // WebSocket用
+            fontSrc: ["'self'", 'data:'],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'none'"],
+          },
+        }
+      : false, // 開発・テスト環境ではCSP無効化（Vite HMR対応）
+    crossOriginEmbedderPolicy: false, // 開発環境での互換性
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
 
 // CORS設定（カンマ区切りの文字列を配列に変換）
 const corsOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3001')
@@ -58,20 +83,8 @@ if (process.env.NODE_ENV !== 'test') {
   );
 }
 
-// レート制限
-const rateLimitWindowMs = parseInt(
-  process.env.RATE_LIMIT_WINDOW_MS || '900000'
-); // 15分
-const rateLimitMaxRequests = parseInt(
-  process.env.RATE_LIMIT_MAX_REQUESTS || '100'
-);
-
-app.use(
-  rateLimit({
-    windowMs: rateLimitWindowMs,
-    maxRequests: rateLimitMaxRequests,
-  })
-);
+// レート制限（Redis-based）
+app.use(apiLimiter);
 
 // ヘルスチェックエンドポイント
 app.get('/health', (_req, res) => {
@@ -83,14 +96,14 @@ app.get('/health', (_req, res) => {
 });
 
 // APIルートの登録
-app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/auth`, authRoutes); // loginLimiterはauth.routes.tsで個別適用
 app.use(`${API_PREFIX}/tickets`, ticketRoutes);
 app.use(`${API_PREFIX}/users`, userRoutes);
 app.use(`${API_PREFIX}/categories`, categoryRoutes);
 app.use(`${API_PREFIX}/knowledge`, knowledgeRoutes);
 app.use(`${API_PREFIX}/approvals`, approvalRoutes);
 app.use(`${API_PREFIX}/m365`, m365Routes);
-app.use(`${API_PREFIX}/ai`, aiRoutes);
+app.use(`${API_PREFIX}/ai`, aiLimiter, aiRoutes); // AI APIは厳格なレート制限
 app.use(`${API_PREFIX}/sla`, slaRoutes);
 app.use(`${API_PREFIX}/reports`, reportRoutes);
 

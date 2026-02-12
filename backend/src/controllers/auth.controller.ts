@@ -53,6 +53,23 @@ export class AuthController {
         role: user.role,
       });
 
+      // CSRF対策: SameSite Cookie設定
+      const isProduction = process.env.NODE_ENV === 'production';
+
+      res.cookie('accessToken', token, {
+        httpOnly: true,
+        secure: isProduction, // 本番環境のみHTTPS必須
+        sameSite: 'strict', // CSRF対策
+        maxAge: 24 * 60 * 60 * 1000, // 24時間
+      });
+
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'strict', // CSRF対策
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7日間
+      });
+
       res.json({
         success: true,
         data: {

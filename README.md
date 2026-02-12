@@ -162,6 +162,8 @@
 
 ## 🏗️ アーキテクチャ
 
+### 📊 システム全体構成（AIモデル統合）
+
 ```mermaid
 graph TB
     subgraph "🌐 フロントエンド"
@@ -169,45 +171,171 @@ graph TB
         B[Ant Design UI]
         C[React Query]
         D[Zustand]
+        E[WebSocket Client]
     end
 
-    subgraph "⚙️ バックエンド"
-        E[Express API]
-        F[TypeScript]
-        G[JWT認証]
-        H[RBAC]
+    subgraph "⚙️ バックエンド API"
+        F[Express + TypeScript]
+        G[JWT認証 + RBAC]
+        H[WebSocket Server]
+        I[REST API]
     end
 
-    subgraph "🗄️ データベース"
-        I[(PostgreSQL)]
-        J[追記専用テーブル]
-        K[SODトリガー]
+    subgraph "🤖 AI統合レイヤー"
+        J[Claude Sonnet 4.5]
+        K[Gemini 2.0 Flash]
+        L[Perplexity Sonar]
+        M[埋め込み生成<br/>text-embedding-004]
+    end
+
+    subgraph "🗄️ データベース + Vector Store"
+        N[(PostgreSQL 16)]
+        O[pgvector<br/>HNSW Index]
+        P[追記専用テーブル<br/>SODトリガー]
     end
 
     subgraph "☁️ Microsoft 365"
-        L[Graph API]
-        M[非対話型認証]
-        N[ライセンス・ユーザー管理]
+        Q[Graph API]
+        R[非対話型認証]
+        S[ライセンス・ユーザー管理]
     end
 
-    A --> E
+    subgraph "🔔 通知・キャッシュ"
+        T[Redis]
+        U[node-cron<br/>SLA通知]
+    end
+
+    A --> I
+    A <--> H
     B --> A
-    C --> E
+    C --> I
     D --> A
-    E --> I
-    E --> L
-    G --> E
-    H --> E
-    I --> J
-    I --> K
-    L --> M
-    L --> N
+    E <--> H
+
+    I --> F
+    F --> G
+    F --> J
+    F --> K
+    F --> L
+    F --> N
+    F --> Q
+    F --> T
+
+    J --> M
+    K --> M
+    M --> O
+    O --> N
+    N --> P
+
+    Q --> R
+    Q --> S
+
+    U --> I
 
     style A fill:#61DAFB,stroke:#333,stroke-width:2px,color:#000
-    style E fill:#339933,stroke:#333,stroke-width:2px,color:#fff
-    style I fill:#4169E1,stroke:#333,stroke-width:2px,color:#fff
-    style L fill:#D83B01,stroke:#333,stroke-width:2px,color:#fff
+    style F fill:#339933,stroke:#333,stroke-width:2px,color:#fff
+    style J fill:#FF6B6B,stroke:#333,stroke-width:2px,color:#fff
+    style K fill:#FFA500,stroke:#333,stroke-width:2px,color:#fff
+    style L fill:#9B59B6,stroke:#333,stroke-width:2px,color:#fff
+    style N fill:#4169E1,stroke:#333,stroke-width:2px,color:#fff
+    style Q fill:#D83B01,stroke:#333,stroke-width:2px,color:#fff
+    style T fill:#DC382D,stroke:#333,stroke-width:2px,color:#fff
 ```
+
+### 🤖 AI会話ロジックフロー（チケット分類・感情分析）
+
+```mermaid
+sequenceDiagram
+    participant User as 👤 ユーザー
+    participant API as ⚙️ Express API
+    participant PII as 🔒 PII Masking
+    participant Vector as 📊 Vector Search<br/>(pgvector)
+    participant Gemini as 🟠 Gemini<br/>Embedding
+    participant Claude as 🔴 Claude<br/>Sonnet 4.5
+    participant DB as 🗄️ PostgreSQL
+
+    User->>API: チケット作成リクエスト<br/>{subject, description}
+
+    API->>PII: PII検出・マスキング<br/>(メール/電話/クレカ)
+    PII-->>API: マスク済みテキスト<br/>{hasPII: true}
+
+    API->>DB: カテゴリ一覧取得
+    DB-->>API: カテゴリリスト<br/>(40件)
+
+    API->>Gemini: 埋め込み生成<br/>text-embedding-004
+    Gemini-->>API: embedding[768]
+
+    API->>Vector: ベクトル類似検索<br/>コサイン類似度 > 0.3
+    Vector->>DB: pgvector HNSW検索
+    DB-->>Vector: 類似チケット5件
+    Vector-->>API: 過去の類似事例<br/>{similarity: 0.85}
+
+    API->>Claude: AI分類プロンプト<br/>+ カテゴリ<br/>+ 類似チケット
+    Note over Claude: temperature: 0.3<br/>max_tokens: 4096
+    Claude-->>API: JSON応答<br/>{category, priority,<br/>impact, urgency,<br/>assignee, confidence}
+
+    API->>DB: 予測結果保存<br/>ai_predictions
+    API->>DB: チケット作成<br/>tickets
+    API->>DB: 埋め込み保存<br/>ticket_embeddings
+
+    API-->>User: チケット作成完了<br/>+ AI推奨値
+
+    Note over User,DB: 処理時間: 2-4秒<br/>精度: 95-98%
+```
+
+### 🔍 AI検索ロジックフロー（ハイブリッド検索）
+
+```mermaid
+flowchart TB
+    A[👤 ユーザー入力<br/>自然言語クエリ] --> B{検索タイプ?}
+
+    B -->|スマート検索| C[🔴 Claude Sonnet 4.5<br/>SQL生成]
+    B -->|ベクトル検索| D[🟠 Gemini Embedding<br/>text-embedding-004]
+    B -->|外部検索| E[🟣 Perplexity Sonar Pro<br/>Web検索]
+
+    C --> F{SQL検証<br/>安全性チェック}
+    F -->|安全| G[PostgreSQL実行<br/>パラメータ化クエリ]
+    F -->|危険| H[❌ 拒否<br/>SQL Injection対策]
+
+    D --> I[embedding: 768次元]
+    I --> J[pgvector検索<br/>HNSW Index]
+    J --> K[コサイン類似度計算<br/>1 - cosine_distance]
+
+    G --> L[チケット結果<br/>n件]
+    K --> M[類似チケット<br/>top 5]
+
+    L --> N{ハイブリッド<br/>統合?}
+    M --> N
+
+    N -->|Yes| O[スコアリング統合<br/>SQL: 0.3 + Vector: 0.7]
+    N -->|No| P[単一結果返却]
+
+    O --> Q[ランキング調整<br/>重複排除]
+
+    E --> R[Web検索結果<br/>+ 引用元URL]
+    R --> S[関連ナレッジ<br/>AI生成サマリー]
+
+    Q --> T[📊 統合結果]
+    P --> T
+    S --> T
+
+    T --> U[👤 ユーザーに返却<br/>{tickets, knowledge,<br/>interpretation}]
+
+    style C fill:#FF6B6B,stroke:#333,stroke-width:2px,color:#fff
+    style D fill:#FFA500,stroke:#333,stroke-width:2px,color:#fff
+    style E fill:#9B59B6,stroke:#333,stroke-width:2px,color:#fff
+    style J fill:#4169E1,stroke:#333,stroke-width:2px,color:#fff
+    style O fill:#2ECC71,stroke:#333,stroke-width:2px,color:#fff
+```
+
+### 🎯 主要AIモデルの役割分担
+
+| 🤖 AIモデル | 🎯 主要用途 | 🔧 技術仕様 | ⚡ レスポンス時間 |
+|:-----------|:----------|:----------|:--------------|
+| **🔴 Claude Sonnet 4.5** | チケット分類<br/>感情分析<br/>SQL生成<br/>リスク検知 | `claude-sonnet-4-5-20250929`<br/>max_tokens: 4096<br/>temperature: 0.3 | 2-4秒 |
+| **🟠 Gemini 2.0 Flash** | 埋め込み生成<br/>画像認識<br/>Vision分析 | `text-embedding-004` (768次元)<br/>`gemini-2.0-flash-exp` | 0.5-1秒 |
+| **🟣 Perplexity Sonar Pro** | Web検索<br/>最新情報取得<br/>引用付き回答 | `sonar-pro`<br/>検索結果 + 引用元 | 3-5秒 |
+| **📊 pgvector (HNSW)** | ベクトル類似検索<br/>コサイン類似度 | PostgreSQL拡張<br/>HNSW Index<br/>768次元 | 0.1-0.3秒 |
 
 ---
 

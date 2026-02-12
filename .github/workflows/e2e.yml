@@ -94,11 +94,14 @@ jobs:
           echo $! > backend.pid
           sleep 5
 
-      # フロントエンドサーバーの起動（バックグラウンド）
-      - name: Start frontend server
+      # フロントエンドのビルド + 静的サーバー起動
+      - name: Build and serve frontend
         working-directory: ./frontend
+        env:
+          VITE_API_BASE_URL: http://127.0.0.1:8000/api
         run: |
-          python -m http.server 8080 &
+          npm run build
+          npx serve -s dist -l 8080 &
           echo $! > frontend.pid
           sleep 3
 

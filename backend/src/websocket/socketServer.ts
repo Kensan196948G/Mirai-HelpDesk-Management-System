@@ -1,8 +1,10 @@
 import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
+import { createAdapter } from '@socket.io/redis-adapter';
 import jwt from 'jsonwebtoken';
 import { logger } from '../utils/logger';
 import { UserRole } from '../types';
+import { redisPubClient, redisSubClient } from '../config/redis.config';
 
 interface AuthenticatedSocket extends Socket {
   user?: {
@@ -29,6 +31,10 @@ export function initializeSocketServer(httpServer: HttpServer): Server {
     },
     path: '/socket.io',
   });
+
+  // Redis Adapter設定（複数インスタンス対応）
+  io.adapter(createAdapter(redisPubClient, redisSubClient));
+  logger.info('✅ WebSocket Redis Adapter設定完了（複数インスタンス対応）');
 
   // JWT認証ミドルウェア
   io.use((socket: AuthenticatedSocket, next) => {
