@@ -5,6 +5,7 @@
  */
 
 import dotenv from 'dotenv';
+import { logger } from '../utils/logger';
 
 dotenv.config();
 
@@ -28,7 +29,7 @@ export const claudeConfig: ClaudeConfig = {
 
 // APIキー検証
 if (!claudeConfig.apiKey) {
-  console.warn(
+  logger.warn(
     '⚠️  CLAUDE_API_KEY が設定されていません。AI機能は無効です。'
   );
 }

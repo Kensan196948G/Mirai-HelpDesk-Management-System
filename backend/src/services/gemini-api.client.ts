@@ -6,6 +6,7 @@
 
 import axios from 'axios';
 import Redis from 'ioredis';
+import { logger } from '../utils/logger';
 
 export interface GeminiEmbeddingOptions {
   model?: string;
@@ -32,11 +33,11 @@ export class GeminiAPIClient {
     this.visionModel = process.env.GEMINI_VISION_MODEL || 'gemini-2.0-flash-exp';
 
     if (!this.apiKey) {
-      console.warn('⚠️  GEMINI_API_KEY が設定されていません。Gemini機能は無効です。');
+      logger.warn('⚠️  GEMINI_API_KEY が設定されていません。Gemini機能は無効です。');
     }
 
     this.cache.on('error', (err) => {
-      console.error('❌ Redis エラー (Gemini):', err);
+      logger.error('❌ Redis エラー (Gemini):', err);
     });
   }
 
@@ -57,7 +58,7 @@ export class GeminiAPIClient {
     if (options.cacheKey) {
       const cached = await this.getCached(options.cacheKey);
       if (cached) {
-        console.log(`📦 キャッシュヒット (Gemini Embedding): ${options.cacheKey}`);
+        logger.info(`📦 キャッシュヒット (Gemini Embedding): ${options.cacheKey}`);
         return JSON.parse(cached);
       }
     }
@@ -86,7 +87,7 @@ export class GeminiAPIClient {
       const embedding = response.data.embedding.values;
       const processingTime = Date.now() - startTime;
 
-      console.log(
+      logger.info(
         `✅ Gemini Embedding: ${processingTime}ms, ` +
         `次元数: ${embedding.length}`
       );
@@ -114,7 +115,7 @@ export class GeminiAPIClient {
         );
       }
 
-      console.error(`❌ Gemini Embedding エラー (${processingTime}ms):`, error);
+      logger.error(`❌ Gemini Embedding エラー (${processingTime}ms):`, error);
       throw new Error(`Gemini Embedding エラー: ${error.message || '不明なエラー'}`);
     }
   }
@@ -172,13 +173,13 @@ export class GeminiAPIClient {
       const resultText = response.data.candidates[0].content.parts[0].text;
       const processingTime = Date.now() - startTime;
 
-      console.log(`✅ Gemini Vision: ${processingTime}ms`);
+      logger.info(`✅ Gemini Vision: ${processingTime}ms`);
 
       return resultText;
     } catch (error: any) {
       const processingTime = Date.now() - startTime;
 
-      console.error(`❌ Gemini Vision エラー (${processingTime}ms):`, error);
+      logger.error(`❌ Gemini Vision エラー (${processingTime}ms):`, error);
       throw new Error(`Gemini Vision エラー: ${error.message || '不明なエラー'}`);
     }
   }
@@ -190,7 +191,7 @@ export class GeminiAPIClient {
     try {
       return await this.cache.get(key);
     } catch (error) {
-      console.error('キャッシュ取得エラー:', error);
+      logger.error('キャッシュ取得エラー:', error);
       return null;
     }
   }
@@ -206,7 +207,7 @@ export class GeminiAPIClient {
     try {
       await this.cache.setex(key, ttl, value);
     } catch (error) {
-      console.error('キャッシュ保存エラー:', error);
+      logger.error('キャッシュ保存エラー:', error);
     }
   }
 

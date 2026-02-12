@@ -5,10 +5,15 @@
  */
 
 import { getClaudeAPIClient } from './claude-api.client';
+import { logger } from '../utils/logger';
 import { claudeConfig, promptTemplates } from '../config/claude.config';
+import { logger } from '../utils/logger';
 import { query } from '../config/database';
+import { logger } from '../utils/logger';
 import { PIIMasking } from '../utils/pii-masking';
+import { logger } from '../utils/logger';
 import { AIAuditService } from './ai-audit.service';
+import { logger } from '../utils/logger';
 
 export interface EscalationRiskInput {
   ticket_id: string;
@@ -161,7 +166,7 @@ export class AIEscalationService {
         model_version: claudeConfig.model,
       };
     } catch (error: any) {
-      console.error('❌ エスカレーションリスク検知エラー:', error);
+      logger.error('❌ エスカレーションリスク検知エラー:', error);
       throw new Error(`エスカレーションリスク検知に失敗しました: ${error.message}`);
     }
   }
@@ -188,7 +193,7 @@ export class AIEscalationService {
         recommended_actions: parsed.recommended_actions || [],
       };
     } catch (error) {
-      console.error('❌ エスカレーションレスポンスのパース失敗:', response);
+      logger.error('❌ エスカレーションレスポンスのパース失敗:', response);
       throw new Error('エスカレーションリスク結果の解析に失敗しました。');
     }
   }
@@ -205,7 +210,7 @@ export class AIEscalationService {
     }>;
     total_checked: number;
   }> {
-    console.log('🔍 バッチリスクチェック開始...');
+    logger.info('🔍 バッチリスクチェック開始...');
 
     // 未解決チケットを取得
     const ticketsResult = await query(
@@ -217,7 +222,7 @@ export class AIEscalationService {
     );
 
     const tickets = ticketsResult.rows;
-    console.log(`📊 対象チケット数: ${tickets.length}件`);
+    logger.info(`📊 対象チケット数: ${tickets.length}件`);
 
     const highRiskTickets: Array<{
       ticket_id: string;
@@ -246,7 +251,7 @@ export class AIEscalationService {
               });
             }
           } catch (error) {
-            console.error(`❌ リスクチェック失敗 (${ticket.ticket_number}):`, error);
+            logger.error(`❌ リスクチェック失敗 (${ticket.ticket_number}):`, error);
           }
         })
       );
@@ -256,10 +261,10 @@ export class AIEscalationService {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      console.log(`📈 進捗: ${Math.min(i + batchSize, tickets.length)}/${tickets.length}件`);
+      logger.info(`📈 進捗: ${Math.min(i + batchSize, tickets.length)}/${tickets.length}件`);
     }
 
-    console.log(`✅ バッチリスクチェック完了: ${highRiskTickets.length}件のハイリスクチケット検出`);
+    logger.info(`✅ バッチリスクチェック完了: ${highRiskTickets.length}件のハイリスクチケット検出`);
 
     return {
       high_risk_tickets: highRiskTickets,
@@ -315,7 +320,7 @@ export class AIEscalationService {
         ]
       );
 
-      console.log(`📧 エスカレーション通知送信: ${ticket.ticket_number}`);
+      logger.info(`📧 エスカレーション通知送信: ${ticket.ticket_number}`);
     }
   }
 }

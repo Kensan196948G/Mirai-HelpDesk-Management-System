@@ -5,7 +5,9 @@
  */
 
 import { query } from '../config/database';
+import { logger } from '../utils/logger';
 import { PIIMasking } from '../utils/pii-masking';
+import { logger } from '../utils/logger';
 
 export interface AIOperationLog {
   operation_type: string; // 'classification', 'suggestion', 'summary'
@@ -55,7 +57,7 @@ export class AIAuditService {
       }
 
       // 2. コンソールログにも記録（Winston経由）
-      console.log('📝 AI操作ログ:', {
+      logger.info('📝 AI操作ログ:', {
         timestamp: new Date().toISOString(),
         operation_type: log.operation_type,
         user_id: log.user_id,
@@ -65,7 +67,7 @@ export class AIAuditService {
         pii_masked: log.pii_masked,
       });
     } catch (error) {
-      console.error('❌ AI監査ログ記録エラー:', error);
+      logger.error('❌ AI監査ログ記録エラー:', error);
       // 監査ログ失敗は致命的なエラーではないが、警告を出す
     }
   }

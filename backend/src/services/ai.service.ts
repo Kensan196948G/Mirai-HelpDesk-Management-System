@@ -59,7 +59,7 @@ export class AIService {
     const hasPII = subjectMasked.hasPII || descriptionMasked.hasPII;
 
     if (hasPII) {
-      console.log(`🔒 PII検出: ${[...subjectMasked.maskedFields, ...descriptionMasked.maskedFields].join(', ')}`);
+      logger.info(`🔒 PII検出: ${[...subjectMasked.maskedFields, ...descriptionMasked.maskedFields].join(', ')}`);
     }
 
     // 2. カテゴリ一覧を取得
@@ -191,7 +191,7 @@ export class AIService {
         pii_masked: hasPII,
       };
     } catch (error: any) {
-      console.error('❌ AI分類エラー:', error);
+      logger.error('❌ AI分類エラー:', error);
       throw new Error(`AI分類に失敗しました: ${error.message}`);
     }
   }
@@ -218,7 +218,7 @@ export class AIService {
         assignee: parsed.assignee || undefined,
       };
     } catch (error) {
-      console.error('❌ Claude APIレスポンスのパース失敗:', response);
+      logger.error('❌ Claude APIレスポンスのパース失敗:', response);
       throw new Error('AI分類結果の解析に失敗しました。フォーマットが不正です。');
     }
   }
@@ -308,7 +308,7 @@ export class AIService {
     // 一括保存
     if (predictionData.length > 0) {
       await AIPredictionModel.createBatch(predictionData);
-      console.log(`💾 ${predictionData.length}件のAI予測を保存しました`);
+      logger.info(`💾 ${predictionData.length}件のAI予測を保存しました`);
     }
   }
 

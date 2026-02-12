@@ -6,14 +6,23 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
+import { logger } from '../utils/logger';
 import { getClaudeAPIClient } from '../services/claude-api.client';
+import { logger } from '../utils/logger';
 import { AIService } from '../services/ai.service';
+import { logger } from '../utils/logger';
 import { AIAuditService } from '../services/ai-audit.service';
+import { logger } from '../utils/logger';
 import { TicketModel } from '../models/ticket.model';
+import { logger } from '../utils/logger';
 import { PIIMasking } from '../utils/pii-masking';
+import { logger } from '../utils/logger';
 import { AppError, asyncHandler } from '../middleware/errorHandler';
+import { logger } from '../utils/logger';
 import { aiFeatureConfig, promptTemplates } from '../config/claude.config';
+import { logger } from '../utils/logger';
 import { query } from '../config/database';
+import { logger } from '../utils/logger';
 
 interface ConversationMessage {
   timestamp: string;
@@ -90,7 +99,7 @@ export class AIChatController {
         const hasPII = problemMasked.hasPII;
 
         if (hasPII) {
-          console.log(`🔒 PII検出: ${problemMasked.maskedFields.join(', ')}`);
+          logger.info(`🔒 PII検出: ${problemMasked.maskedFields.join(', ')}`);
         }
 
         // 2. 会話履歴を文字列化
@@ -494,7 +503,7 @@ export class AIChatController {
         content_preview: row.content.substring(0, 200) + '...',
       }));
     } catch (error) {
-      console.error('❌ ナレッジベース検索エラー:', error);
+      logger.error('❌ ナレッジベース検索エラー:', error);
       // エラーの場合は空配列を返す（検索失敗はクリティカルエラーではない）
       return [];
     }
@@ -514,7 +523,7 @@ export class AIChatController {
 
       return JSON.parse(jsonText);
     } catch (error) {
-      console.error('❌ Claude APIレスポンスのパース失敗:', response);
+      logger.error('❌ Claude APIレスポンスのパース失敗:', response);
       throw new Error('AI応答の解析に失敗しました。フォーマットが不正です。');
     }
   }

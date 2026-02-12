@@ -137,7 +137,7 @@ ${schemaInfo}
         related_knowledge,
       };
     } catch (error: any) {
-      console.error('Smart search error:', error);
+      logger.error('Smart search error:', error);
       throw new Error(`スマート検索に失敗しました: ${error.message}`);
     }
   }
@@ -208,7 +208,7 @@ ${schemaInfo}
       throw new Error('SELECT文のみが許可されています');
     }
 
-    console.log('✅ SQL安全性検証: 合格');
+    logger.info('✅ SQL安全性検証: 合格');
   }
 
   /**
@@ -236,7 +236,7 @@ ${schemaInfo}
         parameters: parsed.parameters || [],
       };
     } catch (error) {
-      console.error('❌ スマート検索レスポンスのパース失敗:', response);
+      logger.error('❌ スマート検索レスポンスのパース失敗:', response);
       throw new Error('スマート検索結果の解析に失敗しました。');
     }
   }

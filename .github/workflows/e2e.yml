@@ -64,6 +64,11 @@ jobs:
         working-directory: ./backend
         run: npm ci
 
+      # バックエンドESLintチェック（console.log検出）
+      - name: Lint backend code
+        working-directory: ./backend
+        run: npm run lint
+
       # フロントエンド依存関係のインストール
       - name: Install frontend dependencies
         working-directory: ./frontend

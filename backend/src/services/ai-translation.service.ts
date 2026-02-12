@@ -5,9 +5,13 @@
  */
 
 import { getClaudeAPIClient } from './claude-api.client';
+import { logger } from '../utils/logger';
 import { claudeConfig } from '../config/claude.config';
+import { logger } from '../utils/logger';
 import { query } from '../config/database';
+import { logger } from '../utils/logger';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 export interface TranslationInput {
   text: string;
@@ -130,7 +134,7 @@ ${glossary}
 
       const processingTime = Date.now() - startTime;
 
-      console.log(`✅ 翻訳完了 (${sourceLanguage} → ${input.target_language}): ${processingTime}ms`);
+      logger.info(`✅ 翻訳完了 (${sourceLanguage} → ${input.target_language}): ${processingTime}ms`);
 
       return {
         translated_text: translationData.translated_text,
@@ -143,7 +147,7 @@ ${glossary}
         model_version: claudeConfig.model,
       };
     } catch (error: any) {
-      console.error('❌ 翻訳エラー:', error);
+      logger.error('❌ 翻訳エラー:', error);
       throw new Error(`翻訳に失敗しました: ${error.message}`);
     }
   }
@@ -291,7 +295,7 @@ ${glossary}
         glossary_terms: parsed.glossary_terms,
       };
     } catch (error) {
-      console.error('❌ 翻訳レスポンスのパース失敗:', response);
+      logger.error('❌ 翻訳レスポンスのパース失敗:', response);
       throw new Error('翻訳結果の解析に失敗しました。');
     }
   }

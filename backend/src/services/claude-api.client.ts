@@ -7,6 +7,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import Redis from 'ioredis';
 import { claudeConfig } from '../config/claude.config';
+import { logger } from '../utils/logger';
 
 export interface ClaudeAPIOptions {
   cacheKey?: string;
@@ -31,7 +32,7 @@ export class ClaudeAPIClient {
 
     // Redisエラーハンドリング
     this.cache.on('error', (err) => {
-      console.error('❌ Redis エラー:', err);
+      logger.error('❌ Redis エラー:', err);
     });
   }
 
@@ -54,7 +55,7 @@ export class ClaudeAPIClient {
     if (options.cacheKey) {
       const cached = await this.getCached(options.cacheKey);
       if (cached) {
-        console.log(`📦 キャッシュヒット: ${options.cacheKey}`);
+        logger.log(`📦 キャッシュヒット: ${options.cacheKey}`);
         return cached;
       }
     }
@@ -86,7 +87,7 @@ export class ClaudeAPIClient {
       const processingTime = Date.now() - startTime;
 
       // 使用トークン数をログ
-      console.log(
+      logger.log(
         `✅ Claude API: ${processingTime}ms, ` +
         `トークン: ${response.usage.input_tokens}入力 + ${response.usage.output_tokens}出力 = ${response.usage.input_tokens + response.usage.output_tokens}合計`
       );
@@ -124,7 +125,7 @@ export class ClaudeAPIClient {
       }
 
       // その他のエラー
-      console.error(`❌ Claude API エラー (${processingTime}ms):`, error);
+      logger.error(`❌ Claude API エラー (${processingTime}ms):`, error);
       throw new Error(`Claude API エラー: ${error.message || '不明なエラー'}`);
     }
   }
@@ -165,7 +166,7 @@ export class ClaudeAPIClient {
     try {
       return await this.cache.get(key);
     } catch (error) {
-      console.error('キャッシュ取得エラー:', error);
+      logger.error('キャッシュ取得エラー:', error);
       return null;
     }
   }
@@ -181,7 +182,7 @@ export class ClaudeAPIClient {
     try {
       await this.cache.setex(key, ttl, value);
     } catch (error) {
-      console.error('キャッシュ保存エラー:', error);
+      logger.error('キャッシュ保存エラー:', error);
     }
   }
 

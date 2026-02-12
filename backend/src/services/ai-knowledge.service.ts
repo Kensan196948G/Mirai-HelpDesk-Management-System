@@ -5,9 +5,13 @@
  */
 
 import { getClaudeAPIClient } from './claude-api.client';
+import { logger } from '../utils/logger';
 import { claudeConfig } from '../config/claude.config';
+import { logger } from '../utils/logger';
 import { query } from '../config/database';
+import { logger } from '../utils/logger';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../utils/logger';
 
 export interface KnowledgeGenerationInput {
   similar_ticket_ids: string[];
@@ -155,7 +159,7 @@ ${ticketSummaries}
     );
 
     // 7. 関連チケットを記録（将来: knowledge_article_tickets テーブル）
-    console.log(`✅ ナレッジ記事を下書き保存: ${articleId}`);
+    logger.info(`✅ ナレッジ記事を下書き保存: ${articleId}`);
 
     return {
       article_id: articleId,
@@ -195,7 +199,7 @@ ${ticketSummaries}
         confidence_score: parsed.confidence_score || 0.8,
       };
     } catch (error) {
-      console.error('❌ ナレッジレスポンスのパース失敗:', response);
+      logger.error('❌ ナレッジレスポンスのパース失敗:', response);
       throw new Error('ナレッジ記事生成結果の解析に失敗しました。');
     }
   }
@@ -209,7 +213,7 @@ ${ticketSummaries}
     common_subject: string;
     ticket_count: number;
   }>> {
-    console.log('🔍 FAQ候補の検出開始...');
+    logger.info('🔍 FAQ候補の検出開始...');
 
     // 過去30日間の解決済みチケットから類似パターンを検出
     const result = await query(`
@@ -252,7 +256,7 @@ ${ticketSummaries}
         ticket_count: cluster.similar_tickets.length,
       }));
 
-    console.log(`✅ FAQ候補検出完了: ${faqCandidates.length}個のクラスタ`);
+    logger.info(`✅ FAQ候補検出完了: ${faqCandidates.length}個のクラスタ`);
 
     return faqCandidates;
   }

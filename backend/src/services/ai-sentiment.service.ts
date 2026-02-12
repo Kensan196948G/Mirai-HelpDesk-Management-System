@@ -5,8 +5,11 @@
  */
 
 import { getClaudeAPIClient } from './claude-api.client';
+import { logger } from '../utils/logger';
 import { claudeConfig } from '../config/claude.config';
+import { logger } from '../utils/logger';
 import { query } from '../config/database';
+import { logger } from '../utils/logger';
 
 export interface SentimentAnalysisInput {
   ticket_id: string;
@@ -231,7 +234,7 @@ ${commentsText}
         satisfaction_prediction: parsed.satisfaction_prediction,
       };
     } catch (error) {
-      console.error('❌ 感情分析レスポンスのパース失敗:', response);
+      logger.error('❌ 感情分析レスポンスのパース失敗:', response);
       throw new Error('感情分析結果の解析に失敗しました。');
     }
   }
@@ -243,7 +246,7 @@ ${commentsText}
     ticketNumber: string,
     sentimentData: any
   ): Promise<void> {
-    console.log(`⚠️ 満足度低下アラート: ${ticketNumber}`);
+    logger.info(`⚠️ 満足度低下アラート: ${ticketNumber}`);
 
     // Manager への通知
     await query(

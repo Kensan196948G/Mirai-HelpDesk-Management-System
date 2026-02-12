@@ -7,6 +7,7 @@
 
 import axios from 'axios';
 import Redis from 'ioredis';
+import { logger } from '../utils/logger';
 
 export interface PerplexitySearchOptions {
   model?: string;
@@ -27,11 +28,11 @@ export class PerplexityAPIClient {
     this.model = process.env.PERPLEXITY_MODEL || 'sonar-pro';
 
     if (!this.apiKey) {
-      console.warn('⚠️  PERPLEXITY_API_KEY が設定されていません。Perplexity機能は無効です。');
+      logger.warn('⚠️  PERPLEXITY_API_KEY が設定されていません。Perplexity機能は無効です。');
     }
 
     this.cache.on('error', (err) => {
-      console.error('❌ Redis エラー (Perplexity):', err);
+      logger.error('❌ Redis エラー (Perplexity):', err);
     });
   }
 
@@ -58,7 +59,7 @@ export class PerplexityAPIClient {
     if (options.cacheKey) {
       const cached = await this.getCached(options.cacheKey);
       if (cached) {
-        console.log(`📦 キャッシュヒット (Perplexity): ${options.cacheKey}`);
+        logger.log(`📦 キャッシュヒット (Perplexity): ${options.cacheKey}`);
         const parsed = JSON.parse(cached);
         return {
           ...parsed,
@@ -98,7 +99,7 @@ export class PerplexityAPIClient {
       const sources = response.data.citations || [];
       const processingTime = Date.now() - startTime;
 
-      console.log(
+      logger.log(
         `✅ Perplexity Search: ${processingTime}ms, ` +
         `ソース数: ${sources.length}`
       );
@@ -131,7 +132,7 @@ export class PerplexityAPIClient {
         );
       }
 
-      console.error(`❌ Perplexity Search エラー (${processingTime}ms):`, error);
+      logger.error(`❌ Perplexity Search エラー (${processingTime}ms):`, error);
       throw new Error(`Perplexity Search エラー: ${error.message || '不明なエラー'}`);
     }
   }
@@ -143,7 +144,7 @@ export class PerplexityAPIClient {
     try {
       return await this.cache.get(key);
     } catch (error) {
-      console.error('キャッシュ取得エラー:', error);
+      logger.error('キャッシュ取得エラー:', error);
       return null;
     }
   }
@@ -159,7 +160,7 @@ export class PerplexityAPIClient {
     try {
       await this.cache.setex(key, ttl, value);
     } catch (error) {
-      console.error('キャッシュ保存エラー:', error);
+      logger.error('キャッシュ保存エラー:', error);
     }
   }
 
