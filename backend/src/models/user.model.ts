@@ -3,6 +3,12 @@ import { User, UserRole, UserStatus } from '../types';
 import bcrypt from 'bcrypt';
 
 export class UserModel {
+  // bcryptラウンド数（環境変数で設定可能、デフォルト12）
+  private static readonly BCRYPT_ROUNDS = parseInt(
+    process.env.BCRYPT_ROUNDS || '12',
+    10
+  );
+
   // ユーザー作成
   static async create(userData: {
     email: string;
@@ -15,7 +21,7 @@ export class UserModel {
     let passwordHash: string | undefined;
 
     if (userData.password) {
-      passwordHash = await bcrypt.hash(userData.password, 10);
+      passwordHash = await bcrypt.hash(userData.password, UserModel.BCRYPT_ROUNDS);
     }
 
     const result = await query(

@@ -84,19 +84,28 @@ CREATE OR REPLACE FUNCTION check_sod_violation()
 RETURNS TRIGGER AS $$
 DECLARE
   approval_approver_id UUID;
+  task_approval_id UUID;
 BEGIN
+  -- タスクの approval_id を取得
+  SELECT approval_id INTO task_approval_id
+  FROM m365_tasks
+  WHERE task_id = NEW.task_id;
+
+  -- approval_id が NULL の場合はエラー（承認なしでの実行を防止）
+  IF task_approval_id IS NULL THEN
+    RAISE EXCEPTION 'SOD違反: approval_id が NULL です。M365操作には承認が必須です。task_id=%',
+      NEW.task_id;
+  END IF;
+
   -- 関連する承認の承認者を取得
   SELECT approver_id INTO approval_approver_id
   FROM approvals
-  WHERE approval_id = (
-    SELECT approval_id
-    FROM m365_tasks
-    WHERE task_id = NEW.task_id
-  );
+  WHERE approval_id = task_approval_id;
 
-  -- approval_id が NULL の場合はSODチェックをスキップ（承認不要タスク）
+  -- 承認者が見つからない場合もエラー
   IF approval_approver_id IS NULL THEN
-    RETURN NEW;
+    RAISE EXCEPTION 'SOD違反: 承認者が見つかりません。approval_id=%',
+      task_approval_id;
   END IF;
 
   -- SOD違反チェック: 承認者 ≠ 実施者

@@ -4,11 +4,13 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import { testConnection } from './config/database';
 import { logger } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { rateLimit } from './middleware/rateLimit';
 import { apiLimiter, loginLimiter, aiLimiter, uploadLimiter } from './middleware/rate-limit.middleware';
+import { csrfProtection, csrfErrorHandler } from './middleware/csrf';
 import { initializeSocketServer } from './websocket/socketServer';
 import { startSLAChecker, stopSLAChecker } from './jobs/sla-checker';
 
@@ -23,9 +25,62 @@ import m365Routes from './routes/m365.routes';
 import aiRoutes from './routes/ai.routes';
 import slaRoutes from './routes/sla.routes';
 import reportRoutes from './routes/report.routes';
+import csrfRoutes from './routes/csrf.routes';
 
 // 環境変数の読み込み
 dotenv.config();
+
+// 環境変数のセキュリティ検証
+const validateSecurityConfig = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const jwtSecret = process.env.JWT_SECRET;
+
+  // JWT_SECRETの検証
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET is not set in environment variables');
+  }
+
+  // 本番環境で弱いシークレットを検出
+  const weakSecrets = [
+    'your_jwt_secret_here',
+    'change_in_production',
+    'secret',
+    'password',
+    '123456',
+    'test',
+  ];
+
+  if (isProduction) {
+    // 本番環境では最低32文字必須
+    if (jwtSecret.length < 32) {
+      throw new Error(
+        `JWT_SECRET is too weak for production (minimum 32 characters required, got ${jwtSecret.length})`
+      );
+    }
+
+    // 弱いシークレットの検出
+    const lowerSecret = jwtSecret.toLowerCase();
+    for (const weak of weakSecrets) {
+      if (lowerSecret.includes(weak)) {
+        throw new Error(
+          `JWT_SECRET contains a weak pattern: "${weak}". Please use a strong random secret in production.`
+        );
+      }
+    }
+
+    logger.info('Security configuration validated successfully');
+  } else {
+    // 開発環境でも警告を出す
+    if (jwtSecret.length < 32 || weakSecrets.some(w => jwtSecret.toLowerCase().includes(w))) {
+      logger.warn(
+        'JWT_SECRET appears to be weak. This is acceptable in development but MUST be changed for production.'
+      );
+    }
+  }
+};
+
+// セキュリティ設定の検証を実行
+validateSecurityConfig();
 
 const app: Application = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -71,6 +126,7 @@ app.use(
 );
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
 
 // HTTPリクエストロギング
 if (process.env.NODE_ENV !== 'test') {
@@ -95,20 +151,26 @@ app.get('/health', (_req, res) => {
   });
 });
 
-// APIルートの登録
+// CSRF token endpoint (must be before CSRF protection)
+app.use(API_PREFIX, csrfRoutes);
+
+// APIルートの登録（CSRF保護適用）
 app.use(`${API_PREFIX}/auth`, authRoutes); // loginLimiterはauth.routes.tsで個別適用
-app.use(`${API_PREFIX}/tickets`, ticketRoutes);
-app.use(`${API_PREFIX}/users`, userRoutes);
-app.use(`${API_PREFIX}/categories`, categoryRoutes);
-app.use(`${API_PREFIX}/knowledge`, knowledgeRoutes);
-app.use(`${API_PREFIX}/approvals`, approvalRoutes);
-app.use(`${API_PREFIX}/m365`, m365Routes);
-app.use(`${API_PREFIX}/ai`, aiLimiter, aiRoutes); // AI APIは厳格なレート制限
-app.use(`${API_PREFIX}/sla`, slaRoutes);
-app.use(`${API_PREFIX}/reports`, reportRoutes);
+app.use(`${API_PREFIX}/tickets`, csrfProtection, ticketRoutes);
+app.use(`${API_PREFIX}/users`, csrfProtection, userRoutes);
+app.use(`${API_PREFIX}/categories`, csrfProtection, categoryRoutes);
+app.use(`${API_PREFIX}/knowledge`, csrfProtection, knowledgeRoutes);
+app.use(`${API_PREFIX}/approvals`, csrfProtection, approvalRoutes);
+app.use(`${API_PREFIX}/m365`, csrfProtection, m365Routes);
+app.use(`${API_PREFIX}/ai`, aiLimiter, csrfProtection, aiRoutes); // AI APIは厳格なレート制限
+app.use(`${API_PREFIX}/sla`, csrfProtection, slaRoutes);
+app.use(`${API_PREFIX}/reports`, csrfProtection, reportRoutes);
 
 // 404ハンドラー
 app.use(notFoundHandler);
+
+// CSRF エラーハンドラー（一般エラーハンドラーの前）
+app.use(csrfErrorHandler);
 
 // エラーハンドラー
 app.use(errorHandler);

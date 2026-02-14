@@ -7,16 +7,17 @@ export const validate = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    const errorMessages = errors.array().map((err: any) => ({
-      field: err.path || err.param,
+    const errorDetails = errors.array().map((err: any) => ({
+      field: err.type === 'field' ? err.path : (err.path || err.param || 'unknown'),
       message: err.msg,
-      value: err.value,
+      value: err.type === 'field' ? err.value : undefined,
     }));
 
     throw new AppError(
       'Validation failed',
       400,
-      'VALIDATION_ERROR'
+      'VALIDATION_ERROR',
+      errorDetails
     );
   }
 

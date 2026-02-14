@@ -1,3 +1,22 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git config --global --add safe.directory '%\\(prefix\\)///192.168.0.185/LinuxHDD/Mirai-HelpDesk-Management-System')",
+      "Bash(psql:*)",
+      "Bash(node test-login.js:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(wc:*)",
+      "Bash(ls:*)",
+      "Bash(pg_isready:*)",
+      "Bash(ss:*)",
+      "Bash(node -e:*)",
+      "Bash(npm install:*)",
+      "Bash(chmod:*)",
+      "Bash(npm audit fix:*)",
+      "Bash(npm update:*)",
+      "Bash(git add:*)"
+    ]
+  },
   "outputStyle": "Explanatory"
 }

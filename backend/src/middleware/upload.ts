@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { Request } from 'express';
 import { AppError } from './errorHandler';
+import { fromFile } from 'file-type';
 
 // アップロードディレクトリの作成
 const uploadDir = path.join(__dirname, '../../uploads');
@@ -57,7 +58,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// ファイルフィルター
+// ファイルフィルター（基本的な検証のみ、マジックバイトは後で検証）
 const fileFilter = (
   req: Request,
   file: Express.Multer.File,
@@ -75,7 +76,7 @@ const fileFilter = (
     );
   }
 
-  // MIMEタイプチェック
+  // MIMEタイプチェック（基本検証）
   if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
     return cb(
       new AppError(
@@ -87,6 +88,37 @@ const fileFilter = (
   }
 
   cb(null, true);
+};
+
+/**
+ * マジックバイト検証（ファイルの実際の内容を検証）
+ * アップロード後に呼び出す必要があります
+ */
+export const validateFileMagicBytes = async (filePath: string): Promise<void> => {
+  const fileTypeResult = await fromFile(filePath);
+
+  if (!fileTypeResult) {
+    // ファイルタイプが検出できない場合（テキストファイル等）
+    // 拡張子で判断
+    const ext = path.extname(filePath).toLowerCase();
+    if (!['.txt', '.log'].includes(ext)) {
+      throw new AppError(
+        'Unable to verify file type',
+        400,
+        'FILE_TYPE_VERIFICATION_FAILED'
+      );
+    }
+    return;
+  }
+
+  // マジックバイトから検出されたMIMEタイプが許可リストに含まれているか確認
+  if (!ALLOWED_MIME_TYPES.includes(fileTypeResult.mime)) {
+    throw new AppError(
+      `File content does not match allowed types. Detected: ${fileTypeResult.mime}`,
+      400,
+      'INVALID_FILE_CONTENT'
+    );
+  }
 };
 
 // Multer設定
@@ -111,9 +143,13 @@ export const calculateFileHash = (filePath: string): Promise<string> => {
   });
 };
 
-// ファイル情報の取得
+// ファイル情報の取得（マジックバイト検証を含む）
 export const getFileInfo = async (file: Express.Multer.File) => {
   const filePath = file.path;
+
+  // マジックバイト検証を実行
+  await validateFileMagicBytes(filePath);
+
   const hash = await calculateFileHash(filePath);
   const stats = fs.statSync(filePath);
 

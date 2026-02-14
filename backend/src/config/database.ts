@@ -60,16 +60,66 @@ export const withTransaction = async <T>(
   }
 };
 
+// 機密情報をマスクするヘルパー関数
+const sanitizeParams = (params?: any[]): any[] => {
+  if (!params) return [];
+
+  return params.map((param, index) => {
+    // パラメータが文字列の場合、機密情報をマスク
+    if (typeof param === 'string') {
+      const lowerParam = param.toLowerCase();
+
+      // パスワード、トークン、シークレットを含む場合はマスク
+      if (
+        lowerParam.includes('password') ||
+        lowerParam.includes('token') ||
+        lowerParam.includes('secret') ||
+        lowerParam.includes('$2b$') || // bcryptハッシュ
+        lowerParam.includes('$2a$') || // bcryptハッシュ
+        param.length > 50 // 長い文字列（ハッシュやトークンの可能性）
+      ) {
+        return '[REDACTED]';
+      }
+    }
+
+    // オブジェクトの場合、再帰的にマスク
+    if (typeof param === 'object' && param !== null) {
+      const sanitized: any = Array.isArray(param) ? [] : {};
+      for (const key in param) {
+        const lowerKey = key.toLowerCase();
+        if (
+          lowerKey.includes('password') ||
+          lowerKey.includes('token') ||
+          lowerKey.includes('secret')
+        ) {
+          sanitized[key] = '[REDACTED]';
+        } else {
+          sanitized[key] = param[key];
+        }
+      }
+      return sanitized;
+    }
+
+    return param;
+  });
+};
+
 // クエリヘルパー
 export const query = async (text: string, params?: any[]) => {
   const start = Date.now();
   try {
     const result = await pool.query(text, params);
     const duration = Date.now() - start;
-    logger.debug(`Query executed in ${duration}ms`, { text, params });
+
+    // パラメータをサニタイズしてログ出力
+    const sanitizedParams = sanitizeParams(params);
+    logger.debug(`Query executed in ${duration}ms`, { text, params: sanitizedParams });
+
     return result;
   } catch (error) {
-    logger.error('Query error:', { text, params, error });
+    // エラー時もパラメータをサニタイズ
+    const sanitizedParams = sanitizeParams(params);
+    logger.error('Query error:', { text, params: sanitizedParams, error });
     throw error;
   }
 };
