@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirai ヘルプデスク管理システム</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* ============== CSS Variables - Light Theme ============== */
+        :root {
+            /* Microsoft Fluent Design Colors */
+            --ms-blue: #0078d4;
+            --ms-blue-hover: #106ebe;
+            --ms-blue-active: #005a9e;
+            --ms-blue-light: #deecf9;
+
+            /* Background */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f2f1;
+            --bg-tertiary: #faf9f8;
+
+            /* Text */
+            --text-primary: #323130;
+            --text-secondary: #605e5c;
+            --text-disabled: #a19f9d;
+
+            /* Border */
+            --border-color: #edebe9;
+            --border-hover: #8a8886;
+
+            /* Semantic */
+            --success: #107c10;
+            --warning: #ff8c00;
+            --error: #d13438;
+            --info: #0078d4;
+
+            /* Shadow */
+            --shadow-small: 0 1.6px 3.6px rgba(0,0,0,.13), 0 0.3px 0.9px rgba(0,0,0,.11);
+            --shadow-medium: 0 3.2px 7.2px rgba(0,0,0,.13), 0 0.6px 1.8px rgba(0,0,0,.11);
+            --shadow-large: 0 6.4px 14.4px rgba(0,0,0,.13), 0 1.2px 3.6px rgba(0,0,0,.11);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic UI', Meiryo, 'Hiragino Sans', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ============== Login Container ============== */
+        .login-container {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            box-shadow: var(--shadow-large);
+            width: 100%;
+            max-width: 440px;
+            padding: 48px 40px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-logo {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--ms-blue) 0%, #005a9e 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .login-logo i {
+            font-size: 32px;
+            color: white;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* ============== Form Styles ============== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-label i {
+            color: var(--ms-blue);
+        }
+
+        .form-input {
+            width: 100%;
+            height: 40px;
+            padding: 0 12px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .form-input:hover {
+            border-color: var(--border-hover);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--ms-blue);
+            box-shadow: 0 0 0 1px var(--ms-blue);
+        }
+
+        /* ============== Button Styles ============== */
+        .btn-login {
+            width: 100%;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            background: var(--ms-blue);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-small);
+        }
+
+        .btn-login:hover {
+            background: var(--ms-blue-hover);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn-login:active {
+            background: var(--ms-blue-active);
+            transform: scale(0.98);
+        }
+
+        .btn-login:disabled {
+            background: var(--bg-secondary);
+            color: var(--text-disabled);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ============== Error Message ============== */
+        .error-message {
+            display: none;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            background: #fef0f0;
+            border: 1px solid #fde2e2;
+            border-radius: 4px;
+            color: var(--error);
+            font-size: 14px;
+        }
+
+        .error-message.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-message i {
+            font-size: 16px;
+        }
+
+        /* ============== Loading Spinner ============== */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============== Footer ============== */
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .login-footer-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ============== Responsive ============== */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 32px 24px;
+                margin: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Login Header -->
+        <div class="login-header">
+            <div class="login-logo">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h1 class="login-title">Mirai ヘルプデスク</h1>
+            <p class="login-subtitle">社内IT部門向け統合管理システム</p>
+        </div>
+
+        <!-- Error Message -->
+        <div id="login-error" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="error-text"></span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-envelope"></i>
+                    メールアドレス
+                </label>
+                <input
+                    type="email"
+                    id="login-email"
+                    class="form-input"
+                    placeholder="admin@example.com"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-lock"></i>
+                    パスワード
+                </label>
+                <input
+                    type="password"
+                    id="login-password"
+                    class="form-input"
+                    placeholder="パスワードを入力"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit" id="login-btn" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span id="login-btn-text">ログイン</span>
+            </button>
+        </form>
+
+        <!-- Login Footer -->
+        <div class="login-footer">
+            <p class="login-footer-text">
+                <i class="fas fa-info-circle"></i>
+                ログインには社内アカウントを使用してください
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // API Base URL（環境に応じて自動判定）
+        const API_BASE_URL = `http://${window.location.hostname}:8000/api`;
+
+        // Simple login handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+            const errorText = document.getElementById('error-text');
+            const loginBtn = document.getElementById('login-btn');
+            const loginBtnText = document.getElementById('login-btn-text');
+
+            // Hide previous error
+            errorEl.classList.remove('show');
+
+            // Show loading
+            loginBtn.disabled = true;
+            loginBtnText.innerHTML = '<span class="spinner"></span> ログイン中...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('メールアドレスまたはパスワードが正しくありません');
+                }
+
+                const data = await response.json();
+
+                // Save tokens (using Auth.js key names)
+                localStorage.setItem('mirai_access_token', data.access_token);
+                localStorage.setItem('mirai_refresh_token', data.refresh_token);
+
+                // Get user info
+                const userResponse = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${data.access_token}`
+                    }
+                });
+
+                if (userResponse.ok) {
+                    const user = await userResponse.json();
+                    localStorage.setItem('mirai_user', JSON.stringify(user));
+                }
+
+                // Redirect to main app
+                window.location.href = '/app.html';
+
+            } catch (error) {
+                errorText.textContent = error.message || 'ログインに失敗しました';
+                errorEl.classList.add('show');
+                loginBtn.disabled = false;
+                loginBtnText.innerHTML = '<i class="fas fa-sign-in-alt"></i> ログイン';
+            }
+        });
+    </script>
+</body>
+</html>

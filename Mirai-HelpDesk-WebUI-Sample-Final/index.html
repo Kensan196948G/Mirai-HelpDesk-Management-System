@@ -1,0 +1,3202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirai ヘルプデスク管理システム | モダンUI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- サイドメニュー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-container">
+                <span class="logo-icon">🌟</span>
+                <span class="logo-text">Mirai HelpDesk</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <span>≡</span>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <!-- ダッシュボード -->
+            <div class="nav-section">
+                <div class="nav-section-title">ダッシュボード</div>
+                <a href="#" class="nav-item active" data-page="home">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">概要</span>
+                </a>
+                <a href="#" class="nav-item" data-page="analytics">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-label">分析レポート</span>
+                </a>
+                <a href="#" class="nav-item" data-page="monitoring">
+                    <span class="nav-icon">📡</span>
+                    <span class="nav-label">リアルタイム監視</span>
+                </a>
+            </div>
+
+            <!-- AI機能 -->
+            <div class="nav-section">
+                <div class="nav-section-title">AI機能</div>
+                <a href="#" class="nav-item" data-page="ai-chat">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label">AI対話アシスタント</span>
+                </a>
+                <a href="#" class="nav-item" data-page="ai-search">
+                    <span class="nav-icon">🔍</span>
+                    <span class="nav-label">AI検索</span>
+                </a>
+                <a href="#" class="nav-item" data-page="ai-analyze">
+                    <span class="nav-icon">🧠</span>
+                    <span class="nav-label">AI分析</span>
+                </a>
+                <a href="#" class="nav-item" data-page="ai-recommend">
+                    <span class="nav-icon">💡</span>
+                    <span class="nav-label">AI推奨</span>
+                </a>
+            </div>
+
+            <!-- ナレッジ管理 -->
+            <div class="nav-section">
+                <div class="nav-section-title">ナレッジ管理</div>
+                <a href="#" class="nav-item" data-page="knowledge-create">
+                    <span class="nav-icon">✍️</span>
+                    <span class="nav-label">新規作成</span>
+                </a>
+                <a href="#" class="nav-item" data-page="knowledge-browse">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-label">一覧・閲覧</span>
+                </a>
+                <a href="#" class="nav-item" data-page="knowledge-search">
+                    <span class="nav-icon">🔎</span>
+                    <span class="nav-label">高度な検索</span>
+                </a>
+                <a href="#" class="nav-item" data-page="knowledge-category">
+                    <span class="nav-icon">🗂️</span>
+                    <span class="nav-label">カテゴリ管理</span>
+                </a>
+            </div>
+
+            <!-- インシデント管理 -->
+            <div class="nav-section">
+                <div class="nav-section-title">インシデント管理</div>
+                <a href="#" class="nav-item" data-page="incident-active">
+                    <span class="nav-icon">🚨</span>
+                    <span class="nav-label">対応一覧</span>
+                    <span class="badge badge-danger">3</span>
+                </a>
+                <a href="#" class="nav-item" data-page="incident-history">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label">履歴</span>
+                </a>
+                <a href="#" class="nav-item" data-page="incident-workflow">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">ワークフロー</span>
+                </a>
+            </div>
+
+            <!-- ユーザー・チーム -->
+            <div class="nav-section">
+                <div class="nav-section-title">ユーザー・チーム</div>
+                <a href="#" class="nav-item" data-page="users">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">ユーザー管理</span>
+                </a>
+                <a href="#" class="nav-item" data-page="teams">
+                    <span class="nav-icon">🏢</span>
+                    <span class="nav-label">チーム管理</span>
+                </a>
+                <a href="#" class="nav-item" data-page="permissions">
+                    <span class="nav-icon">🔐</span>
+                    <span class="nav-label">権限設定</span>
+                </a>
+            </div>
+
+            <!-- システム設定 -->
+            <div class="nav-section">
+                <div class="nav-section-title">システム設定</div>
+                <a href="#" class="nav-item" data-page="settings-general">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">一般設定</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings-api">
+                    <span class="nav-icon">🔌</span>
+                    <span class="nav-label">API設定</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings-notification">
+                    <span class="nav-icon">🔔</span>
+                    <span class="nav-label">通知設定</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings-integration">
+                    <span class="nav-icon">🔗</span>
+                    <span class="nav-label">連携設定</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings-backup">
+                    <span class="nav-icon">💾</span>
+                    <span class="nav-label">バックアップ</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">KA</div>
+                <div class="user-info">
+                    <div class="user-name">Ken Aritoh</div>
+                    <div class="user-role">システム管理者</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- メインコンテンツエリア -->
+    <div class="main-wrapper">
+        <!-- トップバー -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="btn-icon mobile-toggle" id="mobileToggle">
+                    <span>≡</span>
+                </button>
+                <div class="breadcrumb">
+                    <span class="breadcrumb-item">ホーム</span>
+                    <span class="breadcrumb-separator">›</span>
+                    <span class="breadcrumb-item current" id="breadcrumbCurrent">ダッシュボード概要</span>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="検索... (Ctrl + K)" class="search-input">
+                </div>
+
+                <button class="btn-icon notification-btn">
+                    <span>🔔</span>
+                    <span class="notification-badge">5</span>
+                </button>
+
+                <button class="btn-icon help-btn">
+                    <span>❓</span>
+                </button>
+
+                <div class="status-indicator">
+                    <span class="status-dot status-online"></span>
+                    <span class="status-text">本番環境</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <!-- ホームページ -->
+            <div class="page-content" id="page-home">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">ダッシュボード概要</h1>
+                        <p class="page-subtitle">システム全体の状況とクイックアクセス</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-secondary">
+                            <span>📥</span>
+                            <span>エクスポート</span>
+                        </button>
+                        <button class="btn btn-primary">
+                            <span>✍️</span>
+                            <span>新規作成</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 統計カード -->
+                <div class="stats-grid">
+                    <div class="stat-card card-blue">
+                        <div class="stat-header">
+                            <span class="stat-icon">📚</span>
+                            <span class="stat-trend up">+12%</span>
+                        </div>
+                        <div class="stat-value">147</div>
+                        <div class="stat-label">総ナレッジ数</div>
+                        <div class="stat-footer">
+                            <span>今月 +15件</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card card-red">
+                        <div class="stat-header">
+                            <span class="stat-icon">🚨</span>
+                            <span class="stat-trend down">-8%</span>
+                        </div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">対応中のインシデント</div>
+                        <div class="stat-footer">
+                            <span>高優先度: 1件</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card card-green">
+                        <div class="stat-header">
+                            <span class="stat-icon">✅</span>
+                            <span class="stat-trend up">+25%</span>
+                        </div>
+                        <div class="stat-value">89</div>
+                        <div class="stat-label">今月の解決数</div>
+                        <div class="stat-footer">
+                            <span>平均解決時間: 2.4h</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card card-purple">
+                        <div class="stat-header">
+                            <span class="stat-icon">👥</span>
+                            <span class="stat-trend up">+5%</span>
+                        </div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">アクティブユーザー</div>
+                        <div class="stat-footer">
+                            <span>オンライン: 18名</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- コンテンツグリッド -->
+                <div class="content-grid">
+                    <!-- 最近のインシデント -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🚨</span>
+                                最近のインシデント
+                            </h3>
+                            <a href="#" class="card-link">すべて表示 →</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="incident-list">
+                                <div class="incident-item priority-high">
+                                    <div class="incident-info">
+                                        <div class="incident-title">メールサーバーの応答遅延</div>
+                                        <div class="incident-meta">
+                                            <span class="incident-id">#INC-2024-0127</span>
+                                            <span class="incident-time">15分前</span>
+                                        </div>
+                                    </div>
+                                    <div class="incident-status">
+                                        <span class="status-badge status-in-progress">対応中</span>
+                                    </div>
+                                </div>
+                                <div class="incident-item priority-medium">
+                                    <div class="incident-info">
+                                        <div class="incident-title">VPN接続エラー（複数ユーザー）</div>
+                                        <div class="incident-meta">
+                                            <span class="incident-id">#INC-2024-0126</span>
+                                            <span class="incident-time">2時間前</span>
+                                        </div>
+                                    </div>
+                                    <div class="incident-status">
+                                        <span class="status-badge status-investigating">調査中</span>
+                                    </div>
+                                </div>
+                                <div class="incident-item priority-low">
+                                    <div class="incident-info">
+                                        <div class="incident-title">プリンター接続不良（3階）</div>
+                                        <div class="incident-meta">
+                                            <span class="incident-id">#INC-2024-0125</span>
+                                            <span class="incident-time">4時間前</span>
+                                        </div>
+                                    </div>
+                                    <div class="incident-status">
+                                        <span class="status-badge status-pending">待機中</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- クイックアクション -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">⚡</span>
+                                クイックアクション
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="quick-actions-grid">
+                                <button class="quick-action-btn">
+                                    <span class="qa-icon">✍️</span>
+                                    <span class="qa-label">ナレッジ作成</span>
+                                </button>
+                                <button class="quick-action-btn">
+                                    <span class="qa-icon">💬</span>
+                                    <span class="qa-label">AI対話</span>
+                                </button>
+                                <button class="quick-action-btn">
+                                    <span class="qa-icon">🔍</span>
+                                    <span class="qa-label">AI検索</span>
+                                </button>
+                                <button class="quick-action-btn">
+                                    <span class="qa-icon">🚨</span>
+                                    <span class="qa-label">インシデント登録</span>
+                                </button>
+                                <button class="quick-action-btn">
+                                    <span class="qa-icon">📊</span>
+                                    <span class="qa-label">レポート作成</span>
+                                </button>
+                                <button class="quick-action-btn">
+                                    <span class="qa-icon">⚙️</span>
+                                    <span class="qa-label">設定変更</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 人気のナレッジ -->
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📚</span>
+                                今週の人気ナレッジ
+                            </h3>
+                            <a href="#" class="card-link">もっと見る →</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="knowledge-grid">
+                                <div class="knowledge-card">
+                                    <div class="knowledge-category">ネットワーク</div>
+                                    <h4 class="knowledge-title">VPN接続トラブルシューティングガイド</h4>
+                                    <p class="knowledge-excerpt">VPN接続時の一般的なエラーと解決方法をまとめた包括的なガイド...</p>
+                                    <div class="knowledge-meta">
+                                        <span class="meta-item">👁️ 245 views</span>
+                                        <span class="meta-item">⭐ 4.8</span>
+                                        <span class="meta-item">📅 2日前</span>
+                                    </div>
+                                </div>
+                                <div class="knowledge-card">
+                                    <div class="knowledge-category">データベース</div>
+                                    <h4 class="knowledge-title">SQL Server パフォーマンスチューニング</h4>
+                                    <p class="knowledge-excerpt">データベースの遅延問題を解決するための実践的な手順とベストプラクティス...</p>
+                                    <div class="knowledge-meta">
+                                        <span class="meta-item">👁️ 189 views</span>
+                                        <span class="meta-item">⭐ 4.6</span>
+                                        <span class="meta-item">📅 5日前</span>
+                                    </div>
+                                </div>
+                                <div class="knowledge-card">
+                                    <div class="knowledge-category">セキュリティ</div>
+                                    <h4 class="knowledge-title">SSL証明書更新手順書</h4>
+                                    <p class="knowledge-excerpt">本番環境のSSL証明書を安全に更新するための詳細な手順とチェックリスト...</p>
+                                    <div class="knowledge-meta">
+                                        <span class="meta-item">👁️ 156 views</span>
+                                        <span class="meta-item">⭐ 4.9</span>
+                                        <span class="meta-item">📅 1週間前</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- システムステータス -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🖥️</span>
+                                システムステータス
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="status-list">
+                                <div class="status-item">
+                                    <div class="status-info">
+                                        <span class="status-dot-large status-online"></span>
+                                        <span class="status-name">Webサーバー</span>
+                                    </div>
+                                    <span class="status-value">正常</span>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-info">
+                                        <span class="status-dot-large status-online"></span>
+                                        <span class="status-name">データベース</span>
+                                    </div>
+                                    <span class="status-value">正常</span>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-info">
+                                        <span class="status-dot-large status-warning"></span>
+                                        <span class="status-name">メールサーバー</span>
+                                    </div>
+                                    <span class="status-value">警告</span>
+                                </div>
+                                <div class="status-item">
+                                    <div class="status-info">
+                                        <span class="status-dot-large status-online"></span>
+                                        <span class="status-name">AI APIサービス</span>
+                                    </div>
+                                    <span class="status-value">正常</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI処理状況 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🤖</span>
+                                AI処理状況
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="ai-status-list">
+                                <div class="ai-status-item">
+                                    <div class="ai-status-header">
+                                        <span class="ai-name">Claude API</span>
+                                        <span class="ai-status-badge active">稼働中</span>
+                                    </div>
+                                    <div class="ai-progress-bar">
+                                        <div class="ai-progress-fill" style="width: 75%"></div>
+                                    </div>
+                                    <div class="ai-status-meta">
+                                        <span>本日の使用: 750/1000リクエスト</span>
+                                    </div>
+                                </div>
+                                <div class="ai-status-item">
+                                    <div class="ai-status-header">
+                                        <span class="ai-name">Gemini API</span>
+                                        <span class="ai-status-badge active">稼働中</span>
+                                    </div>
+                                    <div class="ai-progress-bar">
+                                        <div class="ai-progress-fill" style="width: 45%"></div>
+                                    </div>
+                                    <div class="ai-status-meta">
+                                        <span>本日の使用: 450/1000リクエスト</span>
+                                    </div>
+                                </div>
+                                <div class="ai-status-item">
+                                    <div class="ai-status-header">
+                                        <span class="ai-name">Perplexity API</span>
+                                        <span class="ai-status-badge active">稼働中</span>
+                                    </div>
+                                    <div class="ai-progress-bar">
+                                        <div class="ai-progress-fill" style="width: 30%"></div>
+                                    </div>
+                                    <div class="ai-status-meta">
+                                        <span>本日の使用: 150/500リクエスト</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- その他のページ（プレースホルダー） -->
+            <div class="page-content hidden" id="page-analytics">
+                <div class="page-header">
+                    <h1 class="page-title">分析レポート</h1>
+                    <p class="page-subtitle">システム利用状況とトレンド分析</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📊</span>
+                                月次統計サマリー
+                            </h3>
+                            <select class="filter-select">
+                                <option>今月</option>
+                                <option>先月</option>
+                                <option>過去3ヶ月</option>
+                            </select>
+                        </div>
+                        <div class="card-body">
+                            <div class="stats-grid">
+                                <div class="stat-card card-blue">
+                                    <div class="stat-icon">📚</div>
+                                    <div class="stat-value">147</div>
+                                    <div class="stat-label">総ナレッジ数</div>
+                                </div>
+                                <div class="stat-card card-green">
+                                    <div class="stat-icon">✅</div>
+                                    <div class="stat-value">89</div>
+                                    <div class="stat-label">解決インシデント</div>
+                                </div>
+                                <div class="stat-card card-purple">
+                                    <div class="stat-icon">👁️</div>
+                                    <div class="stat-value">2,345</div>
+                                    <div class="stat-label">総閲覧数</div>
+                                </div>
+                                <div class="stat-card card-red">
+                                    <div class="stat-icon">⏱️</div>
+                                    <div class="stat-value">2.4h</div>
+                                    <div class="stat-label">平均解決時間</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🔥</span>
+                                人気カテゴリTOP5
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="ranking-list">
+                                <div class="ranking-item">
+                                    <span class="rank-number">1</span>
+                                    <span class="rank-label">ネットワーク</span>
+                                    <span class="rank-value">456件</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">2</span>
+                                    <span class="rank-label">データベース</span>
+                                    <span class="rank-value">389件</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">3</span>
+                                    <span class="rank-label">セキュリティ</span>
+                                    <span class="rank-value">276件</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">4</span>
+                                    <span class="rank-label">クラウド</span>
+                                    <span class="rank-value">198件</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">5</span>
+                                    <span class="rank-label">バックアップ</span>
+                                    <span class="rank-value">145件</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">⭐</span>
+                                高評価ナレッジTOP5
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="ranking-list">
+                                <div class="ranking-item">
+                                    <span class="rank-number">1</span>
+                                    <span class="rank-label">SSL証明書更新手順</span>
+                                    <span class="rank-value">⭐4.9</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">2</span>
+                                    <span class="rank-label">VPN設定ガイド</span>
+                                    <span class="rank-value">⭐4.8</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">3</span>
+                                    <span class="rank-label">DB最適化手順</span>
+                                    <span class="rank-value">⭐4.7</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">4</span>
+                                    <span class="rank-label">Azure AD連携</span>
+                                    <span class="rank-value">⭐4.6</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">5</span>
+                                    <span class="rank-label">ログ分析方法</span>
+                                    <span class="rank-value">⭐4.5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-monitoring">
+                <div class="page-header">
+                    <h1 class="page-title">リアルタイム監視</h1>
+                    <p class="page-subtitle">システムとワークフローのリアルタイム監視</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🖥️</span>
+                                システムリソース監視
+                            </h3>
+                            <span class="status-badge status-in-progress">リアルタイム更新中</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="monitor-grid">
+                                <div class="monitor-item">
+                                    <div class="monitor-label">CPU使用率</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 45%; background: var(--success-color);"></div>
+                                    </div>
+                                    <div class="monitor-value">45%</div>
+                                </div>
+                                <div class="monitor-item">
+                                    <div class="monitor-label">メモリ使用率</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 68%; background: var(--warning-color);"></div>
+                                    </div>
+                                    <div class="monitor-value">68%</div>
+                                </div>
+                                <div class="monitor-item">
+                                    <div class="monitor-label">ディスク使用率</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 52%; background: var(--success-color);"></div>
+                                    </div>
+                                    <div class="monitor-value">52%</div>
+                                </div>
+                                <div class="monitor-item">
+                                    <div class="monitor-label">ネットワーク帯域</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 35%; background: var(--info-color);"></div>
+                                    </div>
+                                    <div class="monitor-value">35%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">⚙️</span>
+                                実行中ワークフロー
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="workflow-list">
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-name">ナレッジ自動生成</div>
+                                        <div class="workflow-status">
+                                            <span class="status-dot status-online"></span>
+                                            実行中
+                                        </div>
+                                    </div>
+                                    <div class="workflow-progress">
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: 75%;"></div>
+                                        </div>
+                                        <span class="progress-text">75%</span>
+                                    </div>
+                                </div>
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-name">インシデント通知</div>
+                                        <div class="workflow-status">
+                                            <span class="status-dot status-online"></span>
+                                            実行中
+                                        </div>
+                                    </div>
+                                    <div class="workflow-progress">
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: 30%;"></div>
+                                        </div>
+                                        <span class="progress-text">30%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📊</span>
+                                アクティビティログ
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-log">
+                                <div class="log-item">
+                                    <span class="log-time">14:32</span>
+                                    <span class="log-message">新規ナレッジが作成されました</span>
+                                </div>
+                                <div class="log-item">
+                                    <span class="log-time">14:28</span>
+                                    <span class="log-message">インシデント #INC-127 が解決されました</span>
+                                </div>
+                                <div class="log-item">
+                                    <span class="log-time">14:15</span>
+                                    <span class="log-message">AIワークフローが開始されました</span>
+                                </div>
+                                <div class="log-item">
+                                    <span class="log-time">14:02</span>
+                                    <span class="log-message">バックアップが完了しました</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-ai-chat">
+                <div class="page-header">
+                    <h1 class="page-title">AI対話アシスタント</h1>
+                    <p class="page-subtitle">AIと対話してナレッジを作成</p>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-sidebar">
+                        <div class="chat-sidebar-header">
+                            <h3>会話履歴</h3>
+                            <div class="chat-sidebar-actions">
+                                <button class="btn-icon" id="exportChatBtn" title="エクスポート">⬇</button>
+                                <button class="btn-icon" id="importChatBtn" title="インポート">⬆</button>
+                                <button class="btn-icon" id="newChatBtn" title="新規">➕</button>
+                            </div>
+                        </div>
+                        <div class="chat-history-list" id="chatHistoryList"></div>
+                    </div>
+
+                    <div class="chat-main">
+                        <div class="chat-toolbar">
+                            <div class="chat-toolbar-title">新しい質問</div>
+                            <button class="btn btn-secondary btn-sm" id="reloadChatBtn">リロード</button>
+                        </div>
+                        <div class="chat-messages-area" id="aiChatMessages">
+                            <div class="chat-system-message">
+                                <div class="system-title">👋 こんにちは！</div>
+                                <p class="system-text">社内の手順やトラブル対応について何でも質問してください。</p>
+                                <div class="quick-questions">
+                                    <span class="quick-label">よくある質問:</span>
+                                    <div class="quick-buttons">
+                                        <button class="quick-btn" data-question="VPN接続ができない時の対処方法を教えてください">VPN接続</button>
+                                        <button class="quick-btn" data-question="メール送信が遅い時の確認手順を教えてください">メール遅延</button>
+                                        <button class="quick-btn" data-question="経費精算の手順を教えてください">経費精算</button>
+                                        <button class="quick-btn" data-question="有給休暇の申請方法を教えてください">有給休暇</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ai-processing" id="aiChatProcessing" style="display: none;">
+                            <div class="ai-processing-header">
+                                <span class="processing-icon">⚡</span>
+                                <span>AI処理中...</span>
+                            </div>
+                            <div class="ai-pipeline">
+                                <div class="pipeline-stage" id="chatStage1">
+                                    <div class="stage-icon">🧠</div>
+                                    <div class="stage-info">
+                                        <span class="stage-name">Claude</span>
+                                        <span class="stage-desc">初期回答生成</span>
+                                    </div>
+                                    <div class="pipeline-indicator waiting"></div>
+                                </div>
+                                <div class="pipeline-arrow">→</div>
+                                <div class="pipeline-stage" id="chatStage2">
+                                    <div class="stage-icon">🔮</div>
+                                    <div class="stage-info">
+                                        <span class="stage-name">Gemini</span>
+                                        <span class="stage-desc">検証・補完</span>
+                                    </div>
+                                    <div class="pipeline-indicator waiting"></div>
+                                </div>
+                                <div class="pipeline-arrow">→</div>
+                                <div class="pipeline-stage" id="chatStage3">
+                                    <div class="stage-icon">🌐</div>
+                                    <div class="stage-info">
+                                        <span class="stage-name">Perplexity</span>
+                                        <span class="stage-desc">最新情報確認</span>
+                                    </div>
+                                    <div class="pipeline-indicator waiting"></div>
+                                </div>
+                            </div>
+                            <div class="processing-message" id="chatProcessingMessage">
+                                <p>準備中...</p>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <div class="ai-models-status">
+                                <span class="ai-model-badge active">Claude</span>
+                                <span class="ai-model-badge">Gemini</span>
+                                <span class="ai-model-badge">Perplexity</span>
+                            </div>
+                            <div class="chat-input-box">
+                                <textarea class="chat-textarea" id="aiChatInput" placeholder="メッセージを入力..."></textarea>
+                                <button class="btn-send-chat" id="aiChatSendBtn">
+                                    <span>送信</span>
+                                </button>
+                            </div>
+                            <div class="input-hint">Enter で送信 / Shift + Enter で改行</div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="chat-detail-panel" id="chatDetailPanel">
+                    <div class="panel-header">
+                        <h3>回答詳細</h3>
+                        <button class="btn-icon-small" id="closeChatDetail">✖</button>
+                    </div>
+                    <div class="panel-content" id="chatDetailContent">
+                        <p class="panel-placeholder">回答を選択すると詳細が表示されます</p>
+                    </div>
+                </aside>
+            </div>
+            <input type="file" id="chatImportInput" accept="application/json" class="hidden-file-input">
+
+            <div class="page-content hidden" id="page-ai-search">
+                <div class="page-header">
+                    <h1 class="page-title">AI検索</h1>
+                    <p class="page-subtitle">自然言語でナレッジを検索</p>
+                </div>
+
+                <div class="search-page-container">
+                    <div class="search-box-large">
+                        <input type="text" class="search-input-large" id="aiSearchInput" placeholder="例: データベースが遅い時の対処方法は？">
+                        <button class="btn-search-large" id="aiSearchBtn">
+                            <span class="search-icon-large">🔍</span>
+                            <span>AI検索</span>
+                        </button>
+                    </div>
+
+                    <div class="search-suggestions">
+                        <div class="suggestion-title">よく検索されているキーワード:</div>
+                        <div class="suggestion-tags">
+                            <span class="suggestion-tag">VPN接続エラー</span>
+                            <span class="suggestion-tag">データベース遅延</span>
+                            <span class="suggestion-tag">SSL証明書更新</span>
+                            <span class="suggestion-tag">Azure AD連携</span>
+                            <span class="suggestion-tag">バックアップ失敗</span>
+                            <span class="suggestion-tag">メール送信エラー</span>
+                        </div>
+                    </div>
+
+                    <div class="ai-processing" id="aiSearchProcessing" style="display: none;">
+                        <div class="ai-processing-header">
+                            <span class="processing-icon">⚡</span>
+                            <span>AI検索処理中...</span>
+                        </div>
+                        <div class="ai-pipeline">
+                            <div class="pipeline-stage" id="searchStage1">
+                                <div class="stage-icon">🧠</div>
+                                <div class="stage-info">
+                                    <span class="stage-name">Claude</span>
+                                    <span class="stage-desc">初期検索</span>
+                                </div>
+                                <div class="pipeline-indicator waiting"></div>
+                            </div>
+                            <div class="pipeline-arrow">→</div>
+                            <div class="pipeline-stage" id="searchStage2">
+                                <div class="stage-icon">🔮</div>
+                                <div class="stage-info">
+                                    <span class="stage-name">Gemini</span>
+                                    <span class="stage-desc">関連性評価</span>
+                                </div>
+                                <div class="pipeline-indicator waiting"></div>
+                            </div>
+                            <div class="pipeline-arrow">→</div>
+                            <div class="pipeline-stage" id="searchStage3">
+                                <div class="stage-icon">🌐</div>
+                                <div class="stage-info">
+                                    <span class="stage-name">Perplexity</span>
+                                    <span class="stage-desc">最新情報補完</span>
+                                </div>
+                                <div class="pipeline-indicator waiting"></div>
+                            </div>
+                        </div>
+                        <div class="processing-message" id="searchProcessingMessage">
+                            <p>検索準備中...</p>
+                        </div>
+                    </div>
+
+                    <div class="search-results-container" id="aiSearchResults">
+                        <div class="search-results-header">
+                            <h3>検索結果</h3>
+                            <span class="results-count" id="aiSearchCount">検索を実行してください</span>
+                        </div>
+                        <div class="search-results-list" id="aiSearchList">
+                            <div class="empty-state">キーワードを入力してAI検索を開始してください。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-ai-analyze">
+                <div class="page-header">
+                    <h1 class="page-title">AI分析</h1>
+                    <p class="page-subtitle">AIによるデータ分析と洞察</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📊</span>
+                                インシデントトレンド分析
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="analysis-insight">
+                                <div class="insight-icon">💡</div>
+                                <div class="insight-content">
+                                    <h4>AIの洞察</h4>
+                                    <p>過去30日間のインシデントデータを分析した結果、ネットワーク関連の問題が前月比で35%増加しています。特にVPN接続エラーが頻発しており、ピーク時間帯は午前9-10時です。</p>
+                                </div>
+                            </div>
+                            <div class="analysis-chart">
+                                <svg viewBox="0 0 600 180" aria-label="インシデント推移チャート" role="img">
+                                    <polyline id="incidentTrendLine" points="20,140 90,120 160,130 230,100 300,110 370,80 440,95 510,70 580,85" fill="none" stroke="#3b82f6" stroke-width="3"></polyline>
+                                    <line x1="20" y1="150" x2="580" y2="150" stroke="#e5e7eb" stroke-width="2"></line>
+                                    <line x1="20" y1="40" x2="20" y2="150" stroke="#e5e7eb" stroke-width="2"></line>
+                                </svg>
+                                <div class="chart-legend">
+                                    <span>過去8週間のインシデント件数</span>
+                                    <span class="legend-highlight" id="trendDeltaLabel">最新週 +12%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🔥</span>
+                                頻出問題TOP5
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="ranking-list">
+                                <div class="ranking-item">
+                                    <span class="rank-number">1</span>
+                                    <span class="rank-label">VPN接続エラー</span>
+                                    <span class="rank-value">23件</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">2</span>
+                                    <span class="rank-label">メール送受信遅延</span>
+                                    <span class="rank-value">18件</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">3</span>
+                                    <span class="rank-label">共有フォルダアクセス</span>
+                                    <span class="rank-value">15件</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">4</span>
+                                    <span class="rank-label">プリンター接続不良</span>
+                                    <span class="rank-value">12件</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">5</span>
+                                    <span class="rank-label">パスワードリセット</span>
+                                    <span class="rank-value">10件</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">⚠️</span>
+                                推奨アクション
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="action-recommendations">
+                                <div class="recommendation-item">
+                                    <span class="rec-icon">📝</span>
+                                    <div class="rec-content">
+                                        <div class="rec-title">VPN接続ガイドの更新</div>
+                                        <div class="rec-desc">最新のトラブルシューティング手順を追加することを推奨</div>
+                                    </div>
+                                </div>
+                                <div class="recommendation-item">
+                                    <span class="rec-icon">🔔</span>
+                                    <div class="rec-content">
+                                        <div class="rec-title">メールサーバー監視強化</div>
+                                        <div class="rec-desc">ピーク時間帯のパフォーマンス監視を推奨</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">⏱️</span>
+                                解決時間とSLAリスク
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="monitor-grid">
+                                <div class="monitor-item">
+                                    <div class="monitor-label">平均解決時間</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 62%;"></div>
+                                    </div>
+                                    <div class="monitor-value">2.9h</div>
+                                </div>
+                                <div class="monitor-item">
+                                    <div class="monitor-label">SLA遵守率</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 94%;"></div>
+                                    </div>
+                                    <div class="monitor-value">94%</div>
+                                </div>
+                                <div class="monitor-item">
+                                    <div class="monitor-label">24時間超過</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 18%;"></div>
+                                    </div>
+                                    <div class="monitor-value">6件</div>
+                                </div>
+                                <div class="monitor-item">
+                                    <div class="monitor-label">再対応率</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 22%;"></div>
+                                    </div>
+                                    <div class="monitor-value">12%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🧩</span>
+                                ナレッジギャップ分析
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="ranking-list">
+                                <div class="ranking-item">
+                                    <span class="rank-number">1</span>
+                                    <span class="rank-label">MFAトラブル</span>
+                                    <span class="rank-value">未整備</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">2</span>
+                                    <span class="rank-label">Teams通知設定</span>
+                                    <span class="rank-value">不足</span>
+                                </div>
+                                <div class="ranking-item">
+                                    <span class="rank-number">3</span>
+                                    <span class="rank-label">Mac対応手順</span>
+                                    <span class="rank-value">更新必要</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📡</span>
+                                問い合わせチャネル分析
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="analysis-metric-grid">
+                                <div class="metric-card">
+                                    <div class="metric-label">メール</div>
+                                    <div class="metric-bar"><span style="width: 55%;"></span></div>
+                                    <div class="metric-value">55%</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">チャット</div>
+                                    <div class="metric-bar"><span style="width: 28%;"></span></div>
+                                    <div class="metric-value">28%</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">電話</div>
+                                    <div class="metric-bar"><span style="width: 12%;"></span></div>
+                                    <div class="metric-value">12%</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">ポータル</div>
+                                    <div class="metric-bar"><span style="width: 5%;"></span></div>
+                                    <div class="metric-value">5%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-ai-recommend">
+                <div class="page-header">
+                    <h1 class="page-title">AI推奨</h1>
+                    <p class="page-subtitle">AIによる最適な対応の推奨</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">💡</span>
+                                推奨される対応策
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="recommendation-cards">
+                                <div class="rec-card high-priority">
+                                    <div class="rec-card-header">
+                                        <span class="rec-badge priority">優先度: 高</span>
+                                        <span class="rec-confidence">信頼度: 95%</span>
+                                    </div>
+                                    <h4 class="rec-card-title">VPNインフラの増強</h4>
+                                    <p class="rec-card-desc">現在の接続数が容量の85%に達しています。追加のVPNサーバー設置を推奨します。</p>
+                                    <div class="rec-card-actions">
+                                        <button class="btn btn-primary btn-sm">詳細を見る</button>
+                                        <button class="btn btn-secondary btn-sm">後で確認</button>
+                                    </div>
+                                </div>
+
+                                <div class="rec-card medium-priority">
+                                    <div class="rec-card-header">
+                                        <span class="rec-badge normal">優先度: 中</span>
+                                        <span class="rec-confidence">信頼度: 87%</span>
+                                    </div>
+                                    <h4 class="rec-card-title">ナレッジベース整理</h4>
+                                    <p class="rec-card-desc">類似のナレッジが複数存在します。統合と整理を推奨します。</p>
+                                    <div class="rec-card-actions">
+                                        <button class="btn btn-primary btn-sm">詳細を見る</button>
+                                        <button class="btn btn-secondary btn-sm">後で確認</button>
+                                    </div>
+                                </div>
+
+                                <div class="rec-card low-priority">
+                                    <div class="rec-card-header">
+                                        <span class="rec-badge low">優先度: 低</span>
+                                        <span class="rec-confidence">信頼度: 78%</span>
+                                    </div>
+                                    <h4 class="rec-card-title">定期メンテナンス計画</h4>
+                                    <p class="rec-card-desc">システムの定期メンテナンススケジュールの見直しを推奨します。</p>
+                                    <div class="rec-card-actions">
+                                        <button class="btn btn-primary btn-sm">詳細を見る</button>
+                                        <button class="btn btn-secondary btn-sm">後で確認</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-knowledge-create">
+                <div class="page-header">
+                    <h1 class="page-title">ナレッジ新規作成</h1>
+                    <p class="page-subtitle">新しいナレッジを手動で作成</p>
+                </div>
+
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-section">
+                            <label class="form-label">タイトル <span class="required">*</span></label>
+                            <input type="text" class="form-input" placeholder="ナレッジのタイトルを入力">
+                        </div>
+
+                        <div class="form-section">
+                            <label class="form-label">カテゴリ <span class="required">*</span></label>
+                            <select class="form-select">
+                                <option>カテゴリを選択</option>
+                                <option>ネットワーク</option>
+                                <option>データベース</option>
+                                <option>セキュリティ</option>
+                                <option>クラウド</option>
+                                <option>バックアップ</option>
+                                <option>監視</option>
+                            </select>
+                        </div>
+
+                        <div class="form-section">
+                            <label class="form-label">概要</label>
+                            <textarea class="form-textarea" rows="3" placeholder="ナレッジの概要を入力"></textarea>
+                        </div>
+
+                        <div class="form-section">
+                            <label class="form-label">詳細内容 <span class="required">*</span></label>
+                            <textarea class="form-textarea" rows="10" placeholder="詳細な手順や説明を入力"></textarea>
+                        </div>
+
+                        <div class="form-section">
+                            <label class="form-label">タグ</label>
+                            <input type="text" class="form-input" placeholder="タグをカンマ区切りで入力（例: VPN, ネットワーク, トラブルシューティング）">
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="btn btn-secondary">キャンセル</button>
+                            <button class="btn btn-primary">
+                                <span>💾</span>
+                                <span>保存</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-knowledge-browse">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">ナレッジ一覧・閲覧</h1>
+                        <p class="page-subtitle">登録されているナレッジを閲覧</p>
+                    </div>
+                    <div class="page-actions">
+                        <input type="text" class="filter-input" id="knowledgeSearchInput" placeholder="タイトル・タグで検索">
+                        <select class="filter-select" id="knowledgeCategoryFilter">
+                            <option>全カテゴリ</option>
+                            <option>ネットワーク</option>
+                            <option>データベース</option>
+                            <option>セキュリティ</option>
+                        </select>
+                        <select class="filter-select" id="knowledgeSortSelect">
+                            <option value="popular">人気順</option>
+                            <option value="rating">評価順</option>
+                            <option value="updated">更新日順</option>
+                            <option value="title">タイトル順</option>
+                        </select>
+                        <button class="btn btn-primary">
+                            <span>✍️</span>
+                            <span>新規作成</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="knowledge-grid">
+                    <div class="knowledge-card" data-title="VPN接続トラブルシューティングガイド" data-category="ネットワーク" data-tags="VPN,ネットワーク,トラブルシューティング" data-views="245" data-rating="4.8" data-date="2日前" data-excerpt="VPN接続時の一般的なエラーと解決方法をまとめた包括的なガイド。" data-content="VPN接続時の一般的なエラーと解決方法をまとめた包括的なガイドです。ネットワーク設定、認証情報、ファイアウォール設定の確認手順を詳しく解説します。">
+                        <div class="knowledge-category">ネットワーク</div>
+                        <h4 class="knowledge-title">VPN接続トラブルシューティングガイド</h4>
+                        <p class="knowledge-excerpt">VPN接続時の一般的なエラーと解決方法をまとめた包括的なガイド。ネットワーク設定、認証情報、ファイアウォール設定の確認手順を詳しく解説します...</p>
+                        <div class="knowledge-meta">
+                            <span class="meta-item">👁️ 245 views</span>
+                            <span class="meta-item">⭐ 4.8</span>
+                            <span class="meta-item">📅 2日前</span>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn btn-secondary btn-sm" data-knowledge-action="detail">詳細</button>
+                            <button class="btn btn-primary btn-sm" data-knowledge-action="edit">編集</button>
+                            <button class="btn btn-danger btn-sm" data-knowledge-action="delete">削除</button>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card" data-title="SQL Server パフォーマンスチューニング" data-category="データベース" data-tags="SQL Server,パフォーマンス,インデックス" data-views="189" data-rating="4.6" data-date="5日前" data-excerpt="データベースの遅延問題を解決するための実践的な手順とベストプラクティス。" data-content="データベースの遅延問題を解決するための実践的な手順とベストプラクティスをまとめています。インデックス最適化、クエリ改善、統計情報更新などを解説します。">
+                        <div class="knowledge-category">データベース</div>
+                        <h4 class="knowledge-title">SQL Server パフォーマンスチューニング</h4>
+                        <p class="knowledge-excerpt">データベースの遅延問題を解決するための実践的な手順とベストプラクティス。インデックス最適化、クエリ改善、統計情報更新などを解説...</p>
+                        <div class="knowledge-meta">
+                            <span class="meta-item">👁️ 189 views</span>
+                            <span class="meta-item">⭐ 4.6</span>
+                            <span class="meta-item">📅 5日前</span>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn btn-secondary btn-sm" data-knowledge-action="detail">詳細</button>
+                            <button class="btn btn-primary btn-sm" data-knowledge-action="edit">編集</button>
+                            <button class="btn btn-danger btn-sm" data-knowledge-action="delete">削除</button>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card" data-title="SSL証明書更新手順書" data-category="セキュリティ" data-tags="SSL,証明書,更新" data-views="156" data-rating="4.9" data-date="1週間前" data-excerpt="本番環境のSSL証明書を安全に更新するための詳細な手順とチェックリスト。" data-content="本番環境のSSL証明書を安全に更新するための詳細な手順とチェックリストです。証明書の購入から設定、動作確認までを網羅します。">
+                        <div class="knowledge-category">セキュリティ</div>
+                        <h4 class="knowledge-title">SSL証明書更新手順書</h4>
+                        <p class="knowledge-excerpt">本番環境のSSL証明書を安全に更新するための詳細な手順とチェックリスト。証明書の購入から設定、動作確認までを網羅...</p>
+                        <div class="knowledge-meta">
+                            <span class="meta-item">👁️ 156 views</span>
+                            <span class="meta-item">⭐ 4.9</span>
+                            <span class="meta-item">📅 1週間前</span>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn btn-secondary btn-sm" data-knowledge-action="detail">詳細</button>
+                            <button class="btn btn-primary btn-sm" data-knowledge-action="edit">編集</button>
+                            <button class="btn btn-danger btn-sm" data-knowledge-action="delete">削除</button>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card" data-title="Azure AD連携設定ガイド" data-category="クラウド" data-tags="Azure AD,連携,ID管理" data-views="134" data-rating="4.7" data-date="2週間前" data-excerpt="オンプレミスActive DirectoryとAzure ADの連携設定手順。" data-content="オンプレミスActive DirectoryとAzure ADの連携設定手順です。Azure AD Connectのインストールから同期設定までを解説します。">
+                        <div class="knowledge-category">クラウド</div>
+                        <h4 class="knowledge-title">Azure AD連携設定ガイド</h4>
+                        <p class="knowledge-excerpt">オンプレミスActive DirectoryとAzure ADの連携設定手順。Azure AD Connectのインストールから同期設定まで...</p>
+                        <div class="knowledge-meta">
+                            <span class="meta-item">👁️ 134 views</span>
+                            <span class="meta-item">⭐ 4.7</span>
+                            <span class="meta-item">📅 2週間前</span>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn btn-secondary btn-sm" data-knowledge-action="detail">詳細</button>
+                            <button class="btn btn-primary btn-sm" data-knowledge-action="edit">編集</button>
+                            <button class="btn btn-danger btn-sm" data-knowledge-action="delete">削除</button>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card" data-title="バックアップ運用手順書" data-category="バックアップ" data-tags="バックアップ,リストア,運用" data-views="112" data-rating="4.5" data-date="3週間前" data-excerpt="定期バックアップの設定と運用手順。" data-content="定期バックアップの設定と運用手順をまとめています。フルバックアップ、差分バックアップのスケジュール設定とリストア手順を解説します。">
+                        <div class="knowledge-category">バックアップ</div>
+                        <h4 class="knowledge-title">バックアップ運用手順書</h4>
+                        <p class="knowledge-excerpt">定期バックアップの設定と運用手順。フルバックアップ、差分バックアップのスケジュール設定とリストア手順を解説...</p>
+                        <div class="knowledge-meta">
+                            <span class="meta-item">👁️ 112 views</span>
+                            <span class="meta-item">⭐ 4.5</span>
+                            <span class="meta-item">📅 3週間前</span>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn btn-secondary btn-sm" data-knowledge-action="detail">詳細</button>
+                            <button class="btn btn-primary btn-sm" data-knowledge-action="edit">編集</button>
+                            <button class="btn btn-danger btn-sm" data-knowledge-action="delete">削除</button>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card" data-title="システム監視設定ガイド" data-category="監視" data-tags="監視,Zabbix,アラート" data-views="98" data-rating="4.4" data-date="1ヶ月前" data-excerpt="Zabbixを使用したシステム監視の設定手順。" data-content="Zabbixを使用したシステム監視の設定手順です。CPU、メモリ、ディスク使用率の監視とアラート通知の設定方法を解説します。">
+                        <div class="knowledge-category">監視</div>
+                        <h4 class="knowledge-title">システム監視設定ガイド</h4>
+                        <p class="knowledge-excerpt">Zabbixを使用したシステム監視の設定手順。CPU、メモリ、ディスク使用率の監視とアラート通知の設定方法...</p>
+                        <div class="knowledge-meta">
+                            <span class="meta-item">👁️ 98 views</span>
+                            <span class="meta-item">⭐ 4.4</span>
+                            <span class="meta-item">📅 1ヶ月前</span>
+                        </div>
+                        <div class="knowledge-actions">
+                            <button class="btn btn-secondary btn-sm" data-knowledge-action="detail">詳細</button>
+                            <button class="btn btn-primary btn-sm" data-knowledge-action="edit">編集</button>
+                            <button class="btn btn-danger btn-sm" data-knowledge-action="delete">削除</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="knowledgeDetailModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>ナレッジ詳細</h3>
+                            <button class="btn-icon-small" data-modal-close>✖</button>
+                        </div>
+                        <div class="modal-body" id="knowledgeDetailBody"></div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-modal-close>閉じる</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="knowledgeEditModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>ナレッジ編集</h3>
+                            <button class="btn-icon-small" data-modal-close>✖</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-grid">
+                                <div class="form-section">
+                                    <label class="form-label">タイトル</label>
+                                    <input type="text" class="form-input" id="editKnowledgeTitle">
+                                </div>
+                                <div class="form-section">
+                                    <label class="form-label">カテゴリ</label>
+                                    <input type="text" class="form-input" id="editKnowledgeCategory">
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">タグ</label>
+                                <input type="text" class="form-input" id="editKnowledgeTags">
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">概要</label>
+                                <textarea class="form-textarea" rows="3" id="editKnowledgeExcerpt"></textarea>
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">詳細</label>
+                                <textarea class="form-textarea" rows="6" id="editKnowledgeContent"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+                            <button class="btn btn-primary" id="saveKnowledgeBtn">保存</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="knowledgeDeleteModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>ナレッジ削除</h3>
+                            <button class="btn-icon-small" data-modal-close>✖</button>
+                        </div>
+                        <div class="modal-body" id="knowledgeDeleteBody"></div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+                            <button class="btn btn-danger" id="confirmKnowledgeDelete">削除</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-knowledge-search">
+                <div class="page-header">
+                    <h1 class="page-title">高度な検索</h1>
+                    <p class="page-subtitle">詳細条件でナレッジを検索</p>
+                </div>
+                <div class="advanced-search-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🎛️</span>
+                                検索条件
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="filter-inline-grid">
+                                <div class="filter-group">
+                                    <label class="filter-label">キーワード</label>
+                                    <input type="text" class="filter-input" placeholder="例: VPN 接続 エラー">
+                                </div>
+                                <div class="filter-group">
+                                    <label class="filter-label">カテゴリ</label>
+                                    <select class="filter-select">
+                                        <option>すべて</option>
+                                        <option>ネットワーク</option>
+                                        <option>データベース</option>
+                                        <option>セキュリティ</option>
+                                        <option>クラウド</option>
+                                        <option>バックアップ</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label class="filter-label">タグ</label>
+                                    <div class="filter-chips">
+                                        <button class="chip active">VPN</button>
+                                        <button class="chip">接続不良</button>
+                                        <button class="chip">認証</button>
+                                        <button class="chip">遅延</button>
+                                        <button class="chip">証明書</button>
+                                    </div>
+                                </div>
+                                <div class="filter-group">
+                                    <label class="filter-label">更新日</label>
+                                    <div class="filter-date-range">
+                                        <input type="date" class="filter-input">
+                                        <span class="filter-range-separator">〜</span>
+                                        <input type="date" class="filter-input">
+                                    </div>
+                                </div>
+                                <div class="filter-group">
+                                    <label class="filter-label">評価</label>
+                                    <select class="filter-select">
+                                        <option>指定なし</option>
+                                        <option>★4.5以上</option>
+                                        <option>★4.0以上</option>
+                                        <option>★3.5以上</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label class="filter-label">並び替え</label>
+                                    <select class="filter-select">
+                                        <option>関連度順</option>
+                                        <option>更新日順</option>
+                                        <option>閲覧数順</option>
+                                        <option>評価順</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn btn-secondary">リセット</button>
+                                <button class="btn btn-primary">検索</button>
+                            </div>
+                            <div class="filter-hint">保存済み条件: VPN障害 / DB性能</div>
+                        </div>
+                    </div>
+
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🔎</span>
+                                検索結果
+                            </h3>
+                            <span class="results-count">12件中 1-4件</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="search-result-item">
+                                <div class="result-relevance">関連度: 97%</div>
+                                <h4 class="result-title">VPN接続エラーの総合対処ガイド</h4>
+                                <p class="result-excerpt">認証失敗、トンネル確立不可、速度低下などの症状別に切り分け手順を整理。ログ取得・検証のポイントも掲載...</p>
+                                <div class="result-meta">
+                                    <span class="meta-badge">ネットワーク</span>
+                                    <span class="meta-item">👁️ 412 views</span>
+                                    <span class="meta-item">⭐ 4.9</span>
+                                    <span class="meta-item">📅 3日前</span>
+                                </div>
+                            </div>
+
+                            <div class="search-result-item">
+                                <div class="result-relevance">関連度: 90%</div>
+                                <h4 class="result-title">認証基盤の影響調査チェックリスト</h4>
+                                <p class="result-excerpt">SSO/LDAP/AD連携の確認項目と、短時間で影響範囲を把握するためのチェックリストを提供...</p>
+                                <div class="result-meta">
+                                    <span class="meta-badge">セキュリティ</span>
+                                    <span class="meta-item">👁️ 268 views</span>
+                                    <span class="meta-item">⭐ 4.6</span>
+                                    <span class="meta-item">📅 1週間前</span>
+                                </div>
+                            </div>
+
+                            <div class="search-result-item">
+                                <div class="result-relevance">関連度: 82%</div>
+                                <h4 class="result-title">VPN同時接続数の見積もりと増強手順</h4>
+                                <p class="result-excerpt">ピークタイムの接続数を算出し、キャパシティ拡張の手順と検証方法をまとめたドキュメント...</p>
+                                <div class="result-meta">
+                                    <span class="meta-badge">インフラ</span>
+                                    <span class="meta-item">👁️ 154 views</span>
+                                    <span class="meta-item">⭐ 4.3</span>
+                                    <span class="meta-item">📅 2週間前</span>
+                                </div>
+                            </div>
+
+                            <div class="search-result-item">
+                                <div class="result-relevance">関連度: 76%</div>
+                                <h4 class="result-title">接続遅延の原因調査（ネットワーク編）</h4>
+                                <p class="result-excerpt">経路遅延、DNS遅延、MTU問題などの典型的な原因と測定コマンドの一覧を整理...</p>
+                                <div class="result-meta">
+                                    <span class="meta-badge">ネットワーク</span>
+                                    <span class="meta-item">👁️ 132 views</span>
+                                    <span class="meta-item">⭐ 4.2</span>
+                                    <span class="meta-item">📅 3週間前</span>
+                                </div>
+                            </div>
+
+                            <div class="pagination">
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn">2</button>
+                                <button class="pagination-btn">3</button>
+                                <button class="pagination-btn">次へ →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-knowledge-category">
+                <div class="page-header">
+                    <h1 class="page-title">カテゴリ管理</h1>
+                    <p class="page-subtitle">ナレッジのカテゴリを管理</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card card-blue">
+                        <div class="stat-icon">🗂️</div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">カテゴリ総数</div>
+                    </div>
+                    <div class="stat-card card-green">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value">9</div>
+                        <div class="stat-label">公開カテゴリ</div>
+                    </div>
+                    <div class="stat-card card-purple">
+                        <div class="stat-icon">🏷️</div>
+                        <div class="stat-value">48</div>
+                        <div class="stat-label">関連タグ</div>
+                    </div>
+                    <div class="stat-card card-red">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">レビュー待ち</div>
+                    </div>
+                </div>
+
+                <div class="category-toolbar">
+                    <input type="text" class="filter-input" id="categorySearchInput" placeholder="カテゴリ名・説明で検索">
+                    <select class="filter-select" id="categorySortSelect">
+                        <option value="count">件数順</option>
+                        <option value="update">更新日順</option>
+                        <option value="name">名前順</option>
+                    </select>
+                    <span class="category-count-text" id="categoryCountText">4件表示</span>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📚</span>
+                                カテゴリ一覧
+                            </h3>
+                            <a href="#" class="card-link">並び替え →</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="category-grid">
+                                <div class="category-card" data-name="ネットワーク" data-count="32" data-desc="VPN、DNS、Wi-Fi、ルーティング関連のナレッジ" data-owner="IT部門" data-status="公開" data-update="2日前" data-rating="4.7">
+                                    <div class="category-header">
+                                        <span class="category-color color-network"></span>
+                                        <span class="category-name">ネットワーク</span>
+                                        <span class="category-count">32件</span>
+                                    </div>
+                                    <p class="category-desc">VPN、DNS、Wi-Fi、ルーティング関連のナレッジ</p>
+                                    <div class="category-meta">
+                                        <span>最終更新: 2日前</span>
+                                        <span>平均評価: 4.7</span>
+                                    </div>
+                                    <div class="category-actions">
+                                        <button class="btn btn-secondary btn-sm" data-category-action="edit">編集</button>
+                                        <button class="btn btn-primary btn-sm" data-category-action="detail">詳細</button>
+                                        <button class="btn btn-danger btn-sm" data-category-action="delete">削除</button>
+                                    </div>
+                                </div>
+
+                                <div class="category-card" data-name="データベース" data-count="18" data-desc="SQL Server、MySQL、監査ログ、バックアップ運用" data-owner="インフラ" data-status="公開" data-update="5日前" data-rating="4.5">
+                                    <div class="category-header">
+                                        <span class="category-color color-database"></span>
+                                        <span class="category-name">データベース</span>
+                                        <span class="category-count">18件</span>
+                                    </div>
+                                    <p class="category-desc">SQL Server、MySQL、監査ログ、バックアップ運用</p>
+                                    <div class="category-meta">
+                                        <span>最終更新: 5日前</span>
+                                        <span>平均評価: 4.5</span>
+                                    </div>
+                                    <div class="category-actions">
+                                        <button class="btn btn-secondary btn-sm" data-category-action="edit">編集</button>
+                                        <button class="btn btn-primary btn-sm" data-category-action="detail">詳細</button>
+                                        <button class="btn btn-danger btn-sm" data-category-action="delete">削除</button>
+                                    </div>
+                                </div>
+
+                                <div class="category-card" data-name="セキュリティ" data-count="14" data-desc="認証、MFA、証明書更新、脅威対応ガイド" data-owner="セキュリティ" data-status="公開" data-update="1週間前" data-rating="4.6">
+                                    <div class="category-header">
+                                        <span class="category-color color-security"></span>
+                                        <span class="category-name">セキュリティ</span>
+                                        <span class="category-count">14件</span>
+                                    </div>
+                                    <p class="category-desc">認証、MFA、証明書更新、脅威対応ガイド</p>
+                                    <div class="category-meta">
+                                        <span>最終更新: 1週間前</span>
+                                        <span>平均評価: 4.6</span>
+                                    </div>
+                                    <div class="category-actions">
+                                        <button class="btn btn-secondary btn-sm" data-category-action="edit">編集</button>
+                                        <button class="btn btn-primary btn-sm" data-category-action="detail">詳細</button>
+                                        <button class="btn btn-danger btn-sm" data-category-action="delete">削除</button>
+                                    </div>
+                                </div>
+
+                                <div class="category-card" data-name="クラウド" data-count="21" data-desc="Azure、AWS、GCP、SaaS運用とコスト管理" data-owner="クラウド" data-status="公開" data-update="2週間前" data-rating="4.4">
+                                    <div class="category-header">
+                                        <span class="category-color color-cloud"></span>
+                                        <span class="category-name">クラウド</span>
+                                        <span class="category-count">21件</span>
+                                    </div>
+                                    <p class="category-desc">Azure、AWS、GCP、SaaS運用とコスト管理</p>
+                                    <div class="category-meta">
+                                        <span>最終更新: 2週間前</span>
+                                        <span>平均評価: 4.4</span>
+                                    </div>
+                                    <div class="category-actions">
+                                        <button class="btn btn-secondary btn-sm" data-category-action="edit">編集</button>
+                                        <button class="btn btn-primary btn-sm" data-category-action="detail">詳細</button>
+                                        <button class="btn btn-danger btn-sm" data-category-action="delete">削除</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">➕</span>
+                                新規カテゴリ作成
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-grid-inline">
+                                <div class="form-section">
+                                    <label class="form-label">カテゴリ名</label>
+                                    <input type="text" class="form-input" placeholder="例: 監視">
+                                </div>
+                                <div class="form-section">
+                                    <label class="form-label">担当チーム</label>
+                                    <select class="form-select">
+                                        <option>IT部門</option>
+                                        <option>セキュリティ</option>
+                                        <option>インフラ</option>
+                                        <option>サポート</option>
+                                    </select>
+                                </div>
+                                <div class="form-section">
+                                    <label class="form-label">公開設定</label>
+                                    <select class="form-select">
+                                        <option>公開</option>
+                                        <option>限定公開</option>
+                                        <option>下書き</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-section form-section-full">
+                                <label class="form-label">説明</label>
+                                <textarea class="form-textarea" rows="3" placeholder="カテゴリの概要を入力"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary">キャンセル</button>
+                                <button class="btn btn-primary">作成</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="categoryDetailModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>カテゴリ詳細</h3>
+                            <button class="btn-icon-small" data-modal-close>✖</button>
+                        </div>
+                        <div class="modal-body" id="categoryDetailBody"></div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-modal-close>閉じる</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="categoryEditModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>カテゴリ編集</h3>
+                            <button class="btn-icon-small" data-modal-close>✖</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-grid">
+                                <div class="form-section">
+                                    <label class="form-label">カテゴリ名</label>
+                                    <input type="text" class="form-input" id="editCategoryName">
+                                </div>
+                                <div class="form-section">
+                                    <label class="form-label">担当チーム</label>
+                                    <input type="text" class="form-input" id="editCategoryOwner">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-section">
+                                    <label class="form-label">公開設定</label>
+                                    <select class="form-select" id="editCategoryStatus">
+                                        <option>公開</option>
+                                        <option>限定公開</option>
+                                        <option>下書き</option>
+                                    </select>
+                                </div>
+                                <div class="form-section">
+                                    <label class="form-label">平均評価</label>
+                                    <input type="text" class="form-input" id="editCategoryRating">
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">説明</label>
+                                <textarea class="form-textarea" rows="3" id="editCategoryDesc"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+                            <button class="btn btn-primary" id="saveCategoryBtn">保存</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="categoryDeleteModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>カテゴリ削除</h3>
+                            <button class="btn-icon-small" data-modal-close>✖</button>
+                        </div>
+                        <div class="modal-body" id="categoryDeleteBody"></div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+                            <button class="btn btn-danger" id="confirmCategoryDelete">削除</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-incident-active">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">インシデント一覧</h1>
+                        <p class="page-subtitle">インシデントのステータスごとの一覧</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-secondary">
+                            <span>📥</span>
+                            <span>インポート</span>
+                        </button>
+                        <button class="btn btn-primary">
+                            <span>🚨</span>
+                            <span>新規登録</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="incident-filters">
+                    <button class="btn btn-sm btn-filter active" data-filter="all">すべて</button>
+                    <button class="btn btn-sm btn-filter" data-filter="in-progress">対応中</button>
+                    <button class="btn btn-sm btn-filter" data-filter="investigating">調査中</button>
+                    <button class="btn btn-sm btn-filter" data-filter="pending">対応待機中</button>
+                    <button class="btn btn-sm btn-filter" data-filter="resolved">解決済み</button>
+                </div>
+
+                <div class="incident-board">
+                    <div class="incident-column" data-status="in-progress">
+                        <div class="column-header">
+                            <span>対応中</span>
+                            <span class="column-count">10</span>
+                        </div>
+                        <div class="incident-card" data-id="#INC-2024-0127" data-title="メールサーバーの応答遅延" data-status="in-progress" data-priority="high" data-owner="山田 太郎" data-time="2024-01-27 13:15" data-elapsed="1時間23分" data-desc="複数ユーザーからメール送受信の遅延報告" data-impact="全社メール業務に影響">
+                            <div class="incident-card-header">
+                                <span class="incident-card-title">メールサーバーの応答遅延</span>
+                                <span class="priority-badge high">高</span>
+                            </div>
+                            <div class="incident-card-meta">#INC-2024-0127 • 山田 太郎 • 1時間23分</div>
+                            <div class="incident-card-desc">複数ユーザーからメール送受信の遅延報告</div>
+                            <div class="incident-card-actions">
+                                <button class="btn btn-secondary btn-sm" data-action="detail">詳細</button>
+                                <button class="btn btn-primary btn-sm" data-action="edit">修正</button>
+                                <button class="btn btn-danger btn-sm" data-action="delete">削除</button>
+                            </div>
+                        </div>
+                        <div class="incident-card" data-id="#INC-2024-0124" data-title="共有フォルダアクセス権限エラー" data-status="in-progress" data-priority="medium" data-owner="田中 美咲" data-time="2024-01-27 09:20" data-elapsed="5時間18分" data-desc="営業部門の共有フォルダにアクセス不可" data-impact="営業部門の業務停止">
+                            <div class="incident-card-header">
+                                <span class="incident-card-title">共有フォルダアクセス権限エラー</span>
+                                <span class="priority-badge medium">中</span>
+                            </div>
+                            <div class="incident-card-meta">#INC-2024-0124 • 田中 美咲 • 5時間18分</div>
+                            <div class="incident-card-desc">営業部門の共有フォルダにアクセス不可</div>
+                            <div class="incident-card-actions">
+                                <button class="btn btn-secondary btn-sm" data-action="detail">詳細</button>
+                                <button class="btn btn-primary btn-sm" data-action="edit">修正</button>
+                                <button class="btn btn-danger btn-sm" data-action="delete">削除</button>
+                            </div>
+                        </div>
+                        <div class="incident-card" data-id="#INC-2024-0128" data-title="基幹システムのパフォーマンス低下" data-status="in-progress" data-priority="high" data-owner="伊藤 健太" data-time="2024-01-27 14:00" data-elapsed="38分" data-desc="特定の画面で応答が非常に遅い" data-impact="経理部門の月次処理に影響">
+                            <div class="incident-card-header">
+                                <span class="incident-card-title">基幹システムのパフォーマンス低下</span>
+                                <span class="priority-badge high">高</span>
+                            </div>
+                            <div class="incident-card-meta">#INC-2024-0128 • 伊藤 健太 • 38分</div>
+                            <div class="incident-card-desc">特定の画面で応答が非常に遅い</div>
+                        </div>
+                        <div class="incident-card" data-id="#INC-2024-0129" data-title="Web会議システムの音声トラブル" data-status="in-progress" data-priority="medium" data-owner="加藤 陽子" data-time="2024-01-27 11:30" data-elapsed="3時間8分" data-desc="一部のユーザーで音声が途切れる" data-impact="複数部門の定例会議に影響">
+                            <div class="incident-card-header">
+                                <span class="incident-card-title">Web会議システムの音声トラブル</span>
+                                <span class="priority-badge medium">中</span>
+                            </div>
+                            <div class="incident-card-meta">#INC-2024-0129 • 加藤 陽子 • 3時間8分</div>
+                            <div class="incident-card-desc">一部のユーザーで音声が途切れる</div>
+                        </div>
+                    </div>
+
+                    <div class="incident-column" data-status="investigating">
+                        <div class="column-header">
+                            <span>調査中</span>
+                            <span class="column-count">10</span>
+                        </div>
+                        <div class="incident-card" data-id="#INC-2024-0126" data-title="VPN接続エラー（複数ユーザー）" data-status="investigating" data-priority="medium" data-owner="佐藤 花子" data-time="2024-01-27 12:30" data-elapsed="2時間8分" data-desc="東京オフィスからの接続不可" data-impact="リモート勤務ユーザーに影響">
+                            <div class="incident-card-header">
+                                <span class="incident-card-title">VPN接続エラー（複数ユーザー）</span>
+                                <span class="priority-badge medium">中</span>
+                            </div>
+                            <div class="incident-card-meta">#INC-2024-0126 • 佐藤 花子 • 2時間8分</div>
+                            <div class="incident-card-desc">東京オフィスからの接続不可</div>
+                            <div class="incident-card-actions">
+                                <button class="btn btn-secondary btn-sm" data-action="detail">詳細</button>
+                                <button class="btn btn-primary btn-sm" data-action="edit">修正</button>
+                                <button class="btn btn-danger btn-sm" data-action="delete">削除</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="incident-column" data-status="pending">
+                        <div class="column-header">
+                            <span>対応待機中</span>
+                            <span class="column-count">10</span>
+                        </div>
+                        <div class="incident-card" data-id="#INC-2024-0125" data-title="プリンター接続不良（3階）" data-status="pending" data-priority="low" data-owner="鈴木 一郎" data-time="2024-01-27 10:45" data-elapsed="3時間53分" data-desc="3階会議室のプリンターが認識されない" data-impact="会議資料の印刷遅延">
+                            <div class="incident-card-header">
+                                <span class="incident-card-title">プリンター接続不良（3階）</span>
+                                <span class="priority-badge low">低</span>
+                            </div>
+                            <div class="incident-card-meta">#INC-2024-0125 • 鈴木 一郎 • 3時間53分</div>
+                            <div class="incident-card-desc">3階会議室のプリンターが認識されない</div>
+                            <div class="incident-card-actions">
+                                <button class="btn btn-secondary btn-sm" data-action="detail">詳細</button>
+                                <button class="btn btn-primary btn-sm" data-action="edit">修正</button>
+                                <button class="btn btn-danger btn-sm" data-action="delete">削除</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="incident-column" data-status="resolved">
+                        <div class="column-header">
+                            <span>解決済み（対応クローズ）</span>
+                            <span class="column-count">10</span>
+                        </div>
+                        <div class="incident-card" data-id="#INC-2024-0123" data-title="新入社員アカウント作成依頼" data-status="resolved" data-priority="low" data-owner="管理者" data-time="2024-01-26 18:00" data-elapsed="22時間38分" data-desc="新入社員5名分のアカウント作成" data-impact="なし">
+                            <div class="incident-card-header">
+                                <span class="incident-card-title">新入社員アカウント作成依頼</span>
+                                <span class="priority-badge low">低</span>
+                            </div>
+                            <div class="incident-card-meta">#INC-2024-0123 • 管理者 • 22時間38分</div>
+                            <div class="incident-card-desc">新入社員5名分のアカウント作成</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="incidentDetailModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>インシデント詳細</h3>
+                            <button class="btn-icon-small" data-modal-close>✖</button>
+                        </div>
+                        <div class="modal-body" id="incidentDetailBody"></div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-modal-close>閉じる</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="incidentEditModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>インシデント修正</h3>
+                            <button class="btn-icon-small" data-modal-close>✖</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-grid">
+                                <div class="form-section">
+                                    <label class="form-label">タイトル</label>
+                                    <input type="text" class="form-input" id="editIncidentTitle">
+                                </div>
+                                <div class="form-section">
+                                    <label class="form-label">担当者</label>
+                                    <input type="text" class="form-input" id="editIncidentOwner">
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-section">
+                                    <label class="form-label">優先度</label>
+                                    <select class="form-select" id="editIncidentPriority">
+                                        <option value="high">高</option>
+                                        <option value="medium">中</option>
+                                        <option value="low">低</option>
+                                    </select>
+                                </div>
+                                <div class="form-section">
+                                    <label class="form-label">ステータス</label>
+                                    <select class="form-select" id="editIncidentStatus">
+                                        <option value="in-progress">対応中</option>
+                                        <option value="investigating">調査中</option>
+                                        <option value="pending">待機中</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">影響範囲</label>
+                                <input type="text" class="form-input" id="editIncidentImpact">
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">概要</label>
+                                <textarea class="form-textarea" rows="3" id="editIncidentDesc"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+                            <button class="btn btn-primary" id="saveIncidentBtn">保存</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal" id="incidentDeleteModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>インシデント削除</h3>
+                            <button class="btn-icon-small" data-modal-close>✖</button>
+                        </div>
+                        <div class="modal-body" id="incidentDeleteBody"></div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-modal-close>キャンセル</button>
+                            <button class="btn btn-danger" id="confirmDeleteIncident">削除</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-incident-history">
+                <div class="page-header">
+                    <h1 class="page-title">インシデント履歴</h1>
+                    <p class="page-subtitle">過去のインシデント記録</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card card-green">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value">128</div>
+                        <div class="stat-label">今月の解決件数</div>
+                    </div>
+                    <div class="stat-card card-blue">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-value">3.1h</div>
+                        <div class="stat-label">平均解決時間</div>
+                    </div>
+                    <div class="stat-card card-purple">
+                        <div class="stat-icon">📉</div>
+                        <div class="stat-value">-12%</div>
+                        <div class="stat-label">再発率</div>
+                    </div>
+                    <div class="stat-card card-red">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">重大インシデント</div>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <input type="text" class="filter-input" placeholder="ID・タイトルで検索">
+                    <select class="filter-select">
+                        <option>すべての優先度</option>
+                        <option>高</option>
+                        <option>中</option>
+                        <option>低</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>すべてのステータス</option>
+                        <option>解決済み</option>
+                        <option>クローズ</option>
+                        <option>再発</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>期間: 過去30日</option>
+                        <option>過去7日</option>
+                        <option>過去90日</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm">適用</button>
+                </div>
+
+                <div class="incident-table-container">
+                    <table class="incident-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>タイトル</th>
+                                <th>優先度</th>
+                                <th>ステータス</th>
+                                <th>担当者</th>
+                                <th>解決日時</th>
+                                <th>対応時間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="incident-row priority-high">
+                                <td>#INC-2024-0108</td>
+                                <td>
+                                    <div class="incident-title-cell">メール遅延障害の復旧</div>
+                                    <div class="incident-desc">Exchange Online のキュー遅延を解消</div>
+                                </td>
+                                <td><span class="priority-badge high">高</span></td>
+                                <td><span class="status-badge status-resolved">解決済み</span></td>
+                                <td>佐藤 花子</td>
+                                <td>2024-01-26 18:12</td>
+                                <td>1時間34分</td>
+                            </tr>
+                            <tr class="incident-row priority-medium">
+                                <td>#INC-2024-0105</td>
+                                <td>
+                                    <div class="incident-title-cell">VPN認証エラーの再発対応</div>
+                                    <div class="incident-desc">MFAポリシー更新後の影響</div>
+                                </td>
+                                <td><span class="priority-badge medium">中</span></td>
+                                <td><span class="status-badge status-reopened">再発</span></td>
+                                <td>田中 美咲</td>
+                                <td>2024-01-25 16:40</td>
+                                <td>2時間10分</td>
+                            </tr>
+                            <tr class="incident-row priority-low">
+                                <td>#INC-2024-0101</td>
+                                <td>
+                                    <div class="incident-title-cell">プリンター接続不良の復旧</div>
+                                    <div class="incident-desc">ドライバ更新と設定変更</div>
+                                </td>
+                                <td><span class="priority-badge low">低</span></td>
+                                <td><span class="status-badge status-closed">クローズ</span></td>
+                                <td>鈴木 一郎</td>
+                                <td>2024-01-25 11:02</td>
+                                <td>55分</td>
+                            </tr>
+                            <tr class="incident-row priority-medium">
+                                <td>#INC-2023-0988</td>
+                                <td>
+                                    <div class="incident-title-cell">共有フォルダアクセス権限問題</div>
+                                    <div class="incident-desc">権限再割り当てと再同期</div>
+                                </td>
+                                <td><span class="priority-badge medium">中</span></td>
+                                <td><span class="status-badge status-resolved">解決済み</span></td>
+                                <td>Ken Aritoh</td>
+                                <td>2024-01-24 15:18</td>
+                                <td>3時間05分</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-incident-workflow">
+                <div class="page-header">
+                    <h1 class="page-title">インシデントワークフロー</h1>
+                    <p class="page-subtitle">自動処理フローの設定と管理</p>
+                </div>
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">⚡</span>
+                                自動化ワークフロー
+                            </h3>
+                            <button class="btn btn-secondary btn-sm">新規作成</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="workflow-list">
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <span class="workflow-name">VPN障害対応フロー</span>
+                                        <span class="workflow-status">稼働中</span>
+                                    </div>
+                                    <div class="workflow-progress">
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: 72%;"></div>
+                                        </div>
+                                        <span class="progress-text">72%</span>
+                                    </div>
+                                </div>
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <span class="workflow-name">メール障害検知フロー</span>
+                                        <span class="workflow-status">稼働中</span>
+                                    </div>
+                                    <div class="workflow-progress">
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: 58%;"></div>
+                                        </div>
+                                        <span class="progress-text">58%</span>
+                                    </div>
+                                </div>
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <span class="workflow-name">権限リクエスト自動処理</span>
+                                        <span class="workflow-status">一時停止</span>
+                                    </div>
+                                    <div class="workflow-progress">
+                                        <div class="progress-bar-container">
+                                            <div class="progress-bar-fill" style="width: 34%;"></div>
+                                        </div>
+                                        <span class="progress-text">34%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📈</span>
+                                実行モニタリング
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="monitor-grid">
+                                <div class="monitor-item">
+                                    <div class="monitor-label">成功率</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 92%;"></div>
+                                    </div>
+                                    <div class="monitor-value">92%</div>
+                                </div>
+                                <div class="monitor-item">
+                                    <div class="monitor-label">平均実行時間</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 65%;"></div>
+                                    </div>
+                                    <div class="monitor-value">2.4分</div>
+                                </div>
+                                <div class="monitor-item">
+                                    <div class="monitor-label">エラー率</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 8%;"></div>
+                                    </div>
+                                    <div class="monitor-value">8%</div>
+                                </div>
+                                <div class="monitor-item">
+                                    <div class="monitor-label">保留タスク</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 22%;"></div>
+                                    </div>
+                                    <div class="monitor-value">12件</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📝</span>
+                                最近の自動処理ログ
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-log">
+                                <div class="log-item">
+                                    <span class="log-time">09:12</span>
+                                    <span class="log-message">VPN障害フロー: 影響範囲分析を完了 → 担当者に通知</span>
+                                </div>
+                                <div class="log-item">
+                                    <span class="log-time">09:05</span>
+                                    <span class="log-message">メール障害検知フロー: アラートを生成 → 優先度 高</span>
+                                </div>
+                                <div class="log-item">
+                                    <span class="log-time">08:58</span>
+                                    <span class="log-message">権限リクエスト自動処理: 承認待ちステップに移行</span>
+                                </div>
+                                <div class="log-item">
+                                    <span class="log-time">08:45</span>
+                                    <span class="log-message">ナレッジ自動作成: 3件の提案をレビュー待ちに追加</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-users">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">ユーザー管理</h1>
+                        <p class="page-subtitle">システムユーザーの管理</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-secondary">
+                            <span>📥</span>
+                            <span>インポート</span>
+                        </button>
+                        <button class="btn btn-primary">
+                            <span>➕</span>
+                            <span>新規ユーザー</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid" style="margin-bottom: 24px;">
+                    <div class="stat-card card-blue">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">総ユーザー数</div>
+                    </div>
+                    <div class="stat-card card-green">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value">18</div>
+                        <div class="stat-label">アクティブユーザー</div>
+                    </div>
+                    <div class="stat-card card-purple">
+                        <div class="stat-icon">👤</div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">管理者</div>
+                    </div>
+                    <div class="stat-card card-red">
+                        <div class="stat-icon">⏸️</div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">無効ユーザー</div>
+                    </div>
+                </div>
+
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>ユーザー名</th>
+                                <th>メール</th>
+                                <th>ロール</th>
+                                <th>チーム</th>
+                                <th>ステータス</th>
+                                <th>最終ログイン</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="user-avatar-small">KA</div>
+                                        <div class="user-name-cell">Ken Aritoh</div>
+                                    </div>
+                                </td>
+                                <td>kensan1969@gmail.com</td>
+                                <td><span class="role-badge admin">管理者</span></td>
+                                <td>IT部門</td>
+                                <td><span class="status-badge status-in-progress">アクティブ</span></td>
+                                <td>2時間前</td>
+                                <td>
+                                    <button class="btn-icon-small">✏️</button>
+                                    <button class="btn-icon-small">🗑️</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="user-avatar-small">YT</div>
+                                        <div class="user-name-cell">山田 太郎</div>
+                                    </div>
+                                </td>
+                                <td>yamada@example.com</td>
+                                <td><span class="role-badge member">メンバー</span></td>
+                                <td>IT部門</td>
+                                <td><span class="status-badge status-in-progress">アクティブ</span></td>
+                                <td>1日前</td>
+                                <td>
+                                    <button class="btn-icon-small">✏️</button>
+                                    <button class="btn-icon-small">🗑️</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="user-avatar-small">SH</div>
+                                        <div class="user-name-cell">佐藤 花子</div>
+                                    </div>
+                                </td>
+                                <td>sato@example.com</td>
+                                <td><span class="role-badge member">メンバー</span></td>
+                                <td>IT部門</td>
+                                <td><span class="status-badge status-in-progress">アクティブ</span></td>
+                                <td>3時間前</td>
+                                <td>
+                                    <button class="btn-icon-small">✏️</button>
+                                    <button class="btn-icon-small">🗑️</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-teams">
+                <div class="page-header">
+                    <h1 class="page-title">チーム管理</h1>
+                    <p class="page-subtitle">チーム・グループの管理</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card card-blue">
+                        <div class="stat-icon">🏢</div>
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">チーム数</div>
+                    </div>
+                    <div class="stat-card card-green">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">総メンバー</div>
+                    </div>
+                    <div class="stat-card card-purple">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">対応中案件</div>
+                    </div>
+                    <div class="stat-card card-red">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-value">2.1h</div>
+                        <div class="stat-label">平均応答時間</div>
+                    </div>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-header">
+                            <span class="team-name">IT部門</span>
+                            <span class="status-badge status-in-progress">稼働中</span>
+                        </div>
+                        <p class="team-desc">社内インフラ・ヘルプデスク運用全般を担当</p>
+                        <div class="team-meta">
+                            <span>担当領域: インフラ</span>
+                            <span>オンコール: 3名</span>
+                        </div>
+                        <div class="team-members">
+                            <span class="team-member">KA</span>
+                            <span class="team-member">YT</span>
+                            <span class="team-member">SH</span>
+                            <span class="team-member">+3</span>
+                        </div>
+                        <div class="team-actions">
+                            <button class="btn btn-secondary btn-sm">編集</button>
+                            <button class="btn btn-primary btn-sm">詳細</button>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-header">
+                            <span class="team-name">セキュリティ</span>
+                            <span class="status-badge status-investigating">監視中</span>
+                        </div>
+                        <p class="team-desc">認証・権限・ログ監査の統括とリスク対応</p>
+                        <div class="team-meta">
+                            <span>担当領域: IAM</span>
+                            <span>オンコール: 2名</span>
+                        </div>
+                        <div class="team-members">
+                            <span class="team-member">MS</span>
+                            <span class="team-member">AI</span>
+                            <span class="team-member">+1</span>
+                        </div>
+                        <div class="team-actions">
+                            <button class="btn btn-secondary btn-sm">編集</button>
+                            <button class="btn btn-primary btn-sm">詳細</button>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-header">
+                            <span class="team-name">運用・監視</span>
+                            <span class="status-badge status-in-progress">稼働中</span>
+                        </div>
+                        <p class="team-desc">監視アラート対応とワークフロー改善を担当</p>
+                        <div class="team-meta">
+                            <span>担当領域: 監視</span>
+                            <span>オンコール: 4名</span>
+                        </div>
+                        <div class="team-members">
+                            <span class="team-member">HK</span>
+                            <span class="team-member">RS</span>
+                            <span class="team-member">TN</span>
+                            <span class="team-member">+2</span>
+                        </div>
+                        <div class="team-actions">
+                            <button class="btn btn-secondary btn-sm">編集</button>
+                            <button class="btn btn-primary btn-sm">詳細</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-table-container">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>チーム名</th>
+                                <th>リーダー</th>
+                                <th>メンバー数</th>
+                                <th>対応中</th>
+                                <th>SLA</th>
+                                <th>最終更新</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>IT部門</td>
+                                <td>Ken Aritoh</td>
+                                <td>10</td>
+                                <td>3件</td>
+                                <td>98%</td>
+                                <td>2時間前</td>
+                                <td>
+                                    <button class="btn-icon-small">✏️</button>
+                                    <button class="btn-icon-small">🗑️</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>セキュリティ</td>
+                                <td>田中 美咲</td>
+                                <td>6</td>
+                                <td>2件</td>
+                                <td>96%</td>
+                                <td>1日前</td>
+                                <td>
+                                    <button class="btn-icon-small">✏️</button>
+                                    <button class="btn-icon-small">🗑️</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>運用・監視</td>
+                                <td>佐藤 花子</td>
+                                <td>8</td>
+                                <td>2件</td>
+                                <td>99%</td>
+                                <td>3日前</td>
+                                <td>
+                                    <button class="btn-icon-small">✏️</button>
+                                    <button class="btn-icon-small">🗑️</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-permissions">
+                <div class="page-header">
+                    <h1 class="page-title">権限設定</h1>
+                    <p class="page-subtitle">ユーザーとチームの権限管理</p>
+                </div>
+                <div class="content-grid">
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🧑‍💼</span>
+                                ロール一覧
+                            </h3>
+                            <button class="btn btn-primary btn-sm">ロール追加</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="role-grid">
+                                <div class="role-card">
+                                    <div class="role-title">管理者</div>
+                                    <p class="role-desc">システム全体の設定・ユーザー管理が可能</p>
+                                    <div class="role-meta">対象ユーザー: 3名</div>
+                                </div>
+                                <div class="role-card">
+                                    <div class="role-title">マネージャー</div>
+                                    <p class="role-desc">チーム管理とインシデント対応の承認</p>
+                                    <div class="role-meta">対象ユーザー: 5名</div>
+                                </div>
+                                <div class="role-card">
+                                    <div class="role-title">担当者</div>
+                                    <p class="role-desc">チケット対応とナレッジ更新が可能</p>
+                                    <div class="role-meta">対象ユーザー: 12名</div>
+                                </div>
+                                <div class="role-card">
+                                    <div class="role-title">閲覧のみ</div>
+                                    <p class="role-desc">閲覧専用、操作は不可</p>
+                                    <div class="role-meta">対象ユーザー: 4名</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📋</span>
+                                権限マトリクス
+                            </h3>
+                            <div class="permission-legend">
+                                <span class="legend-item"><span class="perm-allow">●</span> 許可</span>
+                                <span class="legend-item"><span class="perm-limited">●</span> 制限</span>
+                                <span class="legend-item"><span class="perm-deny">●</span> 不可</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="permission-table-container">
+                                <table class="permission-table">
+                                    <thead>
+                                        <tr>
+                                            <th>機能</th>
+                                            <th>管理者</th>
+                                            <th>マネージャー</th>
+                                            <th>担当者</th>
+                                            <th>閲覧のみ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>インシデント管理</td>
+                                            <td class="permission-cell perm-allow">✔</td>
+                                            <td class="permission-cell perm-allow">✔</td>
+                                            <td class="permission-cell perm-allow">✔</td>
+                                            <td class="permission-cell perm-deny">✖</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ナレッジ編集</td>
+                                            <td class="permission-cell perm-allow">✔</td>
+                                            <td class="permission-cell perm-allow">✔</td>
+                                            <td class="permission-cell perm-limited">△</td>
+                                            <td class="permission-cell perm-deny">✖</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ワークフロー設定</td>
+                                            <td class="permission-cell perm-allow">✔</td>
+                                            <td class="permission-cell perm-limited">△</td>
+                                            <td class="permission-cell perm-deny">✖</td>
+                                            <td class="permission-cell perm-deny">✖</td>
+                                        </tr>
+                                        <tr>
+                                            <td>API設定</td>
+                                            <td class="permission-cell perm-allow">✔</td>
+                                            <td class="permission-cell perm-limited">△</td>
+                                            <td class="permission-cell perm-deny">✖</td>
+                                            <td class="permission-cell perm-deny">✖</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ユーザー管理</td>
+                                            <td class="permission-cell perm-allow">✔</td>
+                                            <td class="permission-cell perm-limited">△</td>
+                                            <td class="permission-cell perm-deny">✖</td>
+                                            <td class="permission-cell perm-deny">✖</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-settings-general">
+                <div class="page-header">
+                    <h1 class="page-title">一般設定</h1>
+                    <p class="page-subtitle">システムの基本設定</p>
+                </div>
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-section">
+                            <label class="form-label">システム名</label>
+                            <input type="text" class="form-input" value="Mirai ヘルプデスク管理システム">
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-section">
+                                <label class="form-label">言語</label>
+                                <select class="form-select">
+                                    <option>日本語</option>
+                                    <option>English</option>
+                                </select>
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">タイムゾーン</label>
+                                <select class="form-select">
+                                    <option>Asia/Tokyo (UTC+9)</option>
+                                    <option>UTC</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-section">
+                                <label class="form-label">セッションタイムアウト</label>
+                                <select class="form-select">
+                                    <option>30分</option>
+                                    <option>60分</option>
+                                    <option>120分</option>
+                                </select>
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">データ保持期間</label>
+                                <select class="form-select">
+                                    <option>2年</option>
+                                    <option>3年</option>
+                                    <option>5年</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <label class="form-label">既定の優先度</label>
+                            <select class="form-select">
+                                <option>中</option>
+                                <option>高</option>
+                                <option>低</option>
+                            </select>
+                        </div>
+
+                        <div class="toggle-list">
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label">自動割り当て</div>
+                                    <div class="toggle-desc">インシデントを担当者へ自動割り当て</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label">メンテナンスモード</div>
+                                    <div class="toggle-desc">システム更新中は読み取り専用にする</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-row">
+                                <div>
+                                    <div class="toggle-label">ログの自動アーカイブ</div>
+                                    <div class="toggle-desc">90日以前のログを自動圧縮して保存</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="btn btn-secondary">キャンセル</button>
+                            <button class="btn btn-primary">
+                                <span>💾</span>
+                                <span>保存</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-settings-api">
+                <div class="page-header">
+                    <h1 class="page-title">API設定</h1>
+                    <p class="page-subtitle">外部API連携の設定</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🧠</span>
+                                Claude API
+                            </h3>
+                            <span class="api-status-badge connected">接続済み</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="api-config">
+                                <div class="config-item">
+                                    <label class="config-label">APIキー</label>
+                                    <input type="password" class="config-input" value="sk-ant-xxxxxxxxxxxxxx">
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">モデル</label>
+                                    <select class="config-select">
+                                        <option>claude-sonnet-4-5</option>
+                                        <option>claude-opus-4-5</option>
+                                        <option>claude-haiku-4-5</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">使用状況</label>
+                                    <div class="usage-bar">
+                                        <div class="usage-fill" style="width: 75%;"></div>
+                                    </div>
+                                    <div class="usage-text">750 / 1,000 リクエスト (今日)</div>
+                                </div>
+                                <button class="btn btn-primary btn-sm">設定を保存</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🔮</span>
+                                Gemini API
+                            </h3>
+                            <span class="api-status-badge connected">接続済み</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="api-config">
+                                <div class="config-item">
+                                    <label class="config-label">APIキー</label>
+                                    <input type="password" class="config-input" value="AIzaSyxxxxxxxxxxxxxx">
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">モデル</label>
+                                    <select class="config-select">
+                                        <option>gemini-2.0-flash-exp</option>
+                                        <option>gemini-1.5-pro</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">使用状況</label>
+                                    <div class="usage-bar">
+                                        <div class="usage-fill" style="width: 45%;"></div>
+                                    </div>
+                                    <div class="usage-text">450 / 1,000 リクエスト (今日)</div>
+                                </div>
+                                <button class="btn btn-primary btn-sm">設定を保存</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🌐</span>
+                                Perplexity API
+                            </h3>
+                            <span class="api-status-badge connected">接続済み</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="api-config">
+                                <div class="config-item">
+                                    <label class="config-label">APIキー</label>
+                                    <input type="password" class="config-input" value="pplx-xxxxxxxxxxxxxx">
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">モデル</label>
+                                    <select class="config-select">
+                                        <option>sonar-pro</option>
+                                        <option>sonar</option>
+                                    </select>
+                                </div>
+                                <div class="config-item">
+                                    <label class="config-label">使用状況</label>
+                                    <div class="usage-bar">
+                                        <div class="usage-fill" style="width: 30%;"></div>
+                                    </div>
+                                    <div class="usage-text">150 / 500 リクエスト (今日)</div>
+                                </div>
+                                <button class="btn btn-primary btn-sm">設定を保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-settings-notification">
+                <div class="page-header">
+                    <h1 class="page-title">通知設定</h1>
+                    <p class="page-subtitle">通知とアラートの設定</p>
+                </div>
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📣</span>
+                                通知チャンネル
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="channel-list">
+                                <div class="channel-item">
+                                    <div class="channel-info">
+                                        <span class="channel-icon">📧</span>
+                                        <div>
+                                            <div class="channel-name">メール通知</div>
+                                            <div class="channel-desc">重大インシデントを即時通知</div>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="channel-item">
+                                    <div class="channel-info">
+                                        <span class="channel-icon">💬</span>
+                                        <div>
+                                            <div class="channel-name">Slack通知</div>
+                                            <div class="channel-desc">#helpdesk-alerts へ送信</div>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="channel-item">
+                                    <div class="channel-info">
+                                        <span class="channel-icon">💼</span>
+                                        <div>
+                                            <div class="channel-name">Teams通知</div>
+                                            <div class="channel-desc">運用チームへエスカレーション</div>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🧩</span>
+                                通知ルール
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="rule-list">
+                                <div class="rule-item">
+                                    <div>
+                                        <div class="rule-title">高優先度インシデント</div>
+                                        <div class="rule-desc">即時通知 + 10分経過で再通知</div>
+                                    </div>
+                                    <span class="status-badge status-in-progress">有効</span>
+                                </div>
+                                <div class="rule-item">
+                                    <div>
+                                        <div class="rule-title">SLA違反の兆候</div>
+                                        <div class="rule-desc">30分前に担当者へ通知</div>
+                                    </div>
+                                    <span class="status-badge status-investigating">監視</span>
+                                </div>
+                                <div class="rule-item">
+                                    <div>
+                                        <div class="rule-title">AI推奨アクション</div>
+                                        <div class="rule-desc">日次レポートとして送信</div>
+                                    </div>
+                                    <span class="status-badge status-pending">保留</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">⏰</span>
+                                通知スケジュール
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-grid">
+                                <div class="form-section">
+                                    <label class="form-label">通知時間帯</label>
+                                    <select class="form-select">
+                                        <option>24時間</option>
+                                        <option>平日 9:00-18:00</option>
+                                        <option>オンコールのみ</option>
+                                    </select>
+                                </div>
+                                <div class="form-section">
+                                    <label class="form-label">再通知間隔</label>
+                                    <select class="form-select">
+                                        <option>10分</option>
+                                        <option>30分</option>
+                                        <option>60分</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary">キャンセル</button>
+                                <button class="btn btn-primary">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-settings-integration">
+                <div class="page-header">
+                    <h1 class="page-title">連携設定</h1>
+                    <p class="page-subtitle">外部サービス連携の設定</p>
+                </div>
+                <div class="integration-grid">
+                    <div class="integration-card">
+                        <div class="integration-header">
+                            <div class="integration-title">
+                                <span class="integration-icon">💬</span>
+                                Slack
+                            </div>
+                            <span class="integration-status connected">接続済み</span>
+                        </div>
+                        <p class="integration-desc">インシデント通知とチケット更新をSlackに送信</p>
+                        <div class="integration-meta">最終同期: 10分前</div>
+                        <div class="integration-actions">
+                            <button class="btn btn-secondary btn-sm">設定</button>
+                            <button class="btn btn-primary btn-sm">再同期</button>
+                        </div>
+                    </div>
+
+                    <div class="integration-card">
+                        <div class="integration-header">
+                            <div class="integration-title">
+                                <span class="integration-icon">💼</span>
+                                Microsoft Teams
+                            </div>
+                            <span class="integration-status pending">認証待ち</span>
+                        </div>
+                        <p class="integration-desc">Teams チャネルにリアルタイム通知を配信</p>
+                        <div class="integration-meta">接続ステータス: 期限内に認証が必要</div>
+                        <div class="integration-actions">
+                            <button class="btn btn-primary btn-sm">認証</button>
+                            <button class="btn btn-secondary btn-sm">詳細</button>
+                        </div>
+                    </div>
+
+                    <div class="integration-card">
+                        <div class="integration-header">
+                            <div class="integration-title">
+                                <span class="integration-icon">📌</span>
+                                Jira Service Management
+                            </div>
+                            <span class="integration-status connected">接続済み</span>
+                        </div>
+                        <p class="integration-desc">インシデントの双方向同期とステータス更新</p>
+                        <div class="integration-meta">同期対象プロジェクト: 2件</div>
+                        <div class="integration-actions">
+                            <button class="btn btn-secondary btn-sm">設定</button>
+                            <button class="btn btn-primary btn-sm">同期ログ</button>
+                        </div>
+                    </div>
+
+                    <div class="integration-card">
+                        <div class="integration-header">
+                            <div class="integration-title">
+                                <span class="integration-icon">⚡</span>
+                                Webhook
+                            </div>
+                            <span class="integration-status disconnected">未接続</span>
+                        </div>
+                        <p class="integration-desc">カスタムエンドポイントへイベント通知を送信</p>
+                        <div class="integration-meta">登録済み: 0件</div>
+                        <div class="integration-actions">
+                            <button class="btn btn-primary btn-sm">追加</button>
+                            <button class="btn btn-secondary btn-sm">ガイド</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-content hidden" id="page-settings-backup">
+                <div class="page-header">
+                    <h1 class="page-title">バックアップ設定</h1>
+                    <p class="page-subtitle">データバックアップの設定</p>
+                </div>
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">💾</span>
+                                バックアップ概要
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="backup-summary">
+                                <div class="backup-item">
+                                    <span class="backup-label">最終バックアップ</span>
+                                    <span class="backup-value">2024-01-27 02:30</span>
+                                </div>
+                                <div class="backup-item">
+                                    <span class="backup-label">ステータス</span>
+                                    <span class="backup-value success-text">成功</span>
+                                </div>
+                                <div class="backup-item">
+                                    <span class="backup-label">サイズ</span>
+                                    <span class="backup-value">8.2 GB</span>
+                                </div>
+                                <div class="backup-item">
+                                    <span class="backup-label">保持数</span>
+                                    <span class="backup-value">14世代</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🗓️</span>
+                                スケジュール
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-section">
+                                <label class="form-label">実行頻度</label>
+                                <select class="form-select">
+                                    <option>毎日</option>
+                                    <option>毎週</option>
+                                    <option>毎月</option>
+                                </select>
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">実行時刻</label>
+                                <input type="time" class="form-input" value="02:30">
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">保持期間</label>
+                                <select class="form-select">
+                                    <option>14日</option>
+                                    <option>30日</option>
+                                    <option>90日</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary">キャンセル</button>
+                                <button class="btn btn-primary">保存</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🗄️</span>
+                                保存先
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-section">
+                                <label class="form-label">ストレージ</label>
+                                <select class="form-select">
+                                    <option>Azure Blob Storage</option>
+                                    <option>AWS S3</option>
+                                    <option>オンプレミスNAS</option>
+                                </select>
+                            </div>
+                            <div class="form-section">
+                                <label class="form-label">使用状況</label>
+                                <div class="usage-bar">
+                                    <div class="usage-fill" style="width: 62%;"></div>
+                                </div>
+                                <div class="usage-text">62% 使用 (62GB / 100GB)</div>
+                            </div>
+                            <button class="btn btn-primary btn-sm">保存先を更新</button>
+                        </div>
+                    </div>
+
+                    <div class="card card-full">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📝</span>
+                                バックアップ履歴
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="backup-log">
+                                <div class="backup-log-item">
+                                    <span class="log-status success"></span>
+                                    <div>
+                                        <div class="log-message">2024-01-27 02:30 完了 (8.2GB)</div>
+                                        <div class="log-time">所要時間: 12分</div>
+                                    </div>
+                                </div>
+                                <div class="backup-log-item">
+                                    <span class="log-status warning"></span>
+                                    <div>
+                                        <div class="log-message">2024-01-26 02:30 警告 (圧縮率低下)</div>
+                                        <div class="log-time">所要時間: 14分</div>
+                                    </div>
+                                </div>
+                                <div class="backup-log-item">
+                                    <span class="log-status success"></span>
+                                    <div>
+                                        <div class="log-message">2024-01-25 02:30 完了 (8.1GB)</div>
+                                        <div class="log-time">所要時間: 11分</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- フッター -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <span>© 2026 Mirai ヘルプデスク管理システム</span>
+                    <span class="footer-separator">|</span>
+                    <span>Version 7.0.0</span>
+                </div>
+                <div class="footer-right">
+                    <a href="#" class="footer-link">ドキュメント</a>
+                    <a href="#" class="footer-link">サポート</a>
+                    <a href="#" class="footer-link">GitHub</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

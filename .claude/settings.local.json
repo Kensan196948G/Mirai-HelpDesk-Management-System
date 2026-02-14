@@ -15,7 +15,11 @@
       "Bash(chmod:*)",
       "Bash(npm audit fix:*)",
       "Bash(npm update:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: 包括的セキュリティレビュー完了 + CRITICAL/HIGH問題修正\n\n## セキュリティ改善\n- JWT_SECRET: 強力なランダム値に変更（43文字）\n- bcrypt: ラウンド数10→12に増加\n- CSRF保護: csurfミドルウェア実装\n- ファイルアップロード: マジックバイト検証追加\n- データベースログ: パラメータサニタイズ実装\n- SODトリガー: approval_idチェック修正\n- エラーハンドリング: 本番環境で詳細隠蔽\n- 本番環境JWT検証: 起動時の脆弱なシークレット検出\n\n## 新規作成ファイル\n- backend/src/middleware/csrf.ts - CSRF保護\n- backend/src/routes/csrf.routes.ts - CSRFトークン取得API\n- database/setup-all.sh - DB自動セットアップスクリプト\n- COMPREHENSIVE_REVIEW_REPORT.md - 包括的レビュー（45,000字）\n- SECURITY_COMPLIANCE_REVIEW.md - セキュリティ監査（18,000字）\n- NPM_VULNERABILITIES_REPORT.md - npm脆弱性分析\n- FINAL_REVIEW_SUMMARY.md - 最終統合サマリー\n- DEVELOPMENT_NEXT_STEPS.md - 開発フェーズ別タスク一覧\n\n## 修正ファイル\n- backend/src/models/user.model.ts - bcrypt 12ラウンド\n- backend/src/config/database.ts - パラメータサニタイズ\n- backend/src/index.ts - CSRF保護統合、JWT検証\n- backend/src/middleware/upload.ts - マジックバイト検証\n- backend/src/middleware/validation.ts - エラーメッセージ改善\n- backend/src/middleware/errorHandler.ts - 本番環境エラー隠蔽\n- database/migrations/009_*.sql - SODトリガーバグ修正\n\n## テスト結果\n- E2E: 95.3% \\(223/234\\)\n- Unit: 100% \\(141/141\\)\n- 総合: 97.1% \\(364/375\\)\n\n## OWASP Top 10 評価\n修正前: 40% → 修正後: 88%\n\n## 総合評価: A- \\(88/100\\)\n本番投入推奨（.env Git履歴削除後）\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(.gitignore << 'EOF'\n# 環境ファイル\n.env\n.env.*\n!.env.example\n!.env.mcp.example\n\n# 依存関係\nnode_modules/\npackage-lock.json\n\n# ビルド出力\ndist/\nbuild/\n.vite/\n\n# ログファイル\n*.log\nlogs/\n*.pid\n\n# テスト\ncoverage/\n.nyc_output/\ntest-results/\nplaywright-report/\nplaywright/.cache/\n\n# OS固有\n.DS_Store\n._.DS_Store\nThumbs.db\ndesktop.ini\n\n# IDE\n.vscode/\n.idea/\n*.swp\n*.swo\n*~\n\n# 一時ファイル\n*.tmp\n*.temp\n.tmp/\narchive/\n\n# データベース\n*.db\n*.sqlite\n*.sqlite3\n\n# セキュリティ\n*.pem\n*.key\n*.cert\ncertificates/private/\n\n# バックアップ\n*.bak\n*.backup\n\n# npm監査レポート\n*-audit-report.json\nEOF)",
+      "Bash(git commit:*)"
     ]
   },
   "outputStyle": "Explanatory"
